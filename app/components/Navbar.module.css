@@ -1,0 +1,354 @@
+.navbar {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 2rem;
+  background: rgba(5, 8, 20, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 215, 0, 0.15);
+  border-radius: 50px;
+  z-index: 999;
+  direction: rtl;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.navbar.scrolled {
+  top: 10px;
+  background: rgba(5, 8, 20, 0.9);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 215, 0, 0.2) inset;
+}
+
+.navbarBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50px;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.bgGlow {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, rgba(255, 215, 0, 0.08) 0%, transparent 60%);
+  animation: rotateBg 25s linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes rotateBg {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.navRight, .navLeft ul {
+  display: flex;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.navLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.navLink {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: 40px;
+  transition: all 0.25s ease;
+  overflow: hidden;
+  border: 1px solid transparent;
+  background: transparent;
+  letter-spacing: 0.3px;
+}
+
+.linkIcon {
+  font-size: 1.1rem;
+  filter: drop-shadow(0 2px 5px rgba(255, 215, 0, 0.2));
+  transition: transform 0.25s ease;
+}
+
+.linkText {
+  position: relative;
+  z-index: 2;
+}
+
+.linkGlow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(255, 215, 0, 0.25), transparent 70%);
+  transform: translate(-50%, -50%);
+  transition: width 0.4s ease, height 0.4s ease, opacity 0.3s ease;
+  opacity: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.navLink:hover {
+  color: gold;
+  border-color: rgba(255, 215, 0, 0.3);
+  background: rgba(255, 215, 0, 0.03);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.15);
+}
+
+.navLink:hover .linkIcon {
+  transform: scale(1.15) rotate(2deg);
+}
+
+.navLink:hover .linkGlow {
+  width: 120px;
+  height: 120px;
+  opacity: 0.8;
+}
+
+.navLink.active {
+  color: #050814;
+  background: gold;
+  border-color: gold;
+  box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
+}
+
+.navLink.active .linkIcon {
+  color: #050814;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.navLink.active .linkGlow {
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.6), transparent 70%);
+}
+
+.logoWrapper {
+  position: relative;
+  margin: 0 0.8rem;
+}
+
+.logo {
+  display: block;
+  text-decoration: none;
+}
+
+.logoInner {
+  position: relative;
+  width: 55px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoInner img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(255, 215, 0, 0.4));
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 3;
+  border-radius: 50%;
+}
+
+.logoGlow {
+  position: absolute;
+  top: -15px;
+  left: -15px;
+  right: -15px;
+  bottom: -15px;
+  background: radial-gradient(circle at center, rgba(255, 215, 0, 0.15), transparent 70%);
+  border-radius: 50%;
+  animation: glowPulse 4s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes glowPulse {
+  0% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.15); }
+  100% { opacity: 0.3; transform: scale(1); }
+}
+
+.logoWrapper:hover .logoInner img {
+  transform: scale(1.1) rotate(3deg);
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 28px;
+  height: 22px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+  z-index: 1001;
+}
+
+.hamburgerLine {
+  width: 100%;
+  height: 2.5px;
+  background: gold;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+.hamburger.active .hamburgerLine:nth-child(1) {
+  transform: translateY(9px) rotate(45deg);
+}
+
+.hamburger.active .hamburgerLine:nth-child(2) {
+  opacity: 0;
+  transform: translateX(-10px);
+}
+
+.hamburger.active .hamburgerLine:nth-child(3) {
+  transform: translateY(-9px) rotate(-45deg);
+}
+
+@media (max-width: 992px) {
+  .navbar {
+    padding: 0.5rem 1.5rem;
+  }
+
+  .navLink {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.9rem;
+  }
+
+  .navRight, .navLeft ul {
+    gap: 0.4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    top: 10px;
+    padding: 0.5rem 1.2rem;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .navRight, .navLeft ul {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    flex-direction: column;
+    background: rgba(5, 8, 20, 0.95);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    border-radius: 20px;
+    padding: 1rem;
+    min-width: 200px;
+    gap: 0.6rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+  }
+
+  .navRight {
+    right: 0;
+  }
+
+  .navLeft ul {
+    left: 0;
+  }
+
+  .navRight.open, .navLeft ul.open {
+    display: flex;
+    animation: slideIn 0.3s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-15px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .navLink {
+    width: 100%;
+    justify-content: center;
+    padding: 0.7rem;
+    font-size: 0.95rem;
+  }
+
+  .logoInner {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0.4rem 1rem;
+  }
+
+  .navRight.open, .navLeft ul.open {
+    min-width: 170px;
+  }
+
+  .navLink {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .linkIcon {
+    font-size: 1rem;
+  }
+
+  .logoInner {
+    width: 42px;
+    height: 42px;
+  }
+
+  .hamburger {
+    width: 24px;
+    height: 18px;
+  }
+
+  .hamburgerLine {
+    height: 2px;
+  }
+
+  .hamburger.active .hamburgerLine:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .hamburger.active .hamburgerLine:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+}

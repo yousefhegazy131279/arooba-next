@@ -1,0 +1,227 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import AOS from "aos";
+import "aos/dist/aos.css";
+import styles from "./StorySection.module.css";
+import { supabase } from "@/lib/supabaseClient";
+
+interface Story {
+  id: string;
+  title: string;
+  description: string;
+  cover: string;
+  category?: string;
+  chapters_count?: number;
+  avg_rating?: number;
+  total_ratings?: number;
+}
+
+const StorySection = () => {
+  const router = useRouter();
+  const [story, setStory] = useState<Story | null>(null);
+  const [pending, setPending] = useState(true);
+  const [error, setError] = useState(false);
+
+  const whyItems = [
+    { icon: "🌟", title: "قصص خالدة", description: "روايات صعب أن تنسى" },
+    { icon: "🎭", title: "تعريب كما قال الكتاب", description: "نحاول أن يكون التعريب على أعلى مستوى ليحظى القارئ بأفضل تجربة ممكنة" },
+    { icon: "💫", title: "نستمع للجمهور", description: "رأيك هو أكثر ما يهمنا لذا لا تكن خجولاً واقترح ما تشاء!" },
+  ];
+
+  // دالة لتوليد رابط الصورة الصحيح
+  const getCoverUrl = (coverPath: string): string => {
+    if (!coverPath) return '';
+    if (coverPath.startsWith('http') || coverPath.startsWith('/')) {
+      return coverPath;
+    }
+    return `/covers/${coverPath}`;
+  };
+
+  const fetchStory = async () => {
+    setPending(true);
+    setError(false);
+    try {
+      // 1. جلب أحدث رواية
+      const { data: novel, error: novelError } = await supabase
+        .from("novels")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+
+      if (novelError) throw novelError;
+      if (!novel) {
+        setError(true);
+        return;
+      }
+
+      // 2. جلب تقييمات هذه الرواية من جدول ratings
+      const { data: ratings, error: ratingsError } = await supabase
+        .from("ratings")
+        .select("rating")
+        .eq("novel_id", novel.id);
+
+      let avgRating = 0;
+      let totalRatings = 0;
+      if (ratings && ratings.length > 0) {
+        const sum = ratings.reduce((acc, curr) => acc + curr.rating, 0);
+        avgRating = sum / ratings.length;
+        totalRatings = ratings.length;
+      }
+
+      // 3. جلب عدد الفصول
+      const { count: chaptersCount } = await supabase
+        .from("chapters")
+        .select("*", { count: "exact", head: true })
+        .eq("novel_id", novel.id);
+
+      setStory({
+        id: novel.id,
+        title: novel.title,
+        description: novel.description || "",
+        cover: novel.cover,
+        category: novel.category,
+        chapters_count: chaptersCount || 0,
+        avg_rating: avgRating,
+        total_ratings: totalRatings,
+      });
+    } catch (err) {
+      console.error("خطأ في جلب القصة:", err);
+      setError(true);
+    } finally {
+      setPending(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStory();
+    AOS.init({
+      duration: 800,
+      easing: "ease-out-cubic",
+      once: false,
+      mirror: true,
+      anchorPlacement: "top-bottom",
+    });
+    const handleResize = () => AOS.refresh();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const goToStory = () => {
+    if (story) router.push(`/stories/${story.id}`);
+  };
+
+  return (
+    <section className={styles.storySection}>
+      <div className={styles.heroBackground}>
+        <div className={`${styles.gradientOrb} ${styles.orb1}`}></div>
+        <div className={`${styles.gradientOrb} ${styles.orb2}`}></div>
+        <div className={`${styles.gradientOrb} ${styles.orb3}`}></div>
+        <div className={styles.gridOverlay}></div>
+      </div>
+
+      <div className={styles.container}>
+        <div className={styles.sectionHeader} data-aos="fade-up" data-aos-duration="1000">
+          <span className={styles.sectionBadge} data-aos="fade-down" data-aos-delay="200">
+            اعمالنا
+          </span>
+          <h2 className={styles.sectionTitle}>
+            <span className={styles.titleWord} data-aos="fade-left" data-aos-delay="300">
+              استمتع بالقصص العالمية
+            </span>
+            <span className={`${styles.titleWord} ${styles.gold}`} data-aos="fade-up" data-aos-delay="400">
+              بلغة الضاد
+            </span>
+          </h2>
+          <div className={styles.titleDecoration} data-aos="zoom-in" data-aos-delay="600">
+            <span className={styles.decorationLine}></span>
+            <span className={styles.decorationStar}>✨</span>
+            <span className={styles.decorationLine}></span>
+          </div>
+        </div>
+
+        {pending && (
+          <div className={styles.loadingState} data-aos="fade-up">
+            <div className={styles.loader}></div>
+            <p>جاري تحميل القصة المميزة...</p>
+          </div>
+        )}
+
+        {error && !pending && (
+          <div className={styles.errorState} data-aos="fade-up">
+            <span className={styles.errorIcon}>😞</span>
+            <p>عذراً، حدث خطأ في تحميل القصة.</p>
+          </div>
+        )}
+
+        {!pending && !error && story && (
+          <div
+            className={styles.storyCard}
+            data-aos="fade-up"
+            data-aos-duration="1200"
+            data-aos-delay="200"
+          >
+            <div className={styles.cardWrapper} onClick={goToStory}>
+              <div className={styles.imageContainer}>
+                <div className={styles.imageOverlay}></div>
+                <img src={getCoverUrl(story.cover)} alt={story.title} />
+                <div className={styles.imageGlow}></div>
+                <div className={styles.storyBadge} data-aos="zoom-in" data-aos-delay="800">
+                  <span className={styles.badgeIcon}>🌟</span>
+                  <span className={styles.badgeText}>{story.category || "الأكثر قراءة"}</span>
+                </div>
+              </div>
+              <div className={styles.cardContent}>
+                <h3 className={styles.storyTitle}>{story.title}</h3>
+                <p className={styles.storyDescription}>{story.description}</p>
+                <div className={styles.storyStats}>
+                  <div className={styles.stat}>
+                    <span className={styles.statIcon}>📖</span>
+                    <span className={styles.statValue}>{story.chapters_count} فصل</span>
+                  </div>
+                  <div className={styles.stat}>
+                    <span className={styles.statIcon}>⭐</span>
+                    <span className={styles.statValue}>
+                      {story.avg_rating ? story.avg_rating.toFixed(1) : "0"} (
+                      {story.total_ratings} تقييم)
+                    </span>
+                  </div>
+                </div>
+                <button className={styles.readButton}>
+                  <span>اقرأ القصة</span>
+                  <span className={styles.buttonIcon}>←</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div
+          className={styles.whySection}
+          data-aos="fade-up"
+          data-aos-duration="1000"
+          data-aos-delay="400"
+        >
+          <div className={styles.whyGrid}>
+            {whyItems.map((item, index) => (
+              <div
+                key={index}
+                className={styles.whyCard}
+                data-aos={index % 2 === 0 ? "fade-left" : "fade-right"}
+                data-aos-delay={500 + index * 100}
+              >
+                <div className={styles.whyIcon}>{item.icon}</div>
+                <h4>{item.title}</h4>
+                <p>{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default StorySection;

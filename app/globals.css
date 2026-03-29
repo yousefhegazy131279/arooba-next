@@ -1,26 +1,50 @@
-@import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Amiri:wght@400;700&family=Scheherazade:wght@400;700&display=swap');
+/* أنماط AOS المخصصة (للـ HeroSection) */
+[data-aos="fade-up"] {
+  transform: translate3d(0, 40px, 0);
+  opacity: 0;
+  transition-property: transform, opacity;
+}
+[data-aos="fade-up"].aos-animate {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+[data-aos="fade-down"] {
+  transform: translate3d(0, -40px, 0);
+  opacity: 0;
+  transition-property: transform, opacity;
+}
+[data-aos="fade-down"].aos-animate {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+[data-aos="fade"] {
+  opacity: 0;
+  transition-property: opacity;
+}
+[data-aos="fade"].aos-animate {
+  opacity: 1;
+}
+
+/* تحسينات الأداء (تقليل الحركة) */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  padding-top: 80px;
+  background-color: #050814;
+  color: white;
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700;
+}
+* {
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700 !important;  /* !important لتجاوز أي أنماط أخرى */
 }

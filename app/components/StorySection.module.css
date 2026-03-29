@@ -1,0 +1,525 @@
+.storySection {
+    position: relative;
+    padding: 100px 20px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    direction: rtl;
+  }
+  
+  .container {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    z-index: 2;
+    width: 100%;
+  }
+  
+  /* خلفية متحركة */
+  .heroBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+  
+  .gradientOrb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    animation: float 20s infinite ease-in-out;
+  }
+  
+  .orb1 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle at 30% 30%, rgba(255,215,0,0.3), rgba(255,215,0,0.1));
+    top: -200px;
+    right: -200px;
+    animation-delay: 0s;
+  }
+  
+  .orb2 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle at 70% 70%, rgba(255,215,0,0.2), rgba(255,165,0,0.1));
+    bottom: -150px;
+    left: -150px;
+    animation-delay: -5s;
+  }
+  
+  .orb3 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle at 50% 50%, rgba(255,215,0,0.25), transparent);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulse 8s infinite;
+  }
+  
+  .gridOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      linear-gradient(rgba(255,215,0,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,215,0,0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 20s linear infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(50px, 50px) scale(1.1); }
+    50% { transform: translate(0, 100px) scale(1); }
+    75% { transform: translate(-50px, 50px) scale(0.9); }
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 0.5; transform: translate(-50%, -50%) scale(1.2); }
+  }
+  
+  @keyframes gridMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50px, 50px); }
+  }
+  
+  /* ===== ترويسة القسم ===== */
+  .sectionHeader {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+  
+  .sectionBadge {
+    display: inline-block;
+    padding: 8px 20px;
+    background: rgba(255,215,0,0.1);
+    color: gold;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255,215,0,0.3);
+    backdrop-filter: blur(10px);
+    animation: glowPulse 2s infinite;
+  }
+  
+  @keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 10px rgba(255,215,0,0.3); }
+    50% { box-shadow: 0 0 20px rgba(255,215,0,0.6); }
+  }
+  
+  .sectionTitle {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+  
+  .titleWord {
+    display: inline-block;
+    margin: 0 5px;
+    color: white;
+    font-family: 'Amiri', serif;
+  }
+  
+  .titleWord.gold {
+    background: linear-gradient(135deg, gold, #ffd700, #fbbf24);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+  }
+  
+  .titleDecoration {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+  }
+  
+  .decorationLine {
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, gold, transparent);
+    animation: lineWidth 3s infinite;
+  }
+  
+  @keyframes lineWidth {
+    0%, 100% { width: 80px; opacity: 0.5; }
+    50% { width: 120px; opacity: 1; }
+  }
+  
+  .decorationStar {
+    color: gold;
+    font-size: 1.5rem;
+    animation: spinStar 4s linear infinite;
+  }
+  
+  @keyframes spinStar {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  /* ===== بطاقة القصة ===== */
+  .storyCard {
+    max-width: 1000px;
+    margin: 0 auto 60px;
+  }
+  
+  .cardWrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,215,0,0.03) 100%);
+    border-radius: 30px;
+    padding: 30px;
+    border: 1px solid rgba(255,215,0,0.2);
+    transition: all 0.5s ease;
+    cursor: pointer;
+  }
+  
+  .cardWrapper:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: gold;
+    box-shadow: 0 30px 60px rgba(255,215,0,0.2);
+  }
+  
+  /* صورة الرواية */
+  .imageContainer {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    aspect-ratio: 2/3;
+  }
+  
+  .imageContainer img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  
+  .cardWrapper:hover img {
+    transform: scale(1.1);
+  }
+  
+  .imageOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.8) 100%);
+    z-index: 1;
+  }
+  
+  .imageGlow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(255,215,0,0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 2;
+  }
+  
+  .cardWrapper:hover .imageGlow {
+    opacity: 1;
+    animation: rotateGlow 10s linear infinite;
+  }
+  
+  @keyframes rotateGlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  /* شارة القصة */
+  .storyBadge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, gold, #ffd700);
+    color: #050814;
+    padding: 8px 15px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 3;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(255,215,0,0.4);
+    animation: badgeFloat 3s infinite;
+  }
+  
+  @keyframes badgeFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+  
+  .badgeIcon {
+    font-size: 1.2rem;
+  }
+  
+  /* محتوى البطاقة */
+  .cardContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  .storyTitle {
+    font-size: 3rem;
+    color: gold;
+    margin-bottom: 20px;
+    font-family: 'Amiri', serif;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .storyTitle::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    right: 0;
+    width: 80px;
+    height: 3px;
+    background: gold;
+    border-radius: 3px;
+    animation: titleLine 3s infinite;
+  }
+  
+  @keyframes titleLine {
+    0%, 100% { width: 80px; }
+    50% { width: 150px; }
+  }
+  
+  .storyDescription {
+    color: #ccc;
+    line-height: 1.8;
+    margin-bottom: 30px;
+    font-size: 1.2rem;
+  }
+  
+  /* إحصائيات القصة */
+  .storyStats {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 30px;
+  }
+  
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .statIcon {
+    font-size: 1.5rem;
+    animation: bounce 2s infinite;
+  }
+  
+  .statValue {
+    color: white;
+    font-size: 1.1rem;
+  }
+  
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+  
+  /* زر القراءة */
+  .readButton {
+    background: linear-gradient(45deg, gold, #ffd700);
+    color: #050814;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: fit-content;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .readButton::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+  
+  .readButton:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+  
+  .readButton:hover {
+    transform: translateX(-10px);
+    box-shadow: 0 10px 30px rgba(255,215,0,0.4);
+  }
+  
+  .buttonIcon {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+  }
+  
+  .readButton:hover .buttonIcon {
+    transform: translateX(-5px);
+  }
+  
+  /* ===== قسم "لماذا هذه القصة؟" ===== */
+  .whySection {
+    margin-top: 80px;
+  }
+  
+  .whyGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+  }
+  
+  .whyCard {
+    background: rgba(255,255,255,0.02);
+    padding: 40px 30px;
+    border-radius: 20px;
+    text-align: center;
+    border: 1px solid rgba(255,215,0,0.1);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+  }
+  
+  .whyCard:hover {
+    transform: translateY(-10px);
+    border-color: gold;
+    box-shadow: 0 20px 40px rgba(255,215,0,0.1);
+  }
+  
+  .whyIcon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    animation: bounce 2s infinite;
+  }
+  
+  .whyCard h4 {
+    color: gold;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    font-family: 'Amiri', serif;
+  }
+  
+  .whyCard p {
+    color: #aaa;
+    line-height: 1.8;
+  }
+  
+  /* ===== حالة التحميل والخطأ ===== */
+  .loadingState, .errorState {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 30px;
+    backdrop-filter: blur(10px);
+    margin: 40px 0;
+    color: #888;
+  }
+  
+  .loader {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(255,215,0,0.1);
+    border-top-color: gold;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  .errorIcon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 20px;
+    opacity: 0.7;
+  }
+  
+  /* ===== استجابة ===== */
+  @media (max-width: 992px) {
+    .cardWrapper {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    
+    .imageContainer {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    
+    .storyTitle {
+      font-size: 2.5rem;
+    }
+    
+    .whyGrid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .sectionTitle {
+      font-size: 2.2rem;
+    }
+    
+    .storyTitle {
+      font-size: 2rem;
+    }
+    
+    .storyDescription {
+      font-size: 1rem;
+    }
+    
+    .storyStats {
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .whyGrid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .sectionTitle {
+      font-size: 1.8rem;
+    }
+    
+    .cardWrapper {
+      padding: 20px;
+    }
+    
+    .storyTitle {
+      font-size: 1.8rem;
+    }
+  }

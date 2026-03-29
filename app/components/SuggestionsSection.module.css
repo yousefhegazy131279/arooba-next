@@ -1,0 +1,1027 @@
+/* ===== المكون الرئيسي ===== */
+.suggestionsSection {
+    position: relative;
+    padding: 100px 20px;
+    background: linear-gradient(135deg, #050814 0%, #0a1020 100%);
+    color: white;
+    direction: rtl;
+    overflow: hidden;
+  }
+  
+  /* ===== خلفية متحركة ===== */
+  .sectionBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+  
+  .bgOrb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.2;
+    animation: floatOrb 20s infinite ease-in-out;
+  }
+  
+  .orb1 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle at 30% 30%, rgba(255,215,0,0.3), transparent);
+    top: -200px;
+    right: -200px;
+    animation-delay: 0s;
+  }
+  
+  .orb2 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle at 70% 70%, rgba(255,215,0,0.2), transparent);
+    bottom: -200px;
+    left: -200px;
+    animation-delay: -5s;
+  }
+  
+  .orb3 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle at 50% 50%, rgba(255,215,0,0.25), transparent);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulse 8s infinite;
+  }
+  
+  .gridOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      linear-gradient(rgba(255,215,0,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,215,0,0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 20s linear infinite;
+  }
+  
+  .floatingShapes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  
+  .shape {
+    position: absolute;
+    font-size: 2rem;
+    opacity: 0.1;
+    animation: floatShape 15s infinite linear;
+  }
+  
+  .shape1 {
+    top: 10%;
+    left: 10%;
+    animation-delay: 0s;
+  }
+  
+  .shape2 {
+    top: 70%;
+    right: 15%;
+    animation-delay: -5s;
+  }
+  
+  .shape3 {
+    bottom: 20%;
+    left: 20%;
+    animation-delay: -10s;
+  }
+  
+  .shape4 {
+    top: 40%;
+    right: 30%;
+    animation-delay: -7s;
+  }
+  
+  @keyframes floatOrb {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(50px, 50px) scale(1.2); }
+    50% { transform: translate(0, 100px) scale(1); }
+    75% { transform: translate(-50px, 50px) scale(0.9); }
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 0.2; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 0.4; transform: translate(-50%, -50%) scale(1.2); }
+  }
+  
+  @keyframes gridMove {
+    0% { background-position: 0 0; }
+    100% { background-position: 50px 50px; }
+  }
+  
+  @keyframes floatShape {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    33% { transform: translate(30px, 30px) rotate(120deg); }
+    66% { transform: translate(-30px, 20px) rotate(240deg); }
+    100% { transform: translate(0, 0) rotate(360deg); }
+  }
+  
+  /* ===== الحاوية الرئيسية ===== */
+  .container {
+    position: relative;
+    max-width: 1400px;
+    margin: 0 auto;
+    z-index: 1;
+  }
+  
+  /* ===== ترويسة القسم ===== */
+  .sectionHeader {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+  
+  .sectionBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.2));
+    color: gold;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255,215,0,0.3);
+    backdrop-filter: blur(10px);
+    animation: badgeGlow 2s infinite;
+  }
+  
+  @keyframes badgeGlow {
+    0%, 100% { box-shadow: 0 0 10px rgba(255,215,0,0.3); }
+    50% { box-shadow: 0 0 20px rgba(255,215,0,0.6); }
+  }
+  
+  .badgeIcon {
+    font-size: 1.2rem;
+  }
+  
+  .sectionTitle {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+  
+  .titleWord {
+    display: inline-block;
+    margin: 0 5px;
+    color: white;
+    font-family: 'Amiri', serif;
+  }
+  
+  .titleWord.gold {
+    background: linear-gradient(135deg, gold, #ffd700, #fbbf24);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+    font-size: 3.5rem;
+  }
+  
+  .subtitle {
+    color: #aaa;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .titleDecoration {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+  }
+  
+  .decorationLine {
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, gold, transparent);
+    animation: lineWidth 3s infinite;
+  }
+  
+  @keyframes lineWidth {
+    0%, 100% { width: 80px; opacity: 0.5; }
+    50% { width: 120px; opacity: 1; }
+  }
+  
+  .decorationStar {
+    color: gold;
+    font-size: 1.5rem;
+    animation: spinStar 4s linear infinite;
+  }
+  
+  @keyframes spinStar {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  /* ===== التخطيط المرن ===== */
+  .flexLayout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+  
+  /* ===== الفورم ===== */
+  .formWrapper {
+    position: relative;
+  }
+  
+  .suggestionForm {
+    background: rgba(255,255,255,0.02);
+    backdrop-filter: blur(10px);
+    padding: 40px;
+    border-radius: 40px;
+    border: 1px solid rgba(255,215,0,0.1);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .suggestionForm::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, gold, transparent);
+    animation: shimmer 3s infinite;
+  }
+  
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  
+  .formHeader {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 40px;
+  }
+  
+  .formIconWrapper {
+    background: linear-gradient(135deg, gold, #ffd700);
+    width: 60px;
+    height: 60px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: float 3s infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  .formIcon {
+    font-size: 2rem;
+  }
+  
+  .formHeader h3 {
+    color: gold;
+    font-size: 2rem;
+    font-family: 'Amiri', serif;
+    margin: 0;
+  }
+  
+  /* حقول الإدخال */
+  .inputGroup {
+    margin-bottom: 25px;
+  }
+  
+  .inputWrapper {
+    position: relative;
+  }
+  
+  .floatingInput {
+    width: 100%;
+    padding: 18px 25px 18px 60px;
+    background: rgba(255,255,255,0.02);
+    border: 2px solid rgba(255,215,0,0.1);
+    border-radius: 20px;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+    resize: vertical;
+    font-family: inherit;
+  }
+  
+  .floatingInput:focus {
+    border-color: gold;
+    box-shadow: 0 0 30px rgba(255,215,0,0.2);
+    background: rgba(255,255,255,0.05);
+  }
+  
+  .floatingInput.hasValue {
+    border-color: rgba(255,215,0,0.5);
+  }
+  
+  .inputIcon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    opacity: 0.5;
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+  
+  .floatingInput:focus + .inputIcon,
+  .floatingInput.hasValue + .inputIcon {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
+  }
+  
+  .inputBorder {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: gold;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+  }
+  
+  .floatingInput:focus ~ .inputBorder {
+    width: 80%;
+  }
+  
+  /* زر الإرسال */
+  .submitBtn {
+    position: relative;
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(45deg, gold, #ffd700);
+    color: #050814;
+    border: none;
+    border-radius: 30px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+  }
+  
+  .btnContent {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .btnIcon {
+    font-size: 1.3rem;
+    animation: bounce 2s infinite;
+  }
+  
+  @keyframes bounce {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(5px); }
+  }
+  
+  .btnGlow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.5) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+  }
+  
+  .submitBtn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 40px rgba(255,215,0,0.4);
+  }
+  
+  .submitBtn:hover .btnGlow {
+    opacity: 1;
+    animation: rotateGlow 3s linear infinite;
+  }
+  
+  @keyframes rotateGlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  .submitBtn:disabled {
+    background: #555;
+    cursor: not-allowed;
+  }
+  
+  /* رسائل الخطأ والنجاح */
+  .errorMessage {
+    margin: 20px 0;
+    padding: 15px 20px;
+    background: rgba(231, 76, 60, 0.1);
+    border: 1px solid #e74c3c;
+    border-radius: 15px;
+    color: #e74c3c;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: shake 0.5s ease;
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+  }
+  
+  .errorIcon {
+    font-size: 1.3rem;
+  }
+  
+  .successMessage {
+    margin-top: 25px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(46, 204, 113, 0.2));
+    border: 1px solid #2ecc71;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    animation: slideUp 0.5s ease;
+  }
+  
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .successIcon {
+    font-size: 3rem;
+    animation: bounce 2s infinite;
+  }
+  
+  .successContent h4 {
+    color: #2ecc71;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+  }
+  
+  .successContent p {
+    color: #aaa;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+  
+  /* ===== جدار الاقتراحات ===== */
+  .commentsWrapper {
+    position: relative;
+    height: fit-content;
+  }
+  
+  .commentsWall {
+    background: rgba(255,255,255,0.02);
+    backdrop-filter: blur(10px);
+    border-radius: 40px;
+    border: 1px solid rgba(255,215,0,0.1);
+    padding: 30px;
+    max-height: 700px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+  }
+  
+  .wallHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid rgba(255,215,0,0.1);
+  }
+  
+  .headerLeft {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .wallIcon {
+    font-size: 2.5rem;
+    animation: bounce 2s infinite;
+  }
+  
+  .wallTitle {
+    color: gold;
+    font-size: 1.8rem;
+    font-family: 'Amiri', serif;
+    margin: 0;
+  }
+  
+  .suggestionsCount {
+    background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.2));
+    padding: 10px 20px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(255,215,0,0.3);
+  }
+  
+  .countNumber {
+    font-size: 2rem;
+    font-weight: bold;
+    color: gold;
+    line-height: 1;
+  }
+  
+  .countLabel {
+    color: #aaa;
+    font-size: 0.9rem;
+  }
+  
+  .commentsList {
+    overflow-y: auto;
+    flex: 1;
+    padding-left: 5px;
+    scroll-behavior: smooth;
+  }
+  
+  .commentsList::-webkit-scrollbar {
+    width: 5px;
+  }
+  
+  .commentsList::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+  }
+  
+  .commentsList::-webkit-scrollbar-thumb {
+    background: gold;
+    border-radius: 10px;
+  }
+  
+  .listWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  /* بطاقة الاقتراح */
+  .commentCard {
+    position: relative;
+    background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,215,0,0.02));
+    padding: 25px;
+    border-radius: 25px;
+    border: 1px solid rgba(255,215,0,0.1);
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+  
+  .cardGlow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(255,215,0,0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  
+  .commentCard:hover {
+    transform: translateY(-5px) scale(1.02);
+    border-color: gold;
+    box-shadow: 0 20px 40px rgba(255,215,0,0.2);
+  }
+  
+  .commentCard:hover .cardGlow {
+    opacity: 1;
+    animation: rotateGlow 6s linear infinite;
+  }
+  
+  .cardHeader {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  
+  .userAvatar {
+    width: 55px;
+    height: 55px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: #050814;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .avatarGlow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.5) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .commentCard:hover .avatarGlow {
+    opacity: 1;
+    animation: rotateGlow 3s linear infinite;
+  }
+  
+  .userInfo {
+    flex: 1;
+  }
+  
+  .userName {
+    color: gold;
+    font-weight: bold;
+    font-size: 1.2rem;
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .commentDate {
+    font-size: 0.85rem;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .dateIcon {
+    font-size: 0.9rem;
+  }
+  
+  .cardBadge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: gold;
+    color: #050814;
+    padding: 5px 15px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    animation: badgePulse 2s infinite;
+  }
+  
+  @keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  
+  .commentContent {
+    padding-right: 70px;
+  }
+  
+  .storyBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255,215,0,0.1);
+    padding: 5px 12px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .badgeIcon {
+    font-size: 1rem;
+  }
+  
+  .badgeText {
+    color: gold;
+    font-size: 0.8rem;
+  }
+  
+  .storyTitle {
+    margin-bottom: 10px;
+  }
+  
+  .storyTitle strong {
+    color: white;
+    font-size: 1.2rem;
+  }
+  
+  .commentText {
+    color: #bbb;
+    line-height: 1.8;
+    font-style: italic;
+    position: relative;
+    margin: 0;
+  }
+  
+  .quoteIcon {
+    color: gold;
+    font-size: 1.5rem;
+    opacity: 0.5;
+    margin-left: 5px;
+  }
+  
+  .quoteIcon.closing {
+    margin-right: 5px;
+  }
+  
+  .cardFooter {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255,215,0,0.1);
+  }
+  
+  .reactions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  /* شاشة التحميل */
+  .loadingWall {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    color: #888;
+  }
+  
+  .loader {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(255,215,0,0.1);
+    border-top-color: gold;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  .loaderSmall {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    margin-left: 8px;
+  }
+  
+  .loadingProgress {
+    width: 200px;
+    height: 4px;
+    background: rgba(255,215,0,0.1);
+    border-radius: 4px;
+    margin-top: 20px;
+    overflow: hidden;
+  }
+  
+  .progressBar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, gold, #ffd700);
+    animation: progress 2s infinite;
+  }
+  
+  @keyframes progress {
+    0% { width: 0%; }
+    50% { width: 70%; }
+    100% { width: 100%; }
+  }
+  
+  /* الحالة الفارغة */
+  .emptyState {
+    text-align: center;
+    padding: 60px 20px;
+  }
+  
+  .emptyAnimation {
+    position: relative;
+    margin-bottom: 30px;
+  }
+  
+  .emptyIcon {
+    font-size: 6rem;
+    animation: float 3s infinite;
+  }
+  
+  .emptyCircles {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+  }
+  
+  .emptyCircles span {
+    width: 8px;
+    height: 8px;
+    background: gold;
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: circlePulse 2s infinite;
+  }
+  
+  .emptyCircles span:nth-child(2) {
+    animation-delay: 0.5s;
+  }
+  
+  .emptyCircles span:nth-child(3) {
+    animation-delay: 1s;
+  }
+  
+  @keyframes circlePulse {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.5); opacity: 1; }
+  }
+  
+  .emptyState h4 {
+    color: gold;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .emptyState p {
+    color: #666;
+  }
+  
+  /* عناصر زخرفية سفلية */
+  .bottomDecoration {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 0;
+  }
+  
+  .wave {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background: linear-gradient(transparent, rgba(255,215,0,0.05));
+  }
+  
+  .wave1 {
+    animation: wave 8s linear infinite;
+  }
+  
+  .wave2 {
+    animation: wave 6s linear infinite reverse;
+    opacity: 0.5;
+  }
+  
+  @keyframes wave {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+  
+  /* ===== استجابة ===== */
+  @media (max-width: 992px) {
+    .flexLayout {
+      grid-template-columns: 1fr;
+    }
+    
+    .sectionTitle {
+      font-size: 2.5rem;
+    }
+    
+    .titleWord.gold {
+      font-size: 3rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .suggestionsSection {
+      padding: 60px 20px;
+    }
+    
+    .sectionTitle {
+      font-size: 2rem;
+    }
+    
+    .titleWord.gold {
+      font-size: 2.5rem;
+    }
+    
+    .suggestionForm {
+      padding: 30px;
+    }
+    
+    .formHeader h3 {
+      font-size: 1.5rem;
+    }
+    
+    .wallTitle {
+      font-size: 1.5rem;
+    }
+    
+    .commentContent {
+      padding-right: 0;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .sectionTitle {
+      font-size: 1.5rem;
+    }
+    
+    .titleWord.gold {
+      font-size: 2rem;
+    }
+    
+    .subtitle {
+      font-size: 1rem;
+    }
+    
+    .suggestionForm {
+      padding: 20px;
+    }
+    
+    .formHeader {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .commentsWall {
+      padding: 20px;
+    }
+    
+    .wallHeader {
+      flex-direction: column;
+      gap: 15px;
+    }
+  }
+  
+  /* ===== تأثيرات AOS مخصصة (مع :global لتجنب مشاكل CSS Modules) ===== */
+  :global([data-aos="flip-right"]) {
+    transform: perspective(2500px) rotateY(-100deg);
+    opacity: 0;
+    transition-property: transform, opacity;
+  }
+  
+  :global([data-aos="flip-right"].aos-animate) {
+    transform: perspective(2500px) rotateY(0);
+    opacity: 1;
+  }
+  
+  :global([data-aos="flip-left"]) {
+    transform: perspective(2500px) rotateY(100deg);
+    opacity: 0;
+    transition-property: transform, opacity;
+  }
+  
+  :global([data-aos="flip-left"].aos-animate) {
+    transform: perspective(2500px) rotateY(0);
+    opacity: 1;
+  }
+  
+  :global([data-aos="pulse"]) {
+    animation: pulse 1s ease;
+  }
+  
+  /* ===== تحسينات الأداء ===== */
+  @media (prefers-reduced-motion: reduce) {
+    :global(*) {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
