@@ -10,6 +10,7 @@ interface Chapter {
   title: string;
   content?: string;
   word_file?: string;
+  image?: string;
   order: number;
   novel_id: string;
   average_rating: number | null;
@@ -36,7 +37,12 @@ export function ChapterList({ chapters, novelId }: ChapterListProps) {
         data-aos="fade-up"
         suppressHydrationWarning
       >
-        <span className={styles.emptyIcon}>📭</span>
+        <span className={styles.emptyIcon}>
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <polyline points="22 4 12 14.01 9 11.01" />
+          </svg>
+        </span>
         <p>لا توجد فصول مضافة بعد.</p>
       </div>
     );
@@ -50,12 +56,21 @@ export function ChapterList({ chapters, novelId }: ChapterListProps) {
         suppressHydrationWarning
       >
         <h2 className={styles.sectionTitle}>
-          <span className={styles.titleIcon}>📖</span>
+          <span className={styles.titleIcon}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+            </svg>
+          </span>
           فصول الرواية
         </h2>
         <div className={styles.sectionDecoration}>
           <span className={styles.line}></span>
-          <span className={styles.star}>✨</span>
+          <span className={styles.star}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+          </span>
           <span className={styles.line}></span>
         </div>
       </div>
@@ -86,7 +101,6 @@ export function ChapterList({ chapters, novelId }: ChapterListProps) {
                   averageRating={chapter.average_rating}
                   showAverageOnly
                 />
-                {/* تم إزالة السطر المكرر: <span>({chapter.total_ratings})</span> */}
               </div>
 
               <div className={styles.chapterActions}>
@@ -98,7 +112,13 @@ export function ChapterList({ chapters, novelId }: ChapterListProps) {
                       onClick={(e) => e.stopPropagation()}
                       title="تحميل الملف"
                     >
-                      <span>📥</span>
+                      <span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                          <polyline points="7 10 12 15 17 10" />
+                          <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                      </span>
                     </a>
                     <a
                       href={chapter.word_file}
@@ -108,18 +128,37 @@ export function ChapterList({ chapters, novelId }: ChapterListProps) {
                       onClick={(e) => e.stopPropagation()}
                       title="عرض الملف"
                     >
-                      <span>📖</span>
+                      <span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
+                      </span>
                     </a>
                   </>
                 )}
               </div>
               <button className={styles.expandBtn}>
-                {expandedChapter === chapter.id ? '▲' : '▼'}
+                {expandedChapter === chapter.id ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="18 15 12 9 6 15" />
+                  </svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                )}
               </button>
             </div>
 
             {expandedChapter === chapter.id && (
               <div className={styles.chapterContent}>
+                {chapter.image && (
+                  <div className={styles.chapterImagePreview}>
+                    <img src={chapter.image} alt={chapter.title} />
+                  </div>
+                )}
+
                 <div className={styles.rateSection}>
                   <span className={styles.rateLabel}>قيم هذا الفصل:</span>
                   <RatingSection
@@ -153,7 +192,14 @@ export function ChapterList({ chapters, novelId }: ChapterListProps) {
                         href={`${chapter.word_file}?download=true`}
                         className={styles.btnDownload}
                       >
-                        <span>📥</span> تحميل الملف
+                        <span>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                          </svg>
+                        </span>
+                        تحميل الملف
                       </a>
                       <a
                         href={chapter.word_file}
@@ -161,7 +207,13 @@ export function ChapterList({ chapters, novelId }: ChapterListProps) {
                         rel="noopener noreferrer"
                         className={`${styles.btnDownload} ${styles.read}`}
                       >
-                        <span>📖</span> عرض في المتصفح
+                        <span>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                          </svg>
+                        </span>
+                        عرض في المتصفح
                       </a>
                     </>
                   )}

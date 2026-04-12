@@ -1,6 +1,7 @@
 'use client';
 
 import { RatingSection } from './RatingSection';
+import FavoriteButton from '@/app/components/FavoriteButton';
 import styles from '../story-page.module.css';
 
 interface NovelDetailsProps {
@@ -26,19 +27,15 @@ const isNewNovel = (createdAt: string): boolean => {
 
 const getCoverUrl = (coverPath: string | undefined): string | null => {
   if (!coverPath) return null;
-  // إذا كان المسار مطلقاً (http:// أو https:// أو /) نرجعه كما هو
   if (coverPath.startsWith('http') || coverPath.startsWith('/')) {
     return coverPath;
   }
-  // وإلا نفترض أن المسار هو اسم ملف فقط ونضيف المسار النسبي
   return `/covers/${coverPath}`;
 };
 
 export function NovelDetails({ novel }: NovelDetailsProps) {
   const isNew = isNewNovel(novel.created_at);
   const coverUrl = getCoverUrl(novel.cover);
-
-  console.log("coverUrl:", coverUrl); // للتتبع
 
   return (
     <div
@@ -73,7 +70,11 @@ export function NovelDetails({ novel }: NovelDetailsProps) {
             data-aos-delay="400"
             suppressHydrationWarning
           >
-            <span>✨</span>
+            <span className={styles.badgeIcon}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+            </span>
             <span>جديد</span>
           </div>
         )}
@@ -89,11 +90,22 @@ export function NovelDetails({ novel }: NovelDetailsProps) {
 
         <div className={styles.novelMeta}>
           <span className={styles.metaItem}>
-            <span className={styles.metaIcon}>✍️</span>
+            <span className={styles.metaIcon}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 19l7-7 3 3-7 7-3-3z" />
+                <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+                <path d="M2 2l7.586 7.586" />
+                <circle cx="11" cy="11" r="2" />
+              </svg>
+            </span>
             {novel.author || 'غير محدد'}
           </span>
           <span className={styles.metaItem}>
-            <span className={styles.metaIcon}>🏷️</span>
+            <span className={styles.metaIcon}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l5 5a2 2 0 0 1 .586 1.414V19a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+              </svg>
+            </span>
             {novel.category || 'أدب'}
           </span>
         </div>
@@ -123,6 +135,14 @@ export function NovelDetails({ novel }: NovelDetailsProps) {
               showAverageOnly
             />
             <span className={styles.statLabel}>التقييم</span>
+          </div>
+          <div
+            className={styles.statCard}
+            data-aos="zoom-in"
+            data-aos-delay="450"
+            suppressHydrationWarning
+          >
+            <FavoriteButton novelId={novel.id} />
           </div>
         </div>
 

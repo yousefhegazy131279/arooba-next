@@ -1,6 +1,65 @@
+/* ===== استيراد الخطوط أولاً ===== */
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Amiri:wght@400;700&family=Scheherazade:wght@400;700&display=swap');
-/* أنماط AOS المخصصة (للـ HeroSection) */
+
+/* ===== متغيرات الثيم (الوضع الداكن افتراضياً) ===== */
+:root {
+  --bg-primary: #050814;
+  --bg-secondary: #0a1020;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --bg-card-hover: rgba(255, 255, 255, 0.05);
+  --bg-input: rgba(0, 0, 0, 0.3);
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --text-muted: #888888;
+  --border-color: rgba(255, 215, 0, 0.2);
+  --border-light: rgba(255, 255, 255, 0.1);
+  --gold: #ffd700;
+  --gold-dark: #b8860b;
+  --gold-glow: rgba(255, 215, 0, 0.3);
+  --shadow: rgba(0, 0, 0, 0.3);
+  --success: #2ecc71;
+  --error: #e74c3c;
+  --info: #3498db;
+  --transition: all 0.3s ease;
+}
+
+/* ===== الوضع الفاتح (خلفية بيضاء، نصوص سوداء) ===== */
+.light {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-card: rgba(0, 0, 0, 0.02);
+  --bg-card-hover: rgba(0, 0, 0, 0.04);
+  --bg-input: rgba(0, 0, 0, 0.02);
+  --text-primary: #000000;
+  --text-secondary: #333333;
+  --text-muted: #6c757d;
+  --border-color: rgba(0, 0, 0, 0.1);
+  --border-light: rgba(0, 0, 0, 0.05);
+  --gold: #b8860b;
+  --gold-dark: #8b6508;
+  --gold-glow: rgba(184, 134, 11, 0.2);
+  --shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* ===== إعادة تعيين عامة ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Cairo', 'Amiri', system-ui, sans-serif;
+  font-weight: 700;
+}
+
+/* ===== أنماط الجسم الأساسية ===== */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: var(--transition);
+  padding-top: 80px;
+}
+
+/* ===== أنماط AOS المخصصة ===== */
 [data-aos="fade-up"] {
   transform: translate3d(0, 40px, 0);
   opacity: 0;
@@ -29,7 +88,23 @@
   opacity: 1;
 }
 
-/* تحسينات الأداء (تقليل الحركة) */
+/* ===== شريط التمرير ===== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-dark);
+}
+
+/* ===== تحسينات الأداء (تقليل الحركة) ===== */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
@@ -37,14 +112,71 @@
     transition-duration: 0.01ms !important;
   }
 }
-body {
-  padding-top: 80px;
-  background-color: #050814;
-  color: white;
-  font-family: 'Cairo', sans-serif;
-  font-weight: 700;
+/* تخصيص إشعارات toast */
+.react-hot-toast {
+  direction: rtl !important;
 }
-* {
-  font-family: 'Cairo', sans-serif;
-  font-weight: 700 !important;  /* !important لتجاوز أي أنماط أخرى */
+
+.react-hot-toast > div {
+  min-width: 350px !important;
+  max-width: 450px !important;
+  width: auto !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  padding: 16px 28px !important;
+  border-radius: 16px !important;
+  text-align: center !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* رسالة النجاح */
+.react-hot-toast .go4109123758 {
+  background: #10b981 !important;
+  color: white !important;
+}
+
+/* رسالة الخطأ */
+.react-hot-toast .go2072408551 {
+  background: #ef4444 !important;
+  color: white !important;
+}
+
+/* رسالة التحميل */
+.react-hot-toast .go3274193481 {
+  background: #ffd966 !important;
+  color: #1e1e2e !important;
+}
+/* تأثيرات دخول وخروج الإشعارات */
+.toast-progress.toast-enter {
+  animation: toastSlideUp 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+.toast-progress.toast-exit {
+  animation: toastSlideDown 0.3s ease-in forwards;
+}
+
+@keyframes toastSlideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toastSlideDown {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+.react-hot-toast {
+  direction: rtl !important;
 }

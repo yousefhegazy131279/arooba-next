@@ -1,0 +1,53 @@
+.favoriteBtn {
+    position: relative;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: rgba(255, 255, 255, 0.7);
+    z-index: 10;
+  }
+  
+  .favoriteBtn:hover {
+    transform: scale(1.1);
+    background: rgba(0, 0, 0, 0.8);
+    color: #ef4444;
+  }
+  
+  .favoriteBtn.active {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.2);
+  }
+  
+  .favoriteBtn.active:hover {
+    transform: scale(1.1);
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.3);
+  }
+  
+  .favoriteBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .spinner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #ef4444;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/app/stores/useAuthStore";
+import { useThemeStore } from "@/app/stores/useThemeStore";
 import styles from "./Admin.module.css";
 import {
   getUsers,
@@ -14,6 +15,7 @@ import {
   deleteNovel,
   getChapters,
   createChapter,
+  updateChapter,
   deleteChapter,
   getSuggestions,
   deleteSuggestion,
@@ -22,6 +24,7 @@ import {
   deleteMessage,
   uploadCover,
   uploadChapterFile,
+  uploadChapterImage,
 } from "./actions";
 
 const tabs = [
@@ -33,10 +36,15 @@ const tabs = [
 
 export default function AdminPage() {
   const { isAdmin, isLoggedIn, loading: authLoading } = useAuthStore();
+  const { isDark, toggleTheme } = useThemeStore();
   const router = useRouter();
 
   // تبويب نشط
   const [activeTab, setActiveTab] = useState("suggestions");
+
+  // حالة البحث والتصفية
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
 
   // بيانات كل قسم
   const [suggestions, setSuggestions] = useState<any[]>([]);
@@ -64,16 +72,18 @@ export default function AdminPage() {
   });
   const [coverFile, setCoverFile] = useState<File | null>(null);
 
-  // إدارة الفصول (في نفس الصفحة)
+  // إدارة الفصول
   const [selectedNovel, setSelectedNovel] = useState<any>(null);
   const [chapters, setChapters] = useState<any[]>([]);
   const [loadingChapters, setLoadingChapters] = useState(false);
+  const [editingChapter, setEditingChapter] = useState<any>(null);
   const [newChapter, setNewChapter] = useState({
     chapter_number: "",
     title: "",
     content: "",
   });
   const [chapterFile, setChapterFile] = useState<File | null>(null);
+  const [chapterImage, setChapterImage] = useState<File | null>(null);
 
   // حالة تحميل الإحصائيات
   const [loadingStats, setLoadingStats] = useState(true);
@@ -170,6 +180,12 @@ export default function AdminPage() {
     }
   };
 
+  // تصفية الرسائل
+  const filteredMessages = messages.filter((msg) => {
+    if (filterStatus === "all") return true;
+    return msg.status === filterStatus;
+  });
+
   // ---- دوال الروايات ----
   const refreshNovels = async () => {
     setLoadingNovels(true);
@@ -184,7 +200,6 @@ export default function AdminPage() {
   };
 
   const handleCoverUpload = async (file: File): Promise<string | null> => {
-    
     try {
       return await uploadCover(file);
     } catch (error: any) {
@@ -258,6 +273,11 @@ export default function AdminPage() {
     }
   };
 
+  // تصفية الروايات
+  const filteredNovels = novels.filter((novel) =>
+    novel.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   // ---- دوال الفصول (مضمنة) ----
   const fetchChapters = async (novelId: string) => {
     setLoadingChapters(true);
@@ -282,32 +302,70 @@ export default function AdminPage() {
     }
   };
 
+  const handleChapterImageUpload = async (file: File): Promise<string | null> => {
+    try {
+      return await uploadChapterImage(file);
+    } catch (err: any) {
+      alert("فشل رفع صورة الفصل: " + err.message);
+      return null;
+    }
+  };
+
   const handleChapterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedNovel) return;
     try {
       let fileUrl = null;
+      let imageUrl = null;
+
       if (chapterFile) {
         const uploaded = await handleChapterFileUpload(chapterFile);
         if (uploaded) fileUrl = uploaded;
         else if (uploaded === null) fileUrl = null;
         else return;
       }
+
+      if (chapterImage) {
+        const uploaded = await handleChapterImageUpload(chapterImage);
+        if (uploaded) imageUrl = uploaded;
+      }
+
       const chapterData = {
         novel_id: selectedNovel.id,
         chapter_number: parseInt(newChapter.chapter_number),
         title: newChapter.title,
         content: newChapter.content,
         word_file: fileUrl,
+        image: imageUrl,
       };
-      await createChapter(chapterData);
-      alert("تم إضافة الفصل بنجاح");
+
+      if (editingChapter) {
+        await updateChapter(editingChapter.id, chapterData);
+        alert("تم تحديث الفصل بنجاح");
+      } else {
+        await createChapter(chapterData);
+        alert("تم إضافة الفصل بنجاح");
+      }
+
       resetChapterForm();
       fetchChapters(selectedNovel.id);
-      refreshNovels(); // لتحديث عدد الفصول في جدول الروايات
+      refreshNovels();
+      setEditingChapter(null);
     } catch (err: any) {
-      alert("فشل إضافة الفصل: " + err.message);
+      alert("فشل حفظ الفصل: " + err.message);
     }
+  };
+
+  const openEditChapter = (chapter: any) => {
+    setEditingChapter(chapter);
+    setNewChapter({
+      chapter_number: chapter.chapter_number.toString(),
+      title: chapter.title,
+      content: chapter.content || "",
+    });
+    setChapterFile(null);
+    setChapterImage(null);
+    if (!selectedNovel) setSelectedNovel(chapter.novel_id);
   };
 
   const handleDeleteChapter = async (chapterId: string) => {
@@ -327,14 +385,18 @@ export default function AdminPage() {
   const resetChapterForm = () => {
     setNewChapter({ chapter_number: "", title: "", content: "" });
     setChapterFile(null);
+    setChapterImage(null);
+    setEditingChapter(null);
     const fileInput = document.getElementById("chapterFile") as HTMLInputElement;
     if (fileInput) fileInput.value = "";
+    const imageInput = document.getElementById("chapterImage") as HTMLInputElement;
+    if (imageInput) imageInput.value = "";
   };
 
-  // دوال جديدة لفتح وإغلاق قسم الفصول المضمن
   const openChaptersInline = (novel: any) => {
     setSelectedNovel(novel);
     fetchChapters(novel.id);
+    setEditingChapter(null);
   };
 
   const closeChaptersInline = () => {
@@ -383,15 +445,20 @@ export default function AdminPage() {
     }
   };
 
-  // الإحصائيات (بعد التحميل)
+  // تصفية المستخدمين
+  const filteredUsers = users.filter((user) =>
+    user.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.email?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // الإحصائيات مع الاتجاهات (مثال)
   const stats = {
-    suggestions: suggestions.length,
-    messages: messages.length,
-    novels: novels.length,
-    users: users.length,
+    suggestions: { value: suggestions.length, trend: "+12%", trendUp: true },
+    messages: { value: messages.length, trend: "+5%", trendUp: true },
+    novels: { value: novels.length, trend: "+8%", trendUp: true },
+    users: { value: users.length, trend: "+3%", trendUp: true },
   };
 
-  // عرض التحميل العام
   if (authLoading || loadingStats) {
     return (
       <div className={styles.container}>
@@ -405,46 +472,66 @@ export default function AdminPage() {
 
   return (
     <div className={styles.adminPage}>
+      {/* زر تبديل الثيم */}
+      <div className={styles.themeToggleWrapper}>
+        <button onClick={toggleTheme} className={styles.themeToggleBtn}>
+          {isDark ? "☀️" : "🌙"}
+        </button>
+      </div>
+
       <div className={styles.heroBackground}>
         <div className={`${styles.gradientOrb} ${styles.orb1}`}></div>
         <div className={`${styles.gradientOrb} ${styles.orb2}`}></div>
         <div className={`${styles.gradientOrb} ${styles.orb3}`}></div>
         <div className={styles.gridOverlay}></div>
       </div>
+
       <div className={styles.container}>
         <div className={styles.header}>
           <h1 className={styles.pageTitle}>لوحة تحكم عُروبة 🏛️</h1>
           <p className={styles.subtitle}>إدارة اقتراحات القراء والروايات والرسائل والمستخدمين</p>
         </div>
 
-        {/* الإحصائيات */}
+        {/* الإحصائيات المتقدمة */}
         <div className={styles.statsGrid}>
           <div className={styles.statCard}>
-            <span className={styles.statIcon}>💭</span>
+            <div className={styles.statIcon}>💭</div>
             <div className={styles.statInfo}>
               <span className={styles.statLabel}>إجمالي الاقتراحات</span>
-              <strong className={styles.statValue}>{stats.suggestions}</strong>
+              <strong className={styles.statValue}>{stats.suggestions.value}</strong>
+              <div className={`${styles.statTrend} ${stats.suggestions.trendUp ? styles.up : styles.down}`}>
+                {stats.suggestions.trend}
+              </div>
             </div>
           </div>
           <div className={styles.statCard}>
-            <span className={styles.statIcon}>📚</span>
+            <div className={styles.statIcon}>📚</div>
             <div className={styles.statInfo}>
               <span className={styles.statLabel}>إجمالي الروايات</span>
-              <strong className={styles.statValue}>{stats.novels}</strong>
+              <strong className={styles.statValue}>{stats.novels.value}</strong>
+              <div className={`${styles.statTrend} ${stats.novels.trendUp ? styles.up : styles.down}`}>
+                {stats.novels.trend}
+              </div>
             </div>
           </div>
           <div className={styles.statCard}>
-            <span className={styles.statIcon}>✉️</span>
+            <div className={styles.statIcon}>✉️</div>
             <div className={styles.statInfo}>
               <span className={styles.statLabel}>إجمالي الرسائل</span>
-              <strong className={styles.statValue}>{stats.messages}</strong>
+              <strong className={styles.statValue}>{stats.messages.value}</strong>
+              <div className={`${styles.statTrend} ${stats.messages.trendUp ? styles.up : styles.down}`}>
+                {stats.messages.trend}
+              </div>
             </div>
           </div>
           <div className={styles.statCard}>
-            <span className={styles.statIcon}>👥</span>
+            <div className={styles.statIcon}>👥</div>
             <div className={styles.statInfo}>
               <span className={styles.statLabel}>إجمالي المستخدمين</span>
-              <strong className={styles.statValue}>{stats.users}</strong>
+              <strong className={styles.statValue}>{stats.users.value}</strong>
+              <div className={`${styles.statTrend} ${stats.users.trendUp ? styles.up : styles.down}`}>
+                {stats.users.trend}
+              </div>
             </div>
           </div>
         </div>
@@ -526,7 +613,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* محتوى الرسائل */}
+        {/* محتوى الرسائل مع شريط بحث وتصفية */}
         {activeTab === "messages" && (
           <div className={styles.tabPane}>
             <div className={styles.sectionHeader}>
@@ -537,12 +624,33 @@ export default function AdminPage() {
                 🔄 تحديث
               </button>
             </div>
+
+            <div className={styles.tableToolbar}>
+              <input
+                type="text"
+                placeholder="بحث في الرسائل..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className={styles.searchInput}
+              />
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className={styles.filterSelect}
+              >
+                <option value="all">جميع الرسائل</option>
+                <option value="unread">غير مقروءة</option>
+                <option value="read">مقروءة</option>
+                <option value="replied">تم الرد</option>
+              </select>
+            </div>
+
             {loadingMessages ? (
               <div className={styles.loadingState}>
                 <div className={styles.loader}></div>
                 <p>جاري تحميل الرسائل...</p>
               </div>
-            ) : messages.length === 0 ? (
+            ) : filteredMessages.length === 0 ? (
               <div className={styles.emptyState}>
                 <span className={styles.emptyIcon}>✉️</span>
                 <p>لا توجد رسائل بعد</p>
@@ -563,14 +671,12 @@ export default function AdminPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {messages.map((msg, idx) => (
+                    {filteredMessages.map((msg, idx) => (
                       <tr key={msg.id}>
                         <td>{idx + 1}</td>
                         <td>{msg.name}</td>
                         <td>{msg.email}</td>
-                        <td>
-                          <strong>{msg.subject}</strong>
-                        </td>
+                        <td><strong>{msg.subject}</strong></td>
                         <td className={styles.messageCell}>{msg.message}</td>
                         <td>
                           <select
@@ -598,7 +704,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* محتوى الروايات (مع قسم الفصول المضمن) */}
+        {/* محتوى الروايات مع شريط بحث */}
         {activeTab === "novels" && (
           <div className={styles.tabPane}>
             <div className={styles.sectionHeader}>
@@ -608,6 +714,16 @@ export default function AdminPage() {
               <button onClick={refreshNovels} className={styles.refreshBtn} disabled={loadingNovels}>
                 🔄 تحديث
               </button>
+            </div>
+
+            <div className={styles.tableToolbar}>
+              <input
+                type="text"
+                placeholder="بحث عن رواية..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className={styles.searchInput}
+              />
             </div>
 
             {/* نموذج إضافة/تعديل رواية */}
@@ -703,7 +819,7 @@ export default function AdminPage() {
                 <div className={styles.loader}></div>
                 <p>جاري تحميل الروايات...</p>
               </div>
-            ) : novels.length === 0 ? (
+            ) : filteredNovels.length === 0 ? (
               <div className={styles.emptyState}>
                 <span className={styles.emptyIcon}>📚</span>
                 <p>لا توجد روايات مضافة بعد</p>
@@ -723,7 +839,7 @@ export default function AdminPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {novels.map((novel, idx) => (
+                    {filteredNovels.map((novel, idx) => (
                       <tr key={novel.id}>
                         <td>{idx + 1}</td>
                         <td>
@@ -733,9 +849,7 @@ export default function AdminPage() {
                             <span className={styles.noCover}>لا غلاف</span>
                           )}
                         </td>
-                        <td>
-                          <strong>{novel.title}</strong>
-                        </td>
+                        <td><strong>{novel.title}</strong></td>
                         <td>{novel.author || "غير محدد"}</td>
                         <td>{novel.category || "غير محدد"}</td>
                         <td>{novel.chapters_count || 0}</td>
@@ -759,7 +873,7 @@ export default function AdminPage() {
               </div>
             )}
 
-            {/* قسم الفصول المضمن (يظهر أسفل الجدول عند اختيار رواية) */}
+            {/* قسم الفصول المضمن */}
             {selectedNovel && (
               <div className={styles.chaptersInlineSection}>
                 <div className={styles.chaptersHeader}>
@@ -769,6 +883,7 @@ export default function AdminPage() {
                   </button>
                 </div>
 
+                {/* نموذج إضافة/تعديل فصل */}
                 <form onSubmit={handleChapterSubmit} className={styles.chapterForm}>
                   <div className={styles.formGrid}>
                     <div className={styles.formGroup}>
@@ -798,6 +913,20 @@ export default function AdminPage() {
                       />
                     </div>
                     <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+                      <label>صورة الفصل (اختياري)</label>
+                      <input
+                        type="file"
+                        id="chapterImage"
+                        accept="image/*"
+                        onChange={(e) => setChapterImage(e.target.files?.[0] || null)}
+                      />
+                      {editingChapter?.image && !chapterImage && (
+                        <p className={styles.fileHint}>
+                          الصورة الحالية: <a href={editingChapter.image} target="_blank">عرض</a>
+                        </p>
+                      )}
+                    </div>
+                    <div className={`${styles.formGroup} ${styles.fullWidth}`}>
                       <label>محتوى الفصل (اختياري)</label>
                       <textarea
                         rows={3}
@@ -808,7 +937,7 @@ export default function AdminPage() {
                   </div>
                   <div className={styles.formActions}>
                     <button type="submit" className={styles.submitBtn}>
-                      ➕ إضافة الفصل
+                      {editingChapter ? "تحديث الفصل" : "➕ إضافة الفصل"}
                     </button>
                     <button type="button" onClick={resetChapterForm} className={styles.resetBtn}>
                       إعادة تعيين
@@ -816,6 +945,7 @@ export default function AdminPage() {
                   </div>
                 </form>
 
+                {/* قائمة الفصول */}
                 {loadingChapters ? (
                   <div className={styles.loadingState}>
                     <div className={styles.loader}></div>
@@ -833,9 +963,17 @@ export default function AdminPage() {
                         <div className={styles.chapterInfo}>
                           <span className={styles.chapterNumber}>الفصل {ch.chapter_number}</span>
                           <span className={styles.chapterTitle}>{ch.title}</span>
+                          {ch.image && (
+                            <div className={styles.chapterImage}>
+                              <img src={ch.image} alt={ch.title} />
+                            </div>
+                          )}
                           {ch.word_file && <span className={styles.fileType}>📄</span>}
                         </div>
                         <div className={styles.chapterActions}>
+                          <button onClick={() => openEditChapter(ch)} className={styles.editBtn}>
+                            ✏️ تعديل
+                          </button>
                           {ch.word_file && (
                             <a href={ch.word_file} target="_blank" className={styles.downloadLink}>
                               📥 تحميل
@@ -854,7 +992,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* محتوى المستخدمين */}
+        {/* محتوى المستخدمين مع شريط بحث */}
         {activeTab === "users" && (
           <div className={styles.tabPane}>
             <div className={styles.sectionHeader}>
@@ -865,12 +1003,23 @@ export default function AdminPage() {
                 🔄 تحديث
               </button>
             </div>
+
+            <div className={styles.tableToolbar}>
+              <input
+                type="text"
+                placeholder="بحث عن مستخدم..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className={styles.searchInput}
+              />
+            </div>
+
             {loadingUsers ? (
               <div className={styles.loadingState}>
                 <div className={styles.loader}></div>
                 <p>جاري تحميل المستخدمين...</p>
               </div>
-            ) : users.length === 0 ? (
+            ) : filteredUsers.length === 0 ? (
               <div className={styles.emptyState}>
                 <span className={styles.emptyIcon}>👥</span>
                 <p>لا توجد مستخدمين بعد</p>
@@ -889,7 +1038,7 @@ export default function AdminPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {users.map((user, idx) => (
+                    {filteredUsers.map((user, idx) => (
                       <tr key={user.id}>
                         <td>{idx + 1}</td>
                         <td>

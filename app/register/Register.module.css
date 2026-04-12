@@ -1,263 +1,265 @@
+/* Register.module.css – مع دعم كامل للثيم (فاتح/داكن) */
+
 .registerPage {
-    min-height: 100vh;
-    background: #050814;
-    position: relative;
-    overflow: hidden;
-    direction: rtl;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-  
-  .animatedBg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-  }
-  
-  .bgGlow {
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle at center, rgba(255, 215, 0, 0.08) 0%, transparent 60%);
-    animation: rotateBg 25s linear infinite;
-  }
-  
-  @keyframes rotateBg {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-  
-  .bgParticles {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-  }
-  
-  .particle {
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    background: gold;
-    border-radius: 50%;
-    opacity: 0.3;
-    animation: float 8s infinite ease-in-out;
-  }
-  
-  .particle:nth-child(1) { top: 10%; left: 20%; animation-duration: 7s; }
-  .particle:nth-child(2) { top: 30%; left: 80%; animation-duration: 9s; }
-  .particle:nth-child(3) { top: 70%; left: 10%; animation-duration: 11s; }
-  .particle:nth-child(4) { top: 90%; left: 90%; animation-duration: 8s; }
-  .particle:nth-child(5) { top: 40%; left: 40%; animation-duration: 10s; }
-  .particle:nth-child(6) { top: 20%; left: 60%; animation-duration: 12s; }
-  .particle:nth-child(7) { top: 80%; left: 30%; animation-duration: 7.5s; }
-  .particle:nth-child(8) { top: 50%; left: 70%; animation-duration: 9.5s; }
-  
-  @keyframes float {
-    0%, 100% { transform: translateY(0) translateX(0); opacity: 0.2; }
-    50% { transform: translateY(-20px) translateX(10px); opacity: 0.6; }
-  }
-  
-  .registerContainer {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    max-width: 450px;
-    padding: 20px;
-  }
-  
+  min-height: 100vh;
+  background: var(--bg-primary);
+  position: relative;
+  overflow: hidden;
+  direction: rtl;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.animatedBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.bgGlow {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, var(--gold-glow) 0%, transparent 60%);
+  animation: rotateBg 25s linear infinite;
+}
+
+@keyframes rotateBg {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.bgParticles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: var(--gold);
+  border-radius: 50%;
+  opacity: 0.3;
+  animation: float 8s infinite ease-in-out;
+}
+
+.particle:nth-child(1) { top: 10%; left: 20%; animation-duration: 7s; }
+.particle:nth-child(2) { top: 30%; left: 80%; animation-duration: 9s; }
+.particle:nth-child(3) { top: 70%; left: 10%; animation-duration: 11s; }
+.particle:nth-child(4) { top: 90%; left: 90%; animation-duration: 8s; }
+.particle:nth-child(5) { top: 40%; left: 40%; animation-duration: 10s; }
+.particle:nth-child(6) { top: 20%; left: 60%; animation-duration: 12s; }
+.particle:nth-child(7) { top: 80%; left: 30%; animation-duration: 7.5s; }
+.particle:nth-child(8) { top: 50%; left: 70%; animation-duration: 9.5s; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.2; }
+  50% { transform: translateY(-20px) translateX(10px); opacity: 0.6; }
+}
+
+.registerContainer {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 450px;
+  padding: 20px;
+}
+
+.registerCard {
+  background: var(--bg-card);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--border-color);
+  border-radius: 40px;
+  padding: 40px;
+  box-shadow: 0 25px 50px var(--shadow), 0 0 0 1px var(--border-color) inset;
+  transition: transform 0.3s;
+}
+
+.registerCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 30px 60px var(--shadow), 0 0 0 1px var(--gold) inset;
+}
+
+.logoWrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.logo {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 15px var(--gold-glow));
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  padding: 5px;
+  background: var(--bg-input);
+}
+
+.registerCard h2 {
+  color: var(--gold);
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2rem;
+  font-weight: 700;
+  text-shadow: 0 2px 10px var(--gold-glow);
+}
+
+.errorMessage {
+  background: rgba(231, 76, 60, 0.2);
+  color: #ff6b6b;
+  padding: 12px;
+  border-radius: 30px;
+  margin-bottom: 20px;
+  text-align: center;
+  border: 1px solid #ff6b6b;
+  font-weight: 500;
+  backdrop-filter: blur(5px);
+}
+
+.formGroup {
+  margin-bottom: 25px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 50px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s;
+  backdrop-filter: blur(5px);
+}
+
+.formGroup input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 20px var(--gold-glow);
+  background: var(--bg-card-hover);
+}
+
+.formGroup input::placeholder {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* زر الإرسال */
+.submitButton {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(145deg, var(--gold), var(--gold-dark));
+  color: var(--bg-primary);
+  border: none;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 10px;
+  box-shadow: 0 10px 25px var(--gold-glow);
+  position: relative;
+  overflow: hidden;
+}
+
+.submitButton::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.submitButton:hover:not(:disabled)::after {
+  opacity: 1;
+}
+
+.submitButton:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 20px 40px var(--gold-glow);
+}
+
+.submitButton:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spinner {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(5, 8, 20, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--bg-primary);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.switchLink {
+  text-align: center;
+  margin-top: 25px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.switchLink a {
+  color: var(--gold);
+  text-decoration: none;
+  font-weight: 600;
+  margin-right: 5px;
+  transition: all 0.2s;
+  border-bottom: 1px solid transparent;
+}
+
+.switchLink a:hover {
+  border-bottom-color: var(--gold);
+  text-shadow: 0 0 10px var(--gold-glow);
+}
+
+@media (max-width: 480px) {
   .registerCard {
-    background: rgba(10, 12, 25, 0.7);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 215, 0, 0.3);
-    border-radius: 40px;
-    padding: 40px;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 215, 0, 0.2) inset;
-    transition: transform 0.3s;
+    padding: 30px 20px;
   }
-  
-  .registerCard:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px gold inset;
-  }
-  
-  .logoWrapper {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-  }
-  
   .logo {
-    width: 90px;
-    height: 90px;
-    object-fit: contain;
-    filter: drop-shadow(0 4px 15px rgba(255, 215, 0, 0.5));
-    border-radius: 50%;
-    border: 2px solid gold;
-    padding: 5px;
-    background: rgba(5, 8, 20, 0.5);
+    width: 70px;
+    height: 70px;
   }
-  
   .registerCard h2 {
-    color: gold;
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 2rem;
-    font-weight: 700;
-    text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+    font-size: 1.8rem;
   }
-  
-  .errorMessage {
-    background: rgba(231, 76, 60, 0.2);
-    color: #ff6b6b;
-    padding: 12px;
-    border-radius: 30px;
-    margin-bottom: 20px;
-    text-align: center;
-    border: 1px solid #ff6b6b;
-    font-weight: 500;
-    backdrop-filter: blur(5px);
-  }
-  
-  .formGroup {
-    margin-bottom: 25px;
-  }
-  
-  .formGroup label {
-    display: block;
-    margin-bottom: 8px;
-    color: rgba(255, 255, 255, 0.8);
-    font-weight: 500;
-    font-size: 0.95rem;
-    letter-spacing: 0.5px;
-  }
-  
-  .formGroup input {
-    width: 100%;
-    padding: 14px 18px;
-    border-radius: 50px;
-    border: 1px solid rgba(255, 215, 0, 0.3);
-    background: rgba(0, 0, 0, 0.3);
-    color: white;
-    font-size: 1rem;
-    outline: none;
-    transition: all 0.3s;
-    backdrop-filter: blur(5px);
-  }
-  
-  .formGroup input:focus {
-    border-color: gold;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-    background: rgba(0, 0, 0, 0.5);
-  }
-  
-  .formGroup input::placeholder {
-    color: rgba(255, 255, 255, 0.3);
-    font-style: italic;
-  }
-  
-  /* زر الإرسال */
   .submitButton {
-    width: 100%;
-    padding: 16px;
-    background: linear-gradient(145deg, #ffd700, #f0c000);
-    color: #050814;
-    border: none;
-    border-radius: 50px;
-    font-weight: 700;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all 0.3s;
-    margin-top: 10px;
-    box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
-    position: relative;
-    overflow: hidden;
+    padding: 14px;
   }
-  
-  .submitButton::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-  
-  .submitButton:hover:not(:disabled)::after {
-    opacity: 1;
-  }
-  
-  .submitButton:hover:not(:disabled) {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(255, 215, 0, 0.5);
-  }
-  
-  .submitButton:active:not(:disabled) {
-    transform: translateY(0) scale(0.98);
-  }
-  
-  .submitButton:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-  
-  .spinner {
-    display: inline-block;
-    width: 24px;
-    height: 24px;
-    border: 3px solid rgba(5, 8, 20, 0.3);
-    border-radius: 50%;
-    border-top-color: #050814;
-    animation: spin 0.8s linear infinite;
-  }
-  
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-  
-  .switchLink {
-    text-align: center;
-    margin-top: 25px;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.95rem;
-  }
-  
-  .switchLink a {
-    color: gold;
-    text-decoration: none;
-    font-weight: 600;
-    margin-right: 5px;
-    transition: all 0.2s;
-    border-bottom: 1px solid transparent;
-  }
-  
-  .switchLink a:hover {
-    border-bottom-color: gold;
-    text-shadow: 0 0 10px gold;
-  }
-  
-  @media (max-width: 480px) {
-    .registerCard {
-      padding: 30px 20px;
-    }
-    .logo {
-      width: 70px;
-      height: 70px;
-    }
-    .registerCard h2 {
-      font-size: 1.8rem;
-    }
-    .submitButton {
-      padding: 14px;
-    }
-  }
+}

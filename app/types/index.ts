@@ -11,12 +11,14 @@ export interface Novel {
     chapters_count?: number;
   }
   
-  export interface Chapter {
-    id: string;
-    title: string;
-    content?: string;
-    file_url?: string;
-    order: number;
-    novel_id: string;
-    average_rating?: number;
-  }
+// مثال types/supabase.ts
+export interface Chapter {
+  id: string;
+  novel_id: string;
+  title: string;
+  content: string;
+  chapter_number: number;
+  cover_image?: string | null; // ✅ الجديد
+  created_at: string;
+  updated_at: string;
+}

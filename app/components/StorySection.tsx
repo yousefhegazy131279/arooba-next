@@ -25,12 +25,39 @@ const StorySection = () => {
   const [error, setError] = useState(false);
 
   const whyItems = [
-    { icon: "🌟", title: "قصص خالدة", description: "روايات صعب أن تنسى" },
-    { icon: "🎭", title: "تعريب كما قال الكتاب", description: "نحاول أن يكون التعريب على أعلى مستوى ليحظى القارئ بأفضل تجربة ممكنة" },
-    { icon: "💫", title: "نستمع للجمهور", description: "رأيك هو أكثر ما يهمنا لذا لا تكن خجولاً واقترح ما تشاء!" },
+    {
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+      ),
+      title: "قصص خالدة",
+      description: "روايات صعب أن تنسى"
+    },
+    {
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <path d="M2 2 L22 2 L20 8 L4 8 L2 2 Z" />
+          <path d="M12 8 L12 16" />
+          <path d="M8 16 L16 16" />
+          <path d="M6 22 L10 22 L10 16 L6 16 L6 22 Z" />
+          <path d="M14 22 L18 22 L18 16 L14 16 L14 22 Z" />
+        </svg>
+      ),
+      title: "تعريب كما قال الكتاب",
+      description: "نحاول أن يكون التعريب على أعلى مستوى ليحظى القارئ بأفضل تجربة ممكنة"
+    },
+    {
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+        </svg>
+      ),
+      title: "نستمع للجمهور",
+      description: "رأيك هو أكثر ما يهمنا لذا لا تكن خجولاً واقترح ما تشاء!"
+    },
   ];
 
-  // دالة لتوليد رابط الصورة الصحيح
   const getCoverUrl = (coverPath: string): string => {
     if (!coverPath) return '';
     if (coverPath.startsWith('http') || coverPath.startsWith('/')) {
@@ -43,7 +70,6 @@ const StorySection = () => {
     setPending(true);
     setError(false);
     try {
-      // 1. جلب أحدث رواية
       const { data: novel, error: novelError } = await supabase
         .from("novels")
         .select("*")
@@ -57,8 +83,7 @@ const StorySection = () => {
         return;
       }
 
-      // 2. جلب تقييمات هذه الرواية من جدول ratings
-      const { data: ratings, error: ratingsError } = await supabase
+      const { data: ratings } = await supabase
         .from("ratings")
         .select("rating")
         .eq("novel_id", novel.id);
@@ -71,7 +96,6 @@ const StorySection = () => {
         totalRatings = ratings.length;
       }
 
-      // 3. جلب عدد الفصول
       const { count: chaptersCount } = await supabase
         .from("chapters")
         .select("*", { count: "exact", head: true })
@@ -137,7 +161,11 @@ const StorySection = () => {
           </h2>
           <div className={styles.titleDecoration} data-aos="zoom-in" data-aos-delay="600">
             <span className={styles.decorationLine}></span>
-            <span className={styles.decorationStar}>✨</span>
+            <span className={styles.decorationStar}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+            </span>
             <span className={styles.decorationLine}></span>
           </div>
         </div>
@@ -151,7 +179,13 @@ const StorySection = () => {
 
         {error && !pending && (
           <div className={styles.errorState} data-aos="fade-up">
-            <span className={styles.errorIcon}>😞</span>
+            <span className={styles.errorIcon}>
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            </span>
             <p>عذراً، حدث خطأ في تحميل القصة.</p>
           </div>
         )}
@@ -169,7 +203,11 @@ const StorySection = () => {
                 <img src={getCoverUrl(story.cover)} alt={story.title} />
                 <div className={styles.imageGlow}></div>
                 <div className={styles.storyBadge} data-aos="zoom-in" data-aos-delay="800">
-                  <span className={styles.badgeIcon}>🌟</span>
+                  <span className={styles.badgeIcon}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  </span>
                   <span className={styles.badgeText}>{story.category || "الأكثر قراءة"}</span>
                 </div>
               </div>
@@ -178,11 +216,20 @@ const StorySection = () => {
                 <p className={styles.storyDescription}>{story.description}</p>
                 <div className={styles.storyStats}>
                   <div className={styles.stat}>
-                    <span className={styles.statIcon}>📖</span>
+                    <span className={styles.statIcon}>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                      </svg>
+                    </span>
                     <span className={styles.statValue}>{story.chapters_count} فصل</span>
                   </div>
                   <div className={styles.stat}>
-                    <span className={styles.statIcon}>⭐</span>
+                    <span className={styles.statIcon}>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                    </span>
                     <span className={styles.statValue}>
                       {story.avg_rating ? story.avg_rating.toFixed(1) : "0"} (
                       {story.total_ratings} تقييم)
@@ -191,7 +238,12 @@ const StorySection = () => {
                 </div>
                 <button className={styles.readButton}>
                   <span>اقرأ القصة</span>
-                  <span className={styles.buttonIcon}>←</span>
+                  <span className={styles.buttonIcon}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                      <polyline points="12 5 19 12 12 19" />
+                    </svg>
+                  </span>
                 </button>
               </div>
             </div>

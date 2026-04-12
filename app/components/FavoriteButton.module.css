@@ -1,0 +1,37 @@
+.favoriteBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 2rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+  }
+  
+  .favoriteBtn:hover {
+    border-color: #ef4444;
+    color: #ef4444;
+  }
+  
+  .favoriteBtn.active {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: #ef4444;
+    color: #ef4444;
+  }
+  
+  .favoriteBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .favoriteBtn svg {
+    transition: transform 0.2s ease;
+  }
+  
+  .favoriteBtn:hover svg {
+    transform: scale(1.1);
+  }

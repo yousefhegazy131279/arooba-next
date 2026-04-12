@@ -1,695 +1,723 @@
+/* Novels.module.css – مع دعم كامل للثيم (فاتح/داكن) – إظهار الصورة كاملة بدون قص */
+
 .novelsPage {
-    min-height: 100vh;
-    background: #050814;
-    color: white;
-    direction: rtl;
-    position: relative;
-    overflow-x: hidden;
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  direction: rtl;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* خلفية متحركة */
+.animatedBg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, var(--gold-glow), transparent 70%);
+  animation: float 20s infinite ease-in-out;
+}
+
+.bubble:nth-child(1) {
+  width: 400px;
+  height: 400px;
+  top: -100px;
+  right: -100px;
+  animation-duration: 25s;
+}
+
+.bubble:nth-child(2) {
+  width: 300px;
+  height: 300px;
+  bottom: -50px;
+  left: -50px;
+  animation-duration: 30s;
+  animation-delay: -5s;
+}
+
+.bubble:nth-child(3) {
+  width: 200px;
+  height: 200px;
+  top: 30%;
+  left: 10%;
+  animation-duration: 22s;
+  animation-delay: -2s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
   }
-  
-  /* خلفية متحركة */
-  .animatedBg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    pointer-events: none;
+  25% {
+    transform: translate(30px, -30px) rotate(5deg);
   }
-  
-  .bubble {
-    position: absolute;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, rgba(255,215,0,0.1), transparent 70%);
-    animation: float 20s infinite ease-in-out;
+  50% {
+    transform: translate(-20px, 20px) rotate(-5deg);
   }
-  
-  .bubble:nth-child(1) {
-    width: 400px;
-    height: 400px;
-    top: -100px;
-    right: -100px;
-    animation-duration: 25s;
+  75% {
+    transform: translate(20px, 30px) rotate(3deg);
   }
-  
-  .bubble:nth-child(2) {
-    width: 300px;
-    height: 300px;
-    bottom: -50px;
-    left: -50px;
-    animation-duration: 30s;
-    animation-delay: -5s;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  position: relative;
+  z-index: 2;
+}
+
+/* الهيدر */
+.pageHeader {
+  padding: 60px 0 30px;
+  text-align: center;
+  position: relative;
+}
+
+.goldenText {
+  color: var(--gold);
+  font-family: 'Amiri', serif;
+  font-size: 4rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  text-shadow: 0 0 20px var(--gold-glow);
+}
+
+.titleIcon {
+  font-size: 3rem;
+  filter: drop-shadow(0 0 15px var(--gold));
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 1.3rem;
+  margin-bottom: 30px;
+  letter-spacing: 1px;
+}
+
+.headerDecoration {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.headerDecoration span {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  border-radius: 3px;
+  animation: pulseWidth 3s infinite;
+}
+
+.headerDecoration span:nth-child(2) {
+  animation-delay: 0.5s;
+  width: 100px;
+}
+
+.headerDecoration span:nth-child(3) {
+  animation-delay: 1s;
+}
+
+@keyframes pulseWidth {
+  0%, 100% {
+    opacity: 0.3;
+    width: 60px;
   }
-  
-  .bubble:nth-child(3) {
+  50% {
+    opacity: 1;
+    width: 120px;
+  }
+}
+
+/* شريط التحكم */
+.controlBar {
+  margin-bottom: 40px;
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  border-radius: 30px;
+  padding: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.searchWrapper {
+  position: relative;
+  margin: 0 auto 15px auto;
+  max-width: 500px;
+  width: 100%;
+}
+
+.searchIcon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  color: var(--gold);
+  z-index: 3;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 45px 12px 45px;
+  border-radius: 50px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.searchInput:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 30px var(--gold-glow);
+}
+
+.clearSearch {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 5px;
+}
+
+.clearSearch:hover {
+  color: var(--gold);
+}
+
+.resultsInfo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.resultsCount {
+  color: var(--gold);
+  font-weight: bold;
+  font-size: 1.1rem;
+  background: rgba(255,215,0,0.1);
+  padding: 5px 15px;
+  border-radius: 20px;
+}
+
+.sortSelect {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 8px 15px;
+  border-radius: 30px;
+  outline: none;
+  cursor: pointer;
+}
+
+.sortSelect option {
+  background: var(--bg-primary);
+}
+
+.viewToggle {
+  background: rgba(255,215,0,0.1);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  padding: 8px 15px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 0.9rem;
+}
+
+.viewToggle:hover {
+  background: var(--gold);
+  color: var(--bg-primary);
+}
+
+.categoriesScroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 5px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold) var(--bg-primary);
+  justify-content: center;
+}
+
+.categoriesScroll::-webkit-scrollbar {
+  height: 5px;
+}
+
+.categoriesScroll::-webkit-scrollbar-track {
+  background: rgba(255,215,0,0.1);
+  border-radius: 10px;
+}
+
+.categoriesScroll::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border-radius: 10px;
+}
+
+.categoryChip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 40px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  font-size: 0.95rem;
+  backdrop-filter: blur(5px);
+}
+
+.categoryChip:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px var(--gold-glow);
+}
+
+.categoryChip.active {
+  background: var(--gold);
+  color: var(--bg-primary);
+  border-color: var(--gold);
+  font-weight: bold;
+}
+
+.catIcon {
+  font-size: 1.1rem;
+}
+
+/* شبكة الروايات */
+.novelsContainer {
+  margin-bottom: 80px;
+}
+
+.novelsGrid {
+  display: grid;
+  gap: 30px;
+}
+
+.gridView .novelsGrid {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.listView .novelsGrid {
+  grid-template-columns: 1fr;
+}
+
+.novelCardWrapper {
+  transition: all 0.3s;
+}
+
+/* بطاقة الرواية */
+.novelCard {
+  background: var(--bg-card);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--border-color);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.listView .novelCard {
+  flex-direction: row;
+  height: auto;
+  max-height: 250px;
+}
+
+.listView .cardImage {
+  width: 200px;
+  height: 100%;
+  flex-shrink: 0;
+}
+
+.listView .cardInfo {
+  flex: 1;
+  text-align: right;
+}
+
+.listView .cardFooter {
+  justify-content: flex-start;
+}
+
+.novelCard:hover {
+  transform: translateY(-15px) scale(1.02);
+  border-color: var(--gold);
+  box-shadow: 0 20px 40px var(--shadow), 0 0 0 2px var(--gold-glow) inset;
+}
+
+.listView .novelCard:hover {
+  transform: translateY(-5px) scale(1.01);
+}
+
+.cardImage {
+  position: relative;
+  width: 100%;
+  padding-top: 140%; /* نسبة 2:3 تقريبًا مناسبة للصور الطولية */
+  overflow: hidden;
+  background: var(--bg-input);
+}
+
+.listView .cardImage {
+  width: 200px;
+  height: 100%;
+  padding-top: 0; /* إلغاء النسبة في عرض القائمة */
+  background: var(--bg-input);
+}
+
+.cardImage img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* إظهار الصورة كاملة بدون قص */
+  background-color: var(--bg-card); /* لون خلفية للمساحات الفارغة */
+  transition: transform 0.4s ease;
+  opacity: 0;
+}
+
+.listView .cardImage img {
+  position: static; /* في عرض القائمة، الصورة تأخذ مكانها الطبيعي */
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* في القائمة يمكن استخدام cover لتعبئة المساحة */
+}
+
+.cardImage img.loaded {
+  opacity: 1;
+}
+
+.novelCard:hover .cardImage img {
+  transform: scale(1.05);
+}
+
+.imageOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent 0%, var(--bg-primary) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.novelCard:hover .imageOverlay {
+  opacity: 1;
+}
+
+.readNow {
+  color: var(--gold);
+  border: 2px solid var(--gold);
+  padding: 12px 30px;
+  border-radius: 40px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  background: rgba(5,8,20,0.7);
+  backdrop-filter: blur(5px);
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+  margin-bottom: 15px;
+}
+
+.novelCard:hover .readNow {
+  transform: translateY(0);
+}
+
+.cardBadge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: var(--gold);
+  color: var(--bg-primary);
+  padding: 5px 15px;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  z-index: 2;
+  box-shadow: 0 5px 15px var(--gold-glow);
+}
+
+.cardBadge.left {
+  left: 15px;
+  right: auto;
+  background: #e74c3c;
+  color: white;
+}
+
+.cardInfo {
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+}
+
+.cardInfo h3 {
+  color: var(--gold);
+  font-size: 1.5rem;
+  margin-bottom: 5px;
+  font-family: 'Amiri', serif;
+}
+
+.author {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 15px;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  align-items: center;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.stars {
+  display: inline-flex;
+  gap: 2px;
+  color: #555;
+}
+
+.star {
+  color: #555;
+  font-size: 1rem;
+}
+
+.star.filled {
+  color: var(--gold);
+}
+
+.ratingValue {
+  color: var(--text-primary);
+}
+
+.pages {
+  color: var(--text-muted);
+}
+
+.cardGlow {
+  position: absolute;
+  bottom: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, var(--gold-glow), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.novelCard:hover .cardGlow {
+  opacity: 1;
+}
+
+/* Skeleton loading */
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.skeletonCard {
+  height: 450px;
+  background: var(--bg-card);
+  border-radius: 25px;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeletonCard::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--gold-glow), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* حالات التحميل والخطأ */
+.loadingState,
+.errorState,
+.noResults {
+  text-align: center;
+  padding: 100px 20px;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  border-radius: 30px;
+  backdrop-filter: blur(5px);
+  margin: 40px 0;
+}
+
+.loader {
+  width: 60px;
+  height: 60px;
+  border: 4px solid var(--border-color);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.errorIcon,
+.noResultsIcon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 20px;
+  opacity: 0.7;
+}
+
+.resetBtn {
+  margin-top: 20px;
+  padding: 10px 30px;
+  background: var(--gold);
+  color: var(--bg-primary);
+  border: none;
+  border-radius: 30px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.resetBtn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px var(--gold-glow);
+}
+
+/* استجابة */
+@media (max-width: 768px) {
+  .goldenText {
+    font-size: 2.8rem;
+  }
+
+  .gridView .novelsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+  }
+
+  .cardImage {
+    padding-top: 140%;
+  }
+
+  .listView .cardImage {
     width: 200px;
     height: 200px;
-    top: 30%;
-    left: 10%;
-    animation-duration: 22s;
-    animation-delay: -2s;
+    padding-top: 0;
   }
-  
-  @keyframes float {
-    0%, 100% {
-      transform: translate(0, 0) rotate(0deg);
-    }
-    25% {
-      transform: translate(30px, -30px) rotate(5deg);
-    }
-    50% {
-      transform: translate(-20px, 20px) rotate(-5deg);
-    }
-    75% {
-      transform: translate(20px, 30px) rotate(3deg);
-    }
+
+  .cardInfo h3 {
+    font-size: 1.2rem;
   }
-  
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-    position: relative;
-    z-index: 2;
-  }
-  
-  /* الهيدر */
-  .pageHeader {
-    padding: 60px 0 30px;
-    text-align: center;
-    position: relative;
-  }
-  
-  .goldenText {
-    color: gold;
-    font-family: 'Amiri', serif;
-    font-size: 4rem;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    text-shadow: 0 0 20px rgba(255,215,0,0.3);
-  }
-  
-  .titleIcon {
-    font-size: 3rem;
-    filter: drop-shadow(0 0 15px gold);
-  }
-  
-  .subtitle {
-    color: rgba(255,255,255,0.7);
-    font-size: 1.3rem;
-    margin-bottom: 30px;
-    letter-spacing: 1px;
-  }
-  
-  .headerDecoration {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-  }
-  
-  .headerDecoration span {
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, gold, transparent);
-    border-radius: 3px;
-    animation: pulseWidth 3s infinite;
-  }
-  
-  .headerDecoration span:nth-child(2) {
-    animation-delay: 0.5s;
-    width: 100px;
-  }
-  
-  .headerDecoration span:nth-child(3) {
-    animation-delay: 1s;
-  }
-  
-  @keyframes pulseWidth {
-    0%, 100% {
-      opacity: 0.3;
-      width: 60px;
-    }
-    50% {
-      opacity: 1;
-      width: 120px;
-    }
-  }
-  
-  /* شريط التحكم */
+
   .controlBar {
-    margin-bottom: 40px;
-    background: rgba(10, 15, 30, 0.5);
-    backdrop-filter: blur(10px);
-    border-radius: 30px;
-    padding: 20px;
-    border: 1px solid rgba(255,215,0,0.1);
+    padding: 15px;
   }
-  
-  .searchWrapper {
-    position: relative;
-    margin: 0 auto 15px auto;
-    max-width: 500px;
-    width: 100%;
-  }
-  
-  .searchIcon {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.2rem;
-    color: gold;
-    z-index: 3;
-  }
-  
-  .searchInput {
-    width: 100%;
-    padding: 12px 45px 12px 45px;
-    border-radius: 50px;
-    border: 2px solid rgba(255,215,0,0.2);
-    background: rgba(0,0,0,0.3);
-    color: white;
-    font-size: 1rem;
-    outline: none;
-    transition: all 0.3s ease;
-  }
-  
-  .searchInput:focus {
-    border-color: gold;
-    box-shadow: 0 0 30px rgba(255,215,0,0.2);
-  }
-  
-  .clearSearch {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: #888;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 0 5px;
-  }
-  
-  .clearSearch:hover {
-    color: gold;
-  }
-  
+
   .resultsInfo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 15px;
     flex-wrap: wrap;
   }
-  
-  .resultsCount {
-    color: gold;
-    font-weight: bold;
-    font-size: 1.1rem;
-    background: rgba(255,215,0,0.1);
-    padding: 5px 15px;
-    border-radius: 20px;
-  }
-  
-  .sortSelect {
-    background: rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,215,0,0.3);
-    color: white;
-    padding: 8px 15px;
-    border-radius: 30px;
-    outline: none;
-    cursor: pointer;
-  }
-  
-  .sortSelect option {
-    background: #050814;
-  }
-  
-  .viewToggle {
-    background: rgba(255,215,0,0.1);
-    border: 1px solid gold;
-    color: gold;
-    padding: 8px 15px;
-    border-radius: 30px;
-    cursor: pointer;
-    transition: 0.3s;
-    font-size: 0.9rem;
-  }
-  
-  .viewToggle:hover {
-    background: gold;
-    color: #050814;
-  }
-  
-  .categoriesScroll {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding-bottom: 5px;
-    scrollbar-width: thin;
-    scrollbar-color: gold #050814;
-    justify-content: center;
-  }
-  
-  .categoriesScroll::-webkit-scrollbar {
-    height: 5px;
-  }
-  
-  .categoriesScroll::-webkit-scrollbar-track {
-    background: rgba(255,215,0,0.1);
-    border-radius: 10px;
-  }
-  
-  .categoriesScroll::-webkit-scrollbar-thumb {
-    background: gold;
-    border-radius: 10px;
-  }
-  
-  .categoryChip {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 18px;
-    border-radius: 40px;
-    border: 1px solid rgba(255,215,0,0.3);
-    background: rgba(0,0,0,0.3);
-    color: rgba(255,255,255,0.8);
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-    font-size: 0.95rem;
-    backdrop-filter: blur(5px);
-  }
-  
-  .categoryChip:hover {
-    border-color: gold;
-    color: gold;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255,215,0,0.2);
-  }
-  
-  .categoryChip.active {
-    background: gold;
-    color: #050814;
-    border-color: gold;
-    font-weight: bold;
-  }
-  
-  .catIcon {
-    font-size: 1.1rem;
-  }
-  
-  /* شبكة الروايات */
-  .novelsContainer {
-    margin-bottom: 80px;
-  }
-  
-  .novelsGrid {
-    display: grid;
-    gap: 30px;
-  }
-  
-  .gridView .novelsGrid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  }
-  
-  .listView .novelsGrid {
-    grid-template-columns: 1fr;
-  }
-  
-  .novelCardWrapper {
-    transition: all 0.3s;
-  }
-  
-  /* بطاقة الرواية */
-  .novelCard {
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 16px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    position: relative;
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 215, 0, 0.1);
-    height: 100%;
-    display: flex;
+}
+
+@media (max-width: 480px) {
+  .goldenText {
+    font-size: 2.2rem;
     flex-direction: column;
-  }
-  
-  .listView .novelCard {
-    flex-direction: row;
-    height: auto;
-    max-height: 250px;
-  }
-  
-  .listView .cardImage {
-    width: 200px;
-    height: 100%;
-    flex-shrink: 0;
-  }
-  
-  .listView .cardInfo {
-    flex: 1;
-    text-align: right;
-  }
-  
-  .listView .cardFooter {
-    justify-content: flex-start;
-  }
-  
-  .novelCard:hover {
-    transform: translateY(-15px) scale(1.02);
-    border-color: gold;
-    box-shadow: 0 20px 40px rgba(255,215,0,0.2), 0 0 0 2px rgba(255,215,0,0.1) inset;
-  }
-  
-  .listView .novelCard:hover {
-    transform: translateY(-5px) scale(1.01);
-  }
-  
-  .cardImage {
-    position: relative;
-    width: 100%;
-    padding-top: 133%; /* 3:4 نسبة العرض:الارتفاع = 1:1.33 */
-    overflow: hidden;
-    background: rgba(0, 0, 0, 0.3);
-  }
-  
-  .listView .cardImage {
-    height: 250px;
-  }
-  
-  .cardImage img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;   /* تغطي المساحة بالكامل دون تشويه */
-    transition: transform 0.4s ease;
-    opacity: 0;          /* مخفية حتى يتم تحميلها */
-  }
-  
-  .cardImage img.loaded {
-    opacity: 1;
-  }
-  
-  .novelCard:hover .cardImage img {
-    transform: scale(1.05);
-  }
-  
-  .imageOverlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom, transparent 0%, rgba(5,8,20,0.9) 100%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  
-  .novelCard:hover .imageOverlay {
-    opacity: 1;
-  }
-  
-  .readNow {
-    color: gold;
-    border: 2px solid gold;
-    padding: 12px 30px;
-    border-radius: 40px;
-    font-weight: bold;
-    font-size: 1.1rem;
-    background: rgba(5,8,20,0.7);
-    backdrop-filter: blur(5px);
-    transform: translateY(20px);
-    transition: transform 0.3s ease;
-    margin-bottom: 15px;
-  }
-  
-  .novelCard:hover .readNow {
-    transform: translateY(0);
-  }
-  
-  .cardBadge {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: gold;
-    color: #050814;
-    padding: 5px 15px;
-    border-radius: 30px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    z-index: 2;
-    box-shadow: 0 5px 15px rgba(255,215,0,0.3);
-  }
-  
-  .cardBadge.left {
-    left: 15px;
-    right: auto;
-    background: #e74c3c;
-    color: white;
-  }
-  
-  .cardInfo {
-    padding: 20px;
-    text-align: center;
-    position: relative;
-    z-index: 2;
-    flex: 1;
-  }
-  
-  .cardInfo h3 {
-    color: gold;
-    font-size: 1.5rem;
-    margin-bottom: 5px;
-    font-family: 'Amiri', serif;
-  }
-  
-  .author {
-    color: #aaa;
-    font-size: 0.95rem;
-    margin-bottom: 15px;
-  }
-  
-  .cardFooter {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    color: rgba(255,255,255,0.6);
-    font-size: 0.9rem;
-    align-items: center;
-  }
-  
-  .rating {
-    display: flex;
-    align-items: center;
     gap: 5px;
   }
-  
-  .stars {
-    display: inline-flex;
-    gap: 2px;
-    color: #555;
+
+  .titleIcon {
+    font-size: 2rem;
   }
-  
-  .star {
-    color: #555;
+
+  .subtitle {
     font-size: 1rem;
   }
-  
-  .star.filled {
-    color: gold;
+
+  .searchInput {
+    padding: 12px 40px 12px 40px;
+    font-size: 0.95rem;
   }
-  
-  .ratingValue {
-    color: #fff;
+
+  .listView .novelCard {
+    flex-direction: column;
+    max-height: none;
   }
-  
-  .pages {
-    color: #888;
+
+  .listView .cardImage {
+    width: 100%;
+    height: auto;
+    padding-top: 140%;
   }
-  
-  .cardGlow {
-    position: absolute;
-    bottom: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle at center, rgba(255,215,0,0.15), transparent 70%);
-    opacity: 0;
-    transition: opacity 0.5s ease;
-    pointer-events: none;
-  }
-  
-  .novelCard:hover .cardGlow {
-    opacity: 1;
-  }
-  
-  /* Skeleton loading */
-  .skeletonGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 30px;
-    margin-top: 30px;
-  }
-  
-  .skeletonCard {
-    height: 450px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 25px;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .skeletonCard::after {
-    content: "";
+
+  .listView .cardImage img {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent);
-    animation: shimmer 1.5s infinite;
+    object-fit: contain;
   }
-  
-  @keyframes shimmer {
-    0% {
-      transform: translateX(-100%);
-    }
-    100% {
-      transform: translateX(100%);
-    }
-  }
-  
-  /* حالات التحميل والخطأ */
-  .loadingState,
-  .errorState,
-  .noResults {
-    text-align: center;
-    padding: 100px 20px;
-    color: #888;
-    background: rgba(0,0,0,0.2);
-    border-radius: 30px;
-    backdrop-filter: blur(5px);
-    margin: 40px 0;
-  }
-  
-  .loader {
-    width: 60px;
-    height: 60px;
-    border: 4px solid rgba(255,215,0,0.1);
-    border-top-color: gold;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 20px;
-  }
-  
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  
-  .errorIcon,
-  .noResultsIcon {
-    font-size: 4rem;
-    display: block;
-    margin-bottom: 20px;
-    opacity: 0.7;
-  }
-  
-  .resetBtn {
-    margin-top: 20px;
-    padding: 10px 30px;
-    background: gold;
-    color: #050814;
-    border: none;
-    border-radius: 30px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-  
-  .resetBtn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(255,215,0,0.3);
-  }
-  
-  /* استجابة */
-  @media (max-width: 768px) {
-    .goldenText {
-      font-size: 2.8rem;
-    }
-  
-    .gridView .novelsGrid {
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 15px;
-    }
-  
-    .cardImage {
-      height: 250px;
-    }
-  
-    .listView .cardImage {
-      width: 200px;
-      padding-top: 0;      /* إلغاء padding-top في عرض القائمة */
-      height: 250px;
-    }
-  
-    .cardInfo h3 {
-      font-size: 1.2rem;
-    }
-  
-    .controlBar {
-      padding: 15px;
-    }
-  
-    .resultsInfo {
-      flex-wrap: wrap;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .goldenText {
-      font-size: 2.2rem;
-      flex-direction: column;
-      gap: 5px;
-    }
-  
-    .titleIcon {
-      font-size: 2rem;
-    }
-  
-    .subtitle {
-      font-size: 1rem;
-    }
-  
-    .searchInput {
-      padding: 12px 40px 12px 40px;
-      font-size: 0.95rem;
-    }
-  
-    .listView .novelCard {
-      flex-direction: column;
-      max-height: none;
-    }
-  
-    .listView .cardImage {
-      width: 100%;
-      height: 200px;
-    }
-  }
-  
+}
+.favoriteWrapper {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  z-index: 15;
+}

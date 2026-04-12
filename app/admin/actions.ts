@@ -99,6 +99,17 @@ export async function createChapter(chapter: any) {
   return data;
 }
 
+export async function updateChapter(id: string, chapter: any) {
+  const { data, error } = await supabaseAdmin
+    .from("chapters")
+    .update(chapter)
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) throw new Error(error.message);
+  return data;
+}
+
 export async function deleteChapter(id: string) {
   const { error } = await supabaseAdmin
     .from("chapters")
@@ -155,13 +166,11 @@ export async function deleteMessage(id: number) {
   return { success: true };
 }
 
-// ---- رفع الملفات ----
-// دالة مساعدة لتنظيف اسم الملف
+// ---- رفع الملفات (أغلفة، ملفات الفصول، صور الفصول) ----
 function sanitizeFileName(fileName: string): string {
   const lastDot = fileName.lastIndexOf('.');
   const name = lastDot === -1 ? fileName : fileName.slice(0, lastDot);
   const ext = lastDot === -1 ? '' : fileName.slice(lastDot);
-  // تنظيف الاسم: إزالة الأحرف غير المسموح بها (يحافظ على العربية واللاتينية والأرقام)
   const cleanName = name
     .replace(/[^\w\u0600-\u06FF\-]/g, '_')
     .replace(/_+/g, '_')
@@ -174,7 +183,6 @@ function sanitizeFileName(fileName: string): string {
 export async function uploadCover(file: File): Promise<string> {
   console.log("Starting uploadCover for file:", file.name, "size:", file.size);
 
-  // التحقق من وجود bucket
   const { data: buckets, error: listError } = await supabaseAdmin.storage.listBuckets();
   if (listError) {
     console.error("listBuckets error:", listError);
@@ -182,7 +190,6 @@ export async function uploadCover(file: File): Promise<string> {
   }
   const bucketExists = buckets?.some(b => b.name === "covers");
   if (!bucketExists) {
-    // محاولة إنشاء bucket
     const { error: createError } = await supabaseAdmin.storage.createBucket("covers", { public: true });
     if (createError) {
       console.error("createBucket error:", createError);
@@ -204,13 +211,11 @@ export async function uploadCover(file: File): Promise<string> {
 }
 
 export async function uploadChapterFile(file: File): Promise<string> {
-  // التحقق من وجود bucket chapters (اختياري)
   const { data: buckets, error: listError } = await supabaseAdmin.storage.listBuckets();
   if (!listError && !buckets?.some(b => b.name === "chapters")) {
     const { error: createError } = await supabaseAdmin.storage.createBucket("chapters", { public: true });
     if (createError) {
       console.error("createBucket error for chapters:", createError);
-      // لا نلقي خطأ، فقط نكمل محاولة الرفع (سيظهر خطأ لاحقاً إذا لم ينجح)
     }
   }
 
@@ -221,4 +226,86 @@ export async function uploadChapterFile(file: File): Promise<string> {
   if (error) throw new Error(error.message);
   const { data: publicUrl } = supabaseAdmin.storage.from("chapters").getPublicUrl(safeName);
   return publicUrl.publicUrl;
+}
+
+export async function uploadChapterImage(file: File): Promise<string> {
+  const { data: buckets, error: listError } = await supabaseAdmin.storage.listBuckets();
+  if (!listError && !buckets?.some(b => b.name === "chapter-images")) {
+    const { error: createError } = await supabaseAdmin.storage.createBucket("chapter-images", { public: true });
+    if (createError) {
+      console.error("createBucket error for chapter-images:", createError);
+      throw new Error("لم نتمكن من إنشاء bucket لصور الفصول: " + createError.message);
+    }
+  }
+
+  const safeName = sanitizeFileName(file.name);
+  const { error } = await supabaseAdmin.storage
+    .from("chapter-images")
+    .upload(safeName, file);
+  if (error) throw new Error(error.message);
+  const { data: publicUrl } = supabaseAdmin.storage.from("chapter-images").getPublicUrl(safeName);
+  return publicUrl.publicUrl;
+}
+
+// ---- المفضلات ----
+export async function getFavorites(userId: string) {
+  const { data, error } = await supabaseAdmin
+    .from("favorites")
+    .select(`
+      id,
+      novel_id,
+      created_at,
+      novels (
+        id,
+        title,
+        author,
+        cover,
+        category,
+        chapters_count
+      )
+    `)
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(error.message);
+  
+  // تحويل البيانات إلى الشكل المطلوب
+  return (data || []).map((item: any) => ({
+    id: item.id,
+    novel_id: item.novel_id,
+    created_at: item.created_at,
+    novels: item.novels
+  }));
+}
+
+export async function addFavorite(userId: string, novelId: string) {
+  const { error } = await supabaseAdmin
+    .from("favorites")
+    .insert({ user_id: userId, novel_id: novelId });
+
+  if (error) throw new Error(error.message);
+  return { success: true };
+}
+
+export async function removeFavorite(userId: string, novelId: string) {
+  const { error } = await supabaseAdmin
+    .from("favorites")
+    .delete()
+    .eq("user_id", userId)
+    .eq("novel_id", novelId);
+
+  if (error) throw new Error(error.message);
+  return { success: true };
+}
+
+export async function isFavorite(userId: string, novelId: string) {
+  const { data, error } = await supabaseAdmin
+    .from("favorites")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("novel_id", novelId)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  return !!data;
 }

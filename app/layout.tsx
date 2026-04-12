@@ -4,6 +4,8 @@ import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import AuthSidebar from '@/app/components/AuthSidebar';
 import ClientProvider from './ClientProvider';
+import ThemeProvider from '@/app/components/ThemeProvider';
+import ToastProvider from '@/app/components/ToastProvider';
 
 
 
@@ -24,12 +26,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
       </head>
       <body >
+      <ThemeProvider>
         <ClientProvider>
           <Navbar />
           <AuthSidebar />
           {children}
           <Footer />
+          <ToastProvider />
         </ClientProvider>
+      </ThemeProvider>
       </body>
     </html>
   );

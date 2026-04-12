@@ -1,634 +1,637 @@
+/* Contact.module.css – مع دعم كامل للثيم (فاتح/داكن) */
+
 .contactPage {
-    min-height: 100vh;
-    background-color: #050814;
-    color: white;
-    direction: rtl;
-    position: relative;
-    overflow-x: hidden;
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  direction: rtl;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* خلفية متحركة */
+.pageBackground {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.gradientOrb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  animation: float 20s infinite ease-in-out;
+}
+
+.orb1 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle at 30% 30%, var(--gold-glow), rgba(255,215,0,0.05));
+  top: -200px;
+  right: -200px;
+  animation-delay: 0s;
+}
+
+.orb2 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle at 70% 70%, var(--gold-glow), rgba(255,165,0,0.05));
+  bottom: -150px;
+  left: -150px;
+  animation-delay: -5s;
+}
+
+.orb3 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle at 50% 50%, var(--gold-glow), transparent);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulse 8s infinite;
+}
+
+.gridOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    linear-gradient(rgba(255,215,0,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,215,0,0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: gridMove 20s linear infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(50px, 50px) scale(1.1); }
+  50% { transform: translate(0, 100px) scale(1); }
+  75% { transform: translate(-50px, 50px) scale(0.9); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.5; transform: translate(-50%, -50%) scale(1.2); }
+}
+
+@keyframes gridMove {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(50px, 50px); }
+}
+
+.container {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 20px 40px;
+  z-index: 2;
+}
+
+/* ترويسة الصفحة */
+.pageHeader {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.pageTitle {
+  font-size: 3.5rem;
+  margin-bottom: 20px;
+  font-family: 'Amiri', serif;
+}
+
+.titleWord {
+  display: inline-block;
+  margin: 0 5px;
+  color: var(--text-primary);
+}
+
+.titleWord.gold {
+  background: linear-gradient(135deg, var(--gold), #ffd700, #fbbf24);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+  font-size: 4rem;
+}
+
+.pageSubtitle {
+  color: var(--text-secondary);
+  font-size: 1.3rem;
+  max-width: 600px;
+  margin: 0 auto 30px;
+  line-height: 1.8;
+}
+
+.titleDecoration {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.decorationLine {
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  animation: lineWidth 3s infinite;
+}
+
+@keyframes lineWidth {
+  0%, 100% { width: 80px; opacity: 0.5; }
+  50% { width: 120px; opacity: 1; }
+}
+
+.decorationStar {
+  color: var(--gold);
+  font-size: 1.5rem;
+  animation: spinStar 4s linear infinite;
+}
+
+@keyframes spinStar {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* المحتوى الرئيسي */
+.contactContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 60px;
+}
+
+/* بطاقة معلومات الاتصال */
+.contactInfo {
+  position: relative;
+}
+
+.infoCard {
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  border-radius: 30px;
+  padding: 40px;
+  height: 100%;
+  transition: transform 0.3s ease;
+}
+
+.infoCard:hover {
+  transform: translateY(-5px);
+  border-color: var(--gold);
+  box-shadow: 0 20px 40px var(--shadow);
+}
+
+.infoTitle {
+  color: var(--gold);
+  font-size: 2rem;
+  margin-bottom: 30px;
+  font-family: 'Amiri', serif;
+  text-align: center;
+}
+
+.infoItems {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.infoItem {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.itemIcon {
+  font-size: 2rem;
+  background: rgba(255,215,0,0.1);
+  padding: 12px;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+}
+
+.infoItem:hover .itemIcon {
+  transform: scale(1.1);
+  background: rgba(255,215,0,0.2);
+}
+
+.itemDetails h4 {
+  color: var(--gold);
+  margin: 0 0 5px 0;
+  font-size: 1.1rem;
+}
+
+.itemDetails p {
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* وسائل التواصل الاجتماعي */
+.socialSection {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.socialTitle {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+.socialIcons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.socialIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: rgba(255,215,0,0.05);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.socialIcon svg {
+  width: 24px;
+  height: 24px;
+  fill: var(--gold);
+  transition: transform 0.3s ease;
+}
+
+.socialIcon:hover {
+  background: var(--gold);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px var(--gold-glow);
+}
+
+.socialIcon:hover svg {
+  fill: var(--bg-primary);
+  transform: scale(1.1);
+}
+
+/* صورة الخريطة */
+.mapPreview {
+  border-radius: 15px;
+  overflow: hidden;
+  border: 2px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.mapPreview:hover {
+  border-color: var(--gold);
+  transform: scale(1.02);
+}
+
+.mapPreview img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  display: block;
+}
+
+/* بطاقة النموذج */
+.contactForm {
+  position: relative;
+}
+
+.formCard {
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  border-radius: 30px;
+  padding: 40px;
+  height: 100%;
+  transition: transform 0.3s ease;
+}
+
+.formCard:hover {
+  transform: translateY(-5px);
+  border-color: var(--gold);
+  box-shadow: 0 20px 40px var(--shadow);
+}
+
+.formTitle {
+  color: var(--gold);
+  font-size: 2rem;
+  margin-bottom: 30px;
+  font-family: 'Amiri', serif;
+  text-align: center;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.formGroup label {
+  display: block;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.formGroup input,
+.formGroup textarea {
+  width: 100%;
+  padding: 14px 18px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 15px var(--gold-glow);
+  background: var(--bg-card-hover);
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(45deg, var(--gold), var(--gold-dark));
+  color: var(--bg-primary);
+  border: none;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.submitBtn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.submitBtn:hover:not(:disabled)::before {
+  width: 300px;
+  height: 300px;
+}
+
+.submitBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px var(--gold-glow);
+}
+
+.submitBtn:disabled {
+  background: #555;
+  cursor: not-allowed;
+}
+
+.loadingSpinner {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-top-color: var(--bg-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.statusMessage {
+  margin-top: 20px;
+  padding: 15px 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: slideUp 0.5s ease;
+}
+
+.statusMessage.success {
+  background: rgba(46, 204, 113, 0.1);
+  border: 1px solid #2ecc71;
+  color: #2ecc71;
+}
+
+.statusMessage.error {
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid #e74c3c;
+  color: #e74c3c;
+}
+
+.statusIcon {
+  font-size: 1.5rem;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  
-  /* خلفية متحركة */
-  .pageBackground {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .gradientOrb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.4;
-    animation: float 20s infinite ease-in-out;
-  }
-  
-  .orb1 {
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle at 30% 30%, rgba(255,215,0,0.3), rgba(255,215,0,0.1));
-    top: -200px;
-    right: -200px;
-    animation-delay: 0s;
-  }
-  
-  .orb2 {
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle at 70% 70%, rgba(255,215,0,0.2), rgba(255,165,0,0.1));
-    bottom: -150px;
-    left: -150px;
-    animation-delay: -5s;
-  }
-  
-  .orb3 {
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle at 50% 50%, rgba(255,215,0,0.25), transparent);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    animation: pulse 8s infinite;
-  }
-  
-  .gridOverlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image:
-      linear-gradient(rgba(255,215,0,0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,215,0,0.05) 1px, transparent 1px);
-    background-size: 50px 50px;
-    animation: gridMove 20s linear infinite;
-  }
-  
-  @keyframes float {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    25% { transform: translate(50px, 50px) scale(1.1); }
-    50% { transform: translate(0, 100px) scale(1); }
-    75% { transform: translate(-50px, 50px) scale(0.9); }
-  }
-  
-  @keyframes pulse {
-    0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
-    50% { opacity: 0.5; transform: translate(-50%, -50%) scale(1.2); }
-  }
-  
-  @keyframes gridMove {
-    0% { transform: translate(0, 0); }
-    100% { transform: translate(50px, 50px); }
-  }
-  
-  .container {
-    position: relative;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 80px 20px 40px;
-    z-index: 2;
-  }
-  
-  /* ترويسة الصفحة */
-  .pageHeader {
-    text-align: center;
-    margin-bottom: 60px;
-  }
-  
-  .pageTitle {
-    font-size: 3.5rem;
-    margin-bottom: 20px;
-    font-family: 'Amiri', serif;
-  }
-  
-  .titleWord {
-    display: inline-block;
-    margin: 0 5px;
-    color: white;
-  }
-  
-  .titleWord.gold {
-    background: linear-gradient(135deg, gold, #ffd700, #fbbf24);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: bold;
-    font-size: 4rem;
-  }
-  
-  .pageSubtitle {
-    color: #aaa;
-    font-size: 1.3rem;
-    max-width: 600px;
-    margin: 0 auto 30px;
-    line-height: 1.8;
-  }
-  
-  .titleDecoration {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-  }
-  
-  .decorationLine {
-    width: 80px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, gold, transparent);
-    animation: lineWidth 3s infinite;
-  }
-  
-  @keyframes lineWidth {
-    0%, 100% { width: 80px; opacity: 0.5; }
-    50% { width: 120px; opacity: 1; }
-  }
-  
-  .decorationStar {
-    color: gold;
-    font-size: 1.5rem;
-    animation: spinStar 4s linear infinite;
-  }
-  
-  @keyframes spinStar {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-  
-  /* المحتوى الرئيسي */
+}
+
+/* قسم الثقة */
+.trustSection {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-top: 60px;
+}
+
+.trustItem {
+  background: var(--bg-card);
+  padding: 30px 20px;
+  border-radius: 20px;
+  text-align: center;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.trustItem:hover {
+  transform: translateY(-5px);
+  border-color: var(--gold);
+  box-shadow: 0 20px 40px var(--shadow);
+}
+
+.trustIcon {
+  font-size: 2.5rem;
+  background: rgba(255,215,0,0.1);
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.trustItem:hover .trustIcon {
+  background: var(--gold);
+  color: var(--bg-primary);
+}
+
+.trustItem h4 {
+  color: var(--gold);
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.trustItem p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* استجابة */
+@media (max-width: 992px) {
   .contactContent {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    margin-bottom: 60px;
+    grid-template-columns: 1fr;
+    gap: 30px;
   }
-  
-  /* بطاقة معلومات الاتصال */
-  .contactInfo {
-    position: relative;
-  }
-  
-  .infoCard {
-    background: rgba(255,255,255,0.03);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,215,0,0.1);
-    border-radius: 30px;
-    padding: 40px;
-    height: 100%;
-    transition: transform 0.3s ease;
-  }
-  
-  .infoCard:hover {
-    transform: translateY(-5px);
-    border-color: rgba(255,215,0,0.3);
-    box-shadow: 0 20px 40px rgba(255,215,0,0.1);
-  }
-  
-  .infoTitle {
-    color: gold;
-    font-size: 2rem;
-    margin-bottom: 30px;
-    font-family: 'Amiri', serif;
-    text-align: center;
-  }
-  
-  .infoItems {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-    margin-bottom: 30px;
-  }
-  
-  .infoItem {
-    display: flex;
+
+  .trustSection {
+    grid-template-columns: 1fr;
     gap: 20px;
-    align-items: flex-start;
   }
-  
-  .itemIcon {
-    font-size: 2rem;
-    background: rgba(255,215,0,0.1);
-    padding: 12px;
-    border-radius: 15px;
-    transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 60px 15px 30px;
   }
-  
-  .infoItem:hover .itemIcon {
-    transform: scale(1.1);
-    background: rgba(255,215,0,0.2);
+
+  .pageTitle {
+    font-size: 2.5rem;
   }
-  
-  .itemDetails h4 {
-    color: gold;
-    margin: 0 0 5px 0;
+
+  .titleWord.gold {
+    font-size: 3rem;
+  }
+
+  .pageSubtitle {
     font-size: 1.1rem;
   }
-  
-  .itemDetails p {
-    color: #ccc;
-    margin: 0;
-    line-height: 1.6;
-  }
-  
-  /* وسائل التواصل الاجتماعي */
-  .socialSection {
-    margin-bottom: 30px;
-    text-align: center;
-  }
-  
-  .socialTitle {
-    color: #aaa;
-    font-size: 1rem;
-    margin-bottom: 15px;
-  }
-  
-  .socialIcons {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-  }
-  
-  .socialIcon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50px;
-    height: 50px;
-    background: rgba(255,215,0,0.05);
-    border: 1px solid rgba(255,215,0,0.2);
-    border-radius: 50%;
-    transition: all 0.3s ease;
-  }
-  
-  .socialIcon svg {
-    width: 24px;
-    height: 24px;
-    fill: gold;
-    transition: transform 0.3s ease;
-  }
-  
-  .socialIcon:hover {
-    background: gold;
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(255,215,0,0.3);
-  }
-  
-  .socialIcon:hover svg {
-    fill: #050814;
-    transform: scale(1.1);
-  }
-  
-  /* صورة الخريطة */
-  .mapPreview {
-    border-radius: 15px;
-    overflow: hidden;
-    border: 2px solid rgba(255,215,0,0.2);
-    transition: all 0.3s ease;
-  }
-  
-  .mapPreview:hover {
-    border-color: gold;
-    transform: scale(1.02);
-  }
-  
-  .mapPreview img {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-    display: block;
-  }
-  
-  /* بطاقة النموذج */
-  .contactForm {
-    position: relative;
-  }
-  
+
+  .infoCard,
   .formCard {
-    background: rgba(255,255,255,0.03);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,215,0,0.1);
-    border-radius: 30px;
-    padding: 40px;
-    height: 100%;
-    transition: transform 0.3s ease;
+    padding: 25px;
   }
-  
-  .formCard:hover {
-    transform: translateY(-5px);
-    border-color: rgba(255,215,0,0.3);
-    box-shadow: 0 20px 40px rgba(255,215,0,0.1);
-  }
-  
-  .formTitle {
-    color: gold;
+}
+
+@media (max-width: 480px) {
+  .pageTitle {
     font-size: 2rem;
-    margin-bottom: 30px;
-    font-family: 'Amiri', serif;
-    text-align: center;
   }
-  
-  .formGroup {
-    margin-bottom: 20px;
+
+  .titleWord.gold {
+    font-size: 2.5rem;
   }
-  
-  .formGroup label {
-    display: block;
-    color: #aaa;
-    margin-bottom: 8px;
-    font-size: 0.95rem;
-  }
-  
-  .formGroup input,
-  .formGroup textarea {
-    width: 100%;
-    padding: 14px 18px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,215,0,0.2);
-    border-radius: 12px;
-    color: white;
-    font-size: 1rem;
-    outline: none;
-    transition: all 0.3s ease;
-    font-family: inherit;
-  }
-  
-  .formGroup input:focus,
-  .formGroup textarea:focus {
-    border-color: gold;
-    box-shadow: 0 0 15px rgba(255,215,0,0.2);
-    background: rgba(255,255,255,0.08);
-  }
-  
-  .submitBtn {
-    width: 100%;
-    padding: 16px;
-    background: linear-gradient(45deg, gold, #ffd700);
-    color: #050814;
-    border: none;
-    border-radius: 50px;
-    font-weight: bold;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    margin-top: 10px;
-  }
-  
-  .submitBtn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-  }
-  
-  .submitBtn:hover:not(:disabled)::before {
-    width: 300px;
-    height: 300px;
-  }
-  
-  .submitBtn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(255,215,0,0.4);
-  }
-  
-  .submitBtn:disabled {
-    background: #555;
-    cursor: not-allowed;
-  }
-  
-  .loadingSpinner {
-    display: inline-block;
-    width: 24px;
-    height: 24px;
-    border: 3px solid rgba(255,255,255,0.3);
-    border-top-color: #050814;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-  
-  .statusMessage {
-    margin-top: 20px;
-    padding: 15px 20px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    animation: slideUp 0.5s ease;
-  }
-  
-  .statusMessage.success {
-    background: rgba(46, 204, 113, 0.1);
-    border: 1px solid #2ecc71;
-    color: #2ecc71;
-  }
-  
-  .statusMessage.error {
-    background: rgba(231, 76, 60, 0.1);
-    border: 1px solid #e74c3c;
-    color: #e74c3c;
-  }
-  
-  .statusIcon {
-    font-size: 1.5rem;
-  }
-  
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  /* قسم الثقة */
-  .trustSection {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-    margin-top: 60px;
-  }
-  
-  .trustItem {
-    background: rgba(255,255,255,0.02);
-    padding: 30px 20px;
-    border-radius: 20px;
-    text-align: center;
-    border: 1px solid rgba(255,215,0,0.1);
-    transition: all 0.3s ease;
-    display: flex;
+
+  .infoItem {
     flex-direction: column;
     align-items: center;
-    gap: 15px;
+    text-align: center;
   }
-  
-  .trustItem:hover {
-    transform: translateY(-5px);
-    border-color: gold;
-    box-shadow: 0 20px 40px rgba(255,215,0,0.1);
+
+  .itemDetails {
+    text-align: center;
   }
-  
-  .trustIcon {
-    font-size: 2.5rem;
-    background: rgba(255,215,0,0.1);
-    width: 70px;
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-    animation: bounce 2s infinite;
+}
+
+/* ===== تأثيرات AOS (مع :global لتجنب مشاكل CSS Modules) ===== */
+:global([data-aos="fade-left"]) {
+  transform: translateX(-30px);
+  opacity: 0;
+  transition-property: transform, opacity;
+}
+:global([data-aos="fade-left"].aos-animate) {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+:global([data-aos="fade-right"]) {
+  transform: translateX(30px);
+  opacity: 0;
+  transition-property: transform, opacity;
+}
+:global([data-aos="fade-right"].aos-animate) {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+:global([data-aos="fade-up"]) {
+  transform: translateY(30px);
+  opacity: 0;
+  transition-property: transform, opacity;
+}
+:global([data-aos="fade-up"].aos-animate) {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+:global([data-aos="fade-down"]) {
+  transform: translateY(-30px);
+  opacity: 0;
+  transition-property: transform, opacity;
+}
+:global([data-aos="fade-down"].aos-animate) {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+:global([data-aos="zoom-in"]) {
+  transform: scale(0.8);
+  opacity: 0;
+  transition-property: transform, opacity;
+}
+:global([data-aos="zoom-in"].aos-animate) {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* ===== تحسين الأداء ===== */
+@media (prefers-reduced-motion: reduce) {
+  :global(*) {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
-  
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
-  }
-  
-  .trustItem:hover .trustIcon {
-    background: gold;
-    color: #050814;
-  }
-  
-  .trustItem h4 {
-    color: gold;
-    font-size: 1.3rem;
-    margin: 0;
-  }
-  
-  .trustItem p {
-    color: #aaa;
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin: 0;
-  }
-  
-  /* استجابة */
-  @media (max-width: 992px) {
-    .contactContent {
-      grid-template-columns: 1fr;
-      gap: 30px;
-    }
-  
-    .trustSection {
-      grid-template-columns: 1fr;
-      gap: 20px;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .container {
-      padding: 60px 15px 30px;
-    }
-  
-    .pageTitle {
-      font-size: 2.5rem;
-    }
-  
-    .titleWord.gold {
-      font-size: 3rem;
-    }
-  
-    .pageSubtitle {
-      font-size: 1.1rem;
-    }
-  
-    .infoCard,
-    .formCard {
-      padding: 25px;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .pageTitle {
-      font-size: 2rem;
-    }
-  
-    .titleWord.gold {
-      font-size: 2.5rem;
-    }
-  
-    .infoItem {
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-  
-    .itemDetails {
-      text-align: center;
-    }
-  }
-  
-  /* تأثيرات AOS (مطلوب للمكتبة) */
-  :global([data-aos="fade-left"]) {
-    transform: translateX(-30px);
-    opacity: 0;
-    transition-property: transform, opacity;
-  }
-  :global([data-aos="fade-left"].aos-animate) {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  
-  :global([data-aos="fade-right"]) {
-    transform: translateX(30px);
-    opacity: 0;
-    transition-property: transform, opacity;
-  }
-  :global([data-aos="fade-right"].aos-animate) {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  
-  :global([data-aos="fade-up"]) {
-    transform: translateY(30px);
-    opacity: 0;
-    transition-property: transform, opacity;
-  }
-  :global([data-aos="fade-up"].aos-animate) {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  
-  :global([data-aos="fade-down"]) {
-    transform: translateY(-30px);
-    opacity: 0;
-    transition-property: transform, opacity;
-  }
-  :global([data-aos="fade-down"].aos-animate) {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  
-  :global([data-aos="zoom-in"]) {
-    transform: scale(0.8);
-    opacity: 0;
-    transition-property: transform, opacity;
-  }
-  :global([data-aos="zoom-in"].aos-animate) {
-    transform: scale(1);
-    opacity: 1;
-  }
-  
-  /* تحسين الأداء */
-  @media (prefers-reduced-motion: reduce) {
-    :global(*) {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
-  }
+}
