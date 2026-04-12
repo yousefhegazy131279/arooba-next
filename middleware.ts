@@ -35,6 +35,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  // إذا كان المستخدم مسجلاً ويحاول الدخول إلى login، قم بتوجيهه
   if (session && req.nextUrl.pathname === '/login') {
     const redirectTo = req.nextUrl.searchParams.get('redirectTo');
     if (redirectTo) {

@@ -31,13 +31,13 @@ export default function LoginForm() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // التوجيه بعد تسجيل الدخول
+  // التوجيه بعد تسجيل الدخول - استخدام replace لتجنب مشاكل الكاش
   useEffect(() => {
     if (isLoggedIn && !authLoading) {
-      // فك ترميز المسار إذا كان مشفراً
       const decodedPath = decodeURIComponent(redirectTo);
       console.log('Redirecting to:', decodedPath);
-      router.push(decodedPath);
+      // استخدام replace بدلاً من push لتجنب مشاكل التخزين المؤقت
+      router.replace(decodedPath);
     }
   }, [isLoggedIn, authLoading, router, redirectTo]);
 
@@ -122,6 +122,5 @@ export default function LoginForm() {
         </div>
       </div>
     </div>
-    
   );
 }

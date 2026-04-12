@@ -6,7 +6,7 @@ import styles from './story-page.module.css';
 import 'aos/dist/aos.css';
 import { createClient } from '@/lib/supabaseServer';
 
-// دالة لجلب تفاصيل الرواية مع متوسط التقييم وعدد الفصول
+// دالة لجلب تفاصيل الرواية مع منع التخزين المؤقت
 async function getNovel(novelId: string) {
   const supabase = await createClient();
 
@@ -41,7 +41,7 @@ async function getNovel(novelId: string) {
   };
 }
 
-// دالة لجلب قائمة الفصول مع متوسط تقييم كل فصل
+// دالة لجلب الفصول
 async function getChapters(novelId: string) {
   const supabase = await createClient();
 
@@ -77,6 +77,7 @@ async function getChapters(novelId: string) {
   return chaptersWithRatings;
 }
 
+// الصفحة الرئيسية مع منع التخزين المؤقت
 export default async function StoryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
@@ -106,3 +107,7 @@ export default async function StoryPage({ params }: { params: Promise<{ id: stri
     </div>
   );
 }
+
+// منع التخزين المؤقت للصفحة
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
