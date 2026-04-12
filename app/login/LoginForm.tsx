@@ -17,6 +17,7 @@ export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [redirected, setRedirected] = useState(false);
 
   useEffect(() => {
     AOS.init({
@@ -31,15 +32,16 @@ export default function LoginForm() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // التوجيه بعد تسجيل الدخول - استخدام replace لتجنب مشاكل الكاش
+  // التوجيه بعد تسجيل الدخول - تنفيذ فوري
   useEffect(() => {
-    if (isLoggedIn && !authLoading) {
+    if (isLoggedIn && !authLoading && !redirected) {
       const decodedPath = decodeURIComponent(redirectTo);
       console.log('Redirecting to:', decodedPath);
-      // استخدام replace بدلاً من push لتجنب مشاكل التخزين المؤقت
-      router.replace(decodedPath);
+      setRedirected(true);
+      // استخدام window.location للتوجيه الفوري وتجنب أي تخزين مؤقت
+      window.location.href = decodedPath;
     }
-  }, [isLoggedIn, authLoading, router, redirectTo]);
+  }, [isLoggedIn, authLoading, redirectTo, redirected]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +54,7 @@ export default function LoginForm() {
       showToast.error(result.error || 'فشل تسجيل الدخول');
     } else {
       showToast.success('تم تسجيل الدخول بنجاح، جاري التحويل...');
+      // لا نحتاج إلى توجيه يدوي هنا لأن useEffect سيتولى الأمر
     }
   };
 

@@ -21,6 +21,7 @@ interface AuthState {
   register: (username: string, full_name: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   fetchUser: () => Promise<void>;
+  setUser: (user: User | null) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -30,6 +31,15 @@ export const useAuthStore = create<AuthState>()(
       loading: true,
       isLoggedIn: false,
       isAdmin: false,
+
+      setUser: (user) => {
+        set({
+          user,
+          isLoggedIn: !!user,
+          isAdmin: user?.role === 'admin',
+          loading: false,
+        });
+      },
 
       login: async (email, password) => {
         set({ loading: true });
@@ -56,7 +66,7 @@ export const useAuthStore = create<AuthState>()(
             avatar: profile?.avatar_url,
           };
 
-          console.log('User logged in:', userData); // تأكد من وجود username
+          console.log('User logged in:', userData);
 
           set({
             user: userData,
@@ -64,6 +74,7 @@ export const useAuthStore = create<AuthState>()(
             isAdmin: userData.role === 'admin',
             loading: false,
           });
+          
           return { success: true };
         } catch (err: any) {
           console.error('Login error:', err);
@@ -84,7 +95,6 @@ export const useAuthStore = create<AuthState>()(
           });
           if (error) throw error;
 
-          // انتظر لحظة لضمان اكتمال trigger
           await new Promise(resolve => setTimeout(resolve, 500));
 
           const { data: profile, error: profileError } = await supabase
@@ -106,7 +116,7 @@ export const useAuthStore = create<AuthState>()(
             avatar: profile?.avatar_url,
           };
 
-          console.log('User registered:', userData); // تأكد من وجود username
+          console.log('User registered:', userData);
 
           set({
             user: userData,
@@ -114,6 +124,7 @@ export const useAuthStore = create<AuthState>()(
             isAdmin: userData.role === 'admin',
             loading: false,
           });
+          
           return { success: true };
         } catch (err: any) {
           console.error('Registration error:', err);
@@ -124,7 +135,7 @@ export const useAuthStore = create<AuthState>()(
 
       logout: async () => {
         await supabase.auth.signOut();
-        set({ user: null, isLoggedIn: false, isAdmin: false });
+        set({ user: null, isLoggedIn: false, isAdmin: false, loading: false });
       },
 
       fetchUser: async () => {
@@ -155,7 +166,7 @@ export const useAuthStore = create<AuthState>()(
             avatar: profile?.avatar_url,
           };
 
-          console.log('Fetched user:', userData); // تأكد من وجود username
+          console.log('Fetched user:', userData);
 
           set({
             user: userData,
@@ -179,3 +190,42 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
+
+// الاستماع لتغيرات الجلسة من Supabase
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN' && session?.user) {
+    // جلب بيانات الملف الشخصي
+    const fetchProfileAndUpdate = async () => {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('username, full_name, role, avatar_url')
+        .eq('id', session.user.id)
+        .single();
+
+      const userData: User = {
+        id: session.user.id,
+        email: session.user.email!,
+        username: profile?.username || '',
+        full_name: profile?.full_name || '',
+        role: profile?.role || 'user',
+        avatar: profile?.avatar_url,
+      };
+
+      useAuthStore.setState({
+        user: userData,
+        isLoggedIn: true,
+        isAdmin: userData.role === 'admin',
+        loading: false,
+      });
+    };
+    
+    fetchProfileAndUpdate();
+  } else if (event === 'SIGNED_OUT') {
+    useAuthStore.setState({
+      user: null,
+      isLoggedIn: false,
+      isAdmin: false,
+      loading: false,
+    });
+  }
+});
