@@ -25,7 +25,7 @@ export async function middleware(req: NextRequest) {
   const { data: { session } } = await supabase.auth.getSession();
 
   // المسارات المحمية (تتطلب تسجيل الدخول)
-  const protectedPaths = ['/contact', '/stories'];
+  const protectedPaths = ['/contact', '/stories', '/profile'];
   const isProtected = protectedPaths.some(path => req.nextUrl.pathname.startsWith(path));
 
   if (isProtected && !session) {

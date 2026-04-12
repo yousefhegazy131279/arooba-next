@@ -1,24 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import { useAuthStore } from '@/app/stores/useAuthStore';
 import { showToast } from '@/lib/toast';
-import { useAuthStore } from '@/app/stores/useAuthStore'; // عدل المسار حسب موقعك
 import styles from './Login.module.css';
 
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const rawRedirect = searchParams.get('redirectTo') || '/';
-  const redirectTo = decodeURIComponent(rawRedirect);
-
-  const { login, isLoggedIn } = useAuthStore();
+  const redirectTo = searchParams.get('redirectTo') || '/';
+  const { login, isLoggedIn, loading: authLoading } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -34,20 +31,27 @@ export default function LoginForm() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // التوجيه بعد تسجيل الدخول
   useEffect(() => {
-    if (isLoggedIn) {
-      router.push(redirectTo);
+    if (isLoggedIn && !authLoading) {
+      // فك ترميز المسار إذا كان مشفراً
+      const decodedPath = decodeURIComponent(redirectTo);
+      console.log('Redirecting to:', decodedPath);
+      router.push(decodedPath);
     }
-  }, [isLoggedIn, router, redirectTo]);
+  }, [isLoggedIn, authLoading, router, redirectTo]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
+    
     const result = await login(email, password);
     setLoading(false);
+    
     if (!result.success) {
-      setError(result.error || 'فشل تسجيل الدخول');
+      showToast.error(result.error || 'فشل تسجيل الدخول');
+    } else {
+      showToast.success('تم تسجيل الدخول بنجاح، جاري التحويل...');
     }
   };
 
@@ -71,13 +75,7 @@ export default function LoginForm() {
           <h2 data-aos="fade-left" data-aos-delay="300">تسجيل الدخول</h2>
 
           <form onSubmit={handleSubmit}>
-            {error && (
-              <div className={styles.errorMessage} data-aos="fade-in">
-                {error}
-              </div>
-            )}
-
-            {rawRedirect !== '/' && (
+            {redirectTo !== '/' && (
               <div className={styles.infoMessage} data-aos="fade-up">
                 يرجى تسجيل الدخول للوصول إلى الصفحة المطلوبة.
               </div>
@@ -124,5 +122,6 @@ export default function LoginForm() {
         </div>
       </div>
     </div>
+    
   );
 }
