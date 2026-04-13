@@ -7,6 +7,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useAuthStore } from '@/app/stores/useAuthStore';
 import { useThemeStore } from '@/app/stores/useThemeStore';
+import { supabase } from '@/lib/supabaseClient';
 import styles from './AuthSidebar.module.css';
 
 const AuthSidebar = () => {
@@ -15,7 +16,29 @@ const AuthSidebar = () => {
   const { isDark, toggleTheme } = useThemeStore();
   const router = useRouter();
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const toggleBtnRef = useRef<HTMLButtonElement>(null); // مرجع لزر التبديل
+  const toggleBtnRef = useRef<HTMLButtonElement>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  // جلب صورة المستخدم عند تسجيل الدخول أو عند فتح القائمة
+  useEffect(() => {
+    if (isLoggedIn && user) {
+      const fetchAvatar = async () => {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', user.id)
+          .single();
+        if (!error && data) {
+          setAvatarUrl(data.avatar_url);
+        } else {
+          setAvatarUrl(null);
+        }
+      };
+      fetchAvatar();
+    } else {
+      setAvatarUrl(null);
+    }
+  }, [isLoggedIn, user, isOpen]); // يعيد الجلب عند فتح القائمة أو تغيير المستخدم
 
   useEffect(() => {
     fetchUser();
@@ -33,14 +56,27 @@ const AuthSidebar = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // إغلاق القائمة عند النقر خارجها، مع استثناء زر التبديل
+  // الاستماع لحدث تحديث الصورة من صفحة البروفايل
+  useEffect(() => {
+    const handleAvatarUpdate = () => {
+      if (isLoggedIn && user) {
+        supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', user.id)
+          .single()
+          .then(({ data }) => setAvatarUrl(data?.avatar_url || null));
+      }
+    };
+    window.addEventListener('avatar-updated', handleAvatarUpdate);
+    return () => window.removeEventListener('avatar-updated', handleAvatarUpdate);
+  }, [isLoggedIn, user]);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
-      // إذا كان النقر على زر التبديل أو داخله، لا تفعل شيئًا (الزر سيتولى الأمر)
       if (toggleBtnRef.current && toggleBtnRef.current.contains(event.target as Node)) {
         return;
       }
-      // إذا كان النقر خارج الشريط الجانبي، أغلق القائمة
       if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
@@ -67,15 +103,15 @@ const AuthSidebar = () => {
   if (loading) {
     return (
       <div className={styles.authContainer}>
-    <button
-  ref={toggleBtnRef}
-  className={`${styles.authToggleBtn} ${isOpen ? styles.open : ''} ${isOpen ? styles.shifted : ''}`}
-  onClick={toggleSidebar}
-  aria-label="القائمة"
->
-  <span className={styles.arrowIcon}>{isOpen ? '✕' : '☰'}</span>
-  <span className={styles.btnGlow}></span>
-</button>
+        <button
+          ref={toggleBtnRef}
+          className={`${styles.authToggleBtn} ${isOpen ? styles.open : ''} ${isOpen ? styles.shifted : ''}`}
+          onClick={toggleSidebar}
+          aria-label="القائمة"
+        >
+          <span className={styles.arrowIcon}>{isOpen ? '✕' : '☰'}</span>
+          <span className={styles.btnGlow}></span>
+        </button>
         <aside ref={sidebarRef} className={`${styles.authSidebar} ${isOpen ? styles.open : ''}`}>
           <div className={styles.loadingState}>جاري التحميل...</div>
         </aside>
@@ -86,21 +122,21 @@ const AuthSidebar = () => {
   return (
     <div className={styles.authContainer}>
       <button
-  ref={toggleBtnRef}
-  className={`${styles.authToggleBtn} ${isOpen ? styles.open : ''} ${isOpen ? styles.shifted : ''}`}
-  onClick={toggleSidebar}
-  aria-label="القائمة"
->
-  <span className={styles.arrowIcon}>{isOpen ? '✕' : '☰'}</span>
-  <span className={styles.btnGlow}></span>
-</button>
+        ref={toggleBtnRef}
+        className={`${styles.authToggleBtn} ${isOpen ? styles.open : ''} ${isOpen ? styles.shifted : ''}`}
+        onClick={toggleSidebar}
+        aria-label="القائمة"
+      >
+        <span className={styles.arrowIcon}>{isOpen ? '✕' : '☰'}</span>
+        <span className={styles.btnGlow}></span>
+      </button>
 
       <aside ref={sidebarRef} className={`${styles.authSidebar} ${isOpen ? styles.open : ''}`}>
         <div className={styles.sidebarContent}>
           <div className={styles.userProfile} data-aos="fade-left" data-aos-duration="600">
             <div className={styles.avatarWrapper}>
-              {isLoggedIn && user?.avatar ? (
-                <img src={`/avatars/${user.avatar}`} alt="Avatar" className={styles.avatarImg} />
+              {isLoggedIn && avatarUrl ? (
+                <img src={avatarUrl} alt="Avatar" className={styles.avatarImg} />
               ) : !isLoggedIn ? (
                 <div className={`${styles.avatar} ${styles.guestAvatar}`}>
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -163,16 +199,27 @@ const AuthSidebar = () => {
                     <span className={styles.btnText}>لوحة التحكم</span>
                   </Link>
                 )}
-                
-               
-                <Link href="/profile/favorites" className={`${styles.actionBtn} ${styles.favoritesBtn}`}>
-  <span className={styles.btnIcon}>
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-    </svg>
-  </span>
-  <span className={styles.btnText}>المفضلات</span>
-</Link>
+
+                {/* زر الملف الشخصي */}
+                <Link href="/profile" className={`${styles.actionBtn} ${styles.profileBtn}`} onClick={() => setIsOpen(false)}>
+                  <span className={styles.btnIcon}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                  </span>
+                  <span className={styles.btnText}>الملف الشخصي</span>
+                </Link>
+
+                <Link href="/profile/favorites" className={`${styles.actionBtn} ${styles.favoritesBtn}`} onClick={() => setIsOpen(false)}>
+                  <span className={styles.btnIcon}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                    </svg>
+                  </span>
+                  <span className={styles.btnText}>المفضلات</span>
+                </Link>
+
                 <button onClick={handleLogout} className={`${styles.actionBtn} ${styles.logoutBtn}`}>
                   <span className={styles.btnIcon}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

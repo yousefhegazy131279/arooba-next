@@ -334,3 +334,20 @@
 .favoritesBtn:hover .btnText {
   color: #ef4444;
 }
+
+.profileBtn {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+}
+.profileBtn:hover {
+  background: #3b82f6;
+  color: white;
+}
+
+.avatarImg {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--gold);
+}

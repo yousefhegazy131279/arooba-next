@@ -1,0 +1,449 @@
+/* profile.module.css - تصميم حديث مع دعم الثيم العام */
+
+.profilePage {
+    min-height: 100vh;
+    background: var(--bg-primary);
+    direction: rtl;
+    position: relative;
+    padding: 2rem;
+  }
+  
+  /* خلفيات متحركة */
+  .bgOrbs {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .orb1, .orb2, .orb3 {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.4;
+    animation: float 25s infinite alternate;
+  }
+  .orb1 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, var(--gold), transparent);
+    top: -200px;
+    right: -200px;
+  }
+  .orb2 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--gold-dark), transparent);
+    bottom: -150px;
+    left: -150px;
+    animation-duration: 30s;
+  }
+  .orb3 {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, var(--gold-light, #ffb347), transparent);
+    top: 40%;
+    left: 10%;
+    animation-duration: 20s;
+  }
+  @keyframes float {
+    0% { transform: translate(0,0) scale(1); }
+    100% { transform: translate(30px, -30px) scale(1.1); }
+  }
+  
+  .profileLayout {
+    position: relative;
+    z-index: 1;
+    max-width: 1300px;
+    margin: 0 auto;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  
+  /* الشريط الجانبي (يمين) */
+  .sidebar {
+    flex: 0 0 280px;
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    border-radius: 2rem;
+    border: 1px solid var(--border);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    height: fit-content;
+    position: sticky;
+    top: 2rem;
+  }
+  
+  .avatarCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .avatarWrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 1rem;
+  }
+  .avatar, .avatarPlaceholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--gold);
+    box-shadow: var(--shadow);
+  }
+  .avatarPlaceholder {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--bg-primary);
+  }
+  .uploadLabel {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: var(--gold);
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
+    border: 2px solid var(--bg-primary);
+  }
+  .uploadLabel:hover {
+    transform: scale(1.1);
+  }
+  .uploadLabel input {
+    display: none;
+  }
+  .uploadSpinner {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-top-color: var(--gold);
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  .userName {
+    font-size: 1.4rem;
+    color: var(--text-primary);
+    margin: 0.5rem 0 0.2rem;
+  }
+  .userEmail {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+  }
+  .userSince {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+  .logoutBtn {
+    background: rgba(239,68,68,0.2);
+    border: 1px solid #ef4444;
+    color: #ef4444;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 0.85rem;
+  }
+  .logoutBtn:hover {
+    background: #ef4444;
+    color: white;
+  }
+  
+  /* المحتوى الرئيسي */
+  .mainContent {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  /* بطاقات الإحصائيات */
+  .statsRow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .statCard {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 1.5rem;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: var(--transition);
+  }
+  .statCard:hover {
+    transform: translateY(-4px);
+    border-color: var(--gold);
+    box-shadow: var(--shadow);
+  }
+  .statCard svg {
+    stroke: var(--gold);
+    width: 32px;
+    height: 32px;
+  }
+  .statInfo {
+    display: flex;
+    flex-direction: column;
+  }
+  .statNumber {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .statLabel {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+  }
+  
+  /* بطاقة النبذة */
+  .bioCard {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .bioHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .bioHeader h3 {
+    color: var(--gold);
+    font-size: 1.2rem;
+    margin: 0;
+  }
+  .editBtn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.8rem;
+  }
+  .editBtn:hover {
+    color: var(--gold);
+  }
+  .bioActions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .saveBtn, .cancelBtn {
+    padding: 0.3rem 0.8rem;
+    border-radius: 1rem;
+    border: none;
+    cursor: pointer;
+    font-size: 0.75rem;
+  }
+  .saveBtn {
+    background: var(--gold);
+    color: var(--bg-primary);
+  }
+  .cancelBtn {
+    background: #4b5563;
+    color: white;
+  }
+  .bioTextarea {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 0.8rem;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    resize: vertical;
+  }
+  .bioText {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+  
+  /* المفضلات */
+  .favoritesSection {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+  }
+  .sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .sectionHeader h3 {
+    color: var(--gold);
+    font-size: 1.2rem;
+    margin: 0;
+  }
+  .viewAllLink {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: 0.2s;
+  }
+  .viewAllLink:hover {
+    color: var(--gold);
+  }
+  .favGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.2rem;
+  }
+  .favCard {
+    background: var(--input-bg);
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: var(--transition);
+    position: relative;
+  }
+  .favCard:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+  }
+  .favLink {
+    text-decoration: none;
+    display: block;
+  }
+  .favCover {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  .favNoCover {
+    width: 100%;
+    height: 200px;
+    background: var(--hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+  }
+  .favInfo {
+    padding: 0.8rem;
+  }
+  .favTitle {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    margin: 0 0 0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .favAuthor {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+  .removeFavBtn {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(0,0,0,0.6);
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: 0.2s;
+  }
+  .favCard:hover .removeFavBtn {
+    opacity: 1;
+  }
+  .removeFavBtn:hover {
+    background: #ef4444;
+  }
+  .removeFavBtn svg {
+    stroke: white;
+  }
+  .emptyFavs {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+  }
+  .browseBtn {
+    display: inline-block;
+    margin-top: 1rem;
+    background: var(--gold);
+    color: var(--bg-primary);
+    padding: 0.5rem 1.2rem;
+    border-radius: 2rem;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  .loadingFavs {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+  }
+  .loadingContainer {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+  }
+  .loader {
+    width: 50px;
+    height: 50px;
+    border: 3px solid var(--border);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  /* استجابة */
+  @media (max-width: 900px) {
+    .profileLayout {
+      flex-direction: column;
+    }
+    .sidebar {
+      position: static;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .statsRow {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 600px) {
+    .profilePage {
+      padding: 1rem;
+    }
+    .favGrid {
+      grid-template-columns: 1fr;
+    }
+  }
