@@ -27,11 +27,114 @@ import {
   uploadChapterImage,
 } from "./actions";
 
+// SVG Icons
+const Icons = {
+  suggestions: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+    </svg>
+  ),
+  messages: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M22 2L11 13" />
+      <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+    </svg>
+  ),
+  novels: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+    </svg>
+  ),
+  users: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  ),
+  refresh: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  ),
+  search: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  ),
+  close: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  ),
+  edit: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M17 3l4 4-7 7H10v-4l7-7z" />
+      <path d="M3 21h18" />
+    </svg>
+  ),
+  delete: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M3 6h18" />
+      <path d="M8 6v12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6" />
+      <line x1="10" y1="11" x2="10" y2="17" />
+      <line x1="14" y1="11" x2="14" y2="17" />
+    </svg>
+  ),
+  chapters: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+    </svg>
+  ),
+  download: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
+    </svg>
+  ),
+  star: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    </svg>
+  ),
+  sun: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="5" />
+      <line x1="12" y1="1" x2="12" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="23" />
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+      <line x1="1" y1="12" x2="3" y2="12" />
+      <line x1="21" y1="12" x2="23" y2="12" />
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+    </svg>
+  ),
+  moon: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+  ),
+  add: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  ),
+};
+
 const tabs = [
-  { id: "suggestions", name: "الاقتراحات", icon: "🗣️" },
-  { id: "messages", name: "الرسائل", icon: "✉️" },
-  { id: "novels", name: "الروايات", icon: "📚" },
-  { id: "users", name: "المستخدمين", icon: "👥" },
+  { id: "suggestions", name: "الاقتراحات", icon: Icons.suggestions },
+  { id: "messages", name: "الرسائل", icon: Icons.messages },
+  { id: "novels", name: "الروايات", icon: Icons.novels },
+  { id: "users", name: "المستخدمين", icon: Icons.users },
 ];
 
 export default function AdminPage() {
@@ -39,14 +142,10 @@ export default function AdminPage() {
   const { isDark, toggleTheme } = useThemeStore();
   const router = useRouter();
 
-  // تبويب نشط
   const [activeTab, setActiveTab] = useState("suggestions");
-
-  // حالة البحث والتصفية
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
 
-  // بيانات كل قسم
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
@@ -60,7 +159,6 @@ export default function AdminPage() {
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [updating, setUpdating] = useState<string | null>(null);
 
-  // إدارة الروايات
   const [editingNovel, setEditingNovel] = useState<any>(null);
   const [novelFormData, setNovelFormData] = useState({
     title: "",
@@ -72,7 +170,6 @@ export default function AdminPage() {
   });
   const [coverFile, setCoverFile] = useState<File | null>(null);
 
-  // إدارة الفصول
   const [selectedNovel, setSelectedNovel] = useState<any>(null);
   const [chapters, setChapters] = useState<any[]>([]);
   const [loadingChapters, setLoadingChapters] = useState(false);
@@ -85,10 +182,8 @@ export default function AdminPage() {
   const [chapterFile, setChapterFile] = useState<File | null>(null);
   const [chapterImage, setChapterImage] = useState<File | null>(null);
 
-  // حالة تحميل الإحصائيات
   const [loadingStats, setLoadingStats] = useState(true);
 
-  // التحقق من الصلاحيات
   useEffect(() => {
     if (!authLoading) {
       if (!isLoggedIn) router.push("/login");
@@ -96,7 +191,6 @@ export default function AdminPage() {
     }
   }, [authLoading, isLoggedIn, isAdmin, router]);
 
-  // ---- جلب جميع البيانات عند تحميل الصفحة ----
   const fetchAllData = async () => {
     setLoadingStats(true);
     try {
@@ -123,7 +217,6 @@ export default function AdminPage() {
     }
   }, [isAdmin, isLoggedIn]);
 
-  // ---- دوال الاقتراحات ----
   const refreshSuggestions = async () => {
     setLoadingSuggestions(true);
     try {
@@ -147,7 +240,6 @@ export default function AdminPage() {
     }
   };
 
-  // ---- دوال الرسائل ----
   const refreshMessages = async () => {
     setLoadingMessages(true);
     try {
@@ -180,13 +272,11 @@ export default function AdminPage() {
     }
   };
 
-  // تصفية الرسائل
   const filteredMessages = messages.filter((msg) => {
     if (filterStatus === "all") return true;
     return msg.status === filterStatus;
   });
 
-  // ---- دوال الروايات ----
   const refreshNovels = async () => {
     setLoadingNovels(true);
     try {
@@ -273,12 +363,10 @@ export default function AdminPage() {
     }
   };
 
-  // تصفية الروايات
   const filteredNovels = novels.filter((novel) =>
     novel.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // ---- دوال الفصول (مضمنة) ----
   const fetchChapters = async (novelId: string) => {
     setLoadingChapters(true);
     try {
@@ -405,7 +493,6 @@ export default function AdminPage() {
     resetChapterForm();
   };
 
-  // ---- دوال المستخدمين ----
   const refreshUsers = async () => {
     setLoadingUsers(true);
     try {
@@ -445,13 +532,11 @@ export default function AdminPage() {
     }
   };
 
-  // تصفية المستخدمين
   const filteredUsers = users.filter((user) =>
     user.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     user.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // الإحصائيات مع الاتجاهات (مثال)
   const stats = {
     suggestions: { value: suggestions.length, trend: "+12%", trendUp: true },
     messages: { value: messages.length, trend: "+5%", trendUp: true },
@@ -472,10 +557,9 @@ export default function AdminPage() {
 
   return (
     <div className={styles.adminPage}>
-      {/* زر تبديل الثيم */}
       <div className={styles.themeToggleWrapper}>
         <button onClick={toggleTheme} className={styles.themeToggleBtn}>
-          {isDark ? "☀️" : "🌙"}
+          {isDark ? Icons.sun : Icons.moon}
         </button>
       </div>
 
@@ -488,14 +572,13 @@ export default function AdminPage() {
 
       <div className={styles.container}>
         <div className={styles.header}>
-          <h1 className={styles.pageTitle}>لوحة تحكم عُروبة 🏛️</h1>
+          <h1 className={styles.pageTitle}>لوحة تحكم عُروبة</h1>
           <p className={styles.subtitle}>إدارة اقتراحات القراء والروايات والرسائل والمستخدمين</p>
         </div>
 
-        {/* الإحصائيات المتقدمة */}
         <div className={styles.statsGrid}>
           <div className={styles.statCard}>
-            <div className={styles.statIcon}>💭</div>
+            <div className={styles.statIcon}>{Icons.suggestions}</div>
             <div className={styles.statInfo}>
               <span className={styles.statLabel}>إجمالي الاقتراحات</span>
               <strong className={styles.statValue}>{stats.suggestions.value}</strong>
@@ -505,7 +588,7 @@ export default function AdminPage() {
             </div>
           </div>
           <div className={styles.statCard}>
-            <div className={styles.statIcon}>📚</div>
+            <div className={styles.statIcon}>{Icons.novels}</div>
             <div className={styles.statInfo}>
               <span className={styles.statLabel}>إجمالي الروايات</span>
               <strong className={styles.statValue}>{stats.novels.value}</strong>
@@ -515,7 +598,7 @@ export default function AdminPage() {
             </div>
           </div>
           <div className={styles.statCard}>
-            <div className={styles.statIcon}>✉️</div>
+            <div className={styles.statIcon}>{Icons.messages}</div>
             <div className={styles.statInfo}>
               <span className={styles.statLabel}>إجمالي الرسائل</span>
               <strong className={styles.statValue}>{stats.messages.value}</strong>
@@ -525,7 +608,7 @@ export default function AdminPage() {
             </div>
           </div>
           <div className={styles.statCard}>
-            <div className={styles.statIcon}>👥</div>
+            <div className={styles.statIcon}>{Icons.users}</div>
             <div className={styles.statInfo}>
               <span className={styles.statLabel}>إجمالي المستخدمين</span>
               <strong className={styles.statValue}>{stats.users.value}</strong>
@@ -536,7 +619,6 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* التبويبات */}
         <div className={styles.adminTabs}>
           {tabs.map((tab) => (
             <button
@@ -555,10 +637,10 @@ export default function AdminPage() {
           <div className={styles.tabPane}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>
-                <span className={styles.sectionIcon}>🗣️</span> اقتراحات القراء
+                <span className={styles.sectionIcon}>{Icons.suggestions}</span> اقتراحات القراء
               </h2>
               <button onClick={refreshSuggestions} className={styles.refreshBtn} disabled={loadingSuggestions}>
-                🔄 تحديث
+                {Icons.refresh} تحديث
               </button>
             </div>
             {loadingSuggestions ? (
@@ -568,7 +650,6 @@ export default function AdminPage() {
               </div>
             ) : suggestions.length === 0 ? (
               <div className={styles.emptyState}>
-                <span className={styles.emptyIcon}>💭</span>
                 <p>لا توجد اقتراحات بعد</p>
               </div>
             ) : (
@@ -588,20 +669,13 @@ export default function AdminPage() {
                     {suggestions.map((item, idx) => (
                       <tr key={item.id}>
                         <td>{idx + 1}</td>
-                        <td>
-                          <div className={styles.userCell}>
-                            <span className={styles.userAvatar}>{item.name?.charAt(0) || "?"}</span>
-                            {item.name}
-                          </div>
-                        </td>
-                        <td>
-                          <strong className={styles.storyHighlight}>{item.story_title}</strong>
-                        </td>
-                        <td className={styles.commentCell}>{item.comment || <span className={styles.noComment}>-</span>}</td>
+                        <td>{item.name}</td>
+                        <td><strong>{item.story_title}</strong></td>
+                        <td>{item.comment || "-"}</td>
                         <td>{new Date(item.created_at).toLocaleDateString("ar-EG")}</td>
                         <td>
                           <button onClick={() => handleDeleteSuggestion(item.id)} className={styles.deleteBtn}>
-                            🗑️ حذف
+                            {Icons.delete} حذف
                           </button>
                         </td>
                       </tr>
@@ -613,15 +687,15 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* محتوى الرسائل مع شريط بحث وتصفية */}
+        {/* محتوى الرسائل */}
         {activeTab === "messages" && (
           <div className={styles.tabPane}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>
-                <span className={styles.sectionIcon}>✉️</span> الرسائل الواردة
+                <span className={styles.sectionIcon}>{Icons.messages}</span> الرسائل الواردة
               </h2>
               <button onClick={refreshMessages} className={styles.refreshBtn} disabled={loadingMessages}>
-                🔄 تحديث
+                {Icons.refresh} تحديث
               </button>
             </div>
 
@@ -652,7 +726,6 @@ export default function AdminPage() {
               </div>
             ) : filteredMessages.length === 0 ? (
               <div className={styles.emptyState}>
-                <span className={styles.emptyIcon}>✉️</span>
                 <p>لا توجد رسائل بعد</p>
               </div>
             ) : (
@@ -677,7 +750,7 @@ export default function AdminPage() {
                         <td>{msg.name}</td>
                         <td>{msg.email}</td>
                         <td><strong>{msg.subject}</strong></td>
-                        <td className={styles.messageCell}>{msg.message}</td>
+                        <td>{msg.message}</td>
                         <td>
                           <select
                             value={msg.status}
@@ -692,7 +765,7 @@ export default function AdminPage() {
                         <td>{new Date(msg.created_at).toLocaleDateString("ar-EG")}</td>
                         <td>
                           <button onClick={() => handleDeleteMessage(msg.id)} className={styles.deleteBtn}>
-                            🗑️ حذف
+                            {Icons.delete} حذف
                           </button>
                         </td>
                       </tr>
@@ -704,15 +777,15 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* محتوى الروايات مع شريط بحث */}
+        {/* محتوى الروايات */}
         {activeTab === "novels" && (
           <div className={styles.tabPane}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>
-                <span className={styles.sectionIcon}>📚</span> إدارة الروايات
+                <span className={styles.sectionIcon}>{Icons.novels}</span> إدارة الروايات
               </h2>
               <button onClick={refreshNovels} className={styles.refreshBtn} disabled={loadingNovels}>
-                🔄 تحديث
+                {Icons.refresh} تحديث
               </button>
             </div>
 
@@ -726,7 +799,6 @@ export default function AdminPage() {
               />
             </div>
 
-            {/* نموذج إضافة/تعديل رواية */}
             <form onSubmit={handleNovelSubmit} className={styles.addForm}>
               <h3 className={styles.formTitle}>{editingNovel ? "تعديل الرواية" : "إضافة رواية جديدة"}</h3>
               <div className={styles.formGrid}>
@@ -813,7 +885,6 @@ export default function AdminPage() {
               </div>
             </form>
 
-            {/* جدول الروايات */}
             {loadingNovels ? (
               <div className={styles.loadingState}>
                 <div className={styles.loader}></div>
@@ -821,7 +892,6 @@ export default function AdminPage() {
               </div>
             ) : filteredNovels.length === 0 ? (
               <div className={styles.emptyState}>
-                <span className={styles.emptyIcon}>📚</span>
                 <p>لا توجد روايات مضافة بعد</p>
               </div>
             ) : (
@@ -846,7 +916,7 @@ export default function AdminPage() {
                           {novel.cover ? (
                             <img src={novel.cover} alt={novel.title} className={styles.coverThumb} />
                           ) : (
-                            <span className={styles.noCover}>لا غلاف</span>
+                            <span>لا غلاف</span>
                           )}
                         </td>
                         <td><strong>{novel.title}</strong></td>
@@ -856,13 +926,13 @@ export default function AdminPage() {
                         <td>
                           <div className={styles.actionButtons}>
                             <button onClick={() => editNovel(novel)} className={styles.editBtn}>
-                              ✏️ تعديل
+                              {Icons.edit} تعديل
                             </button>
                             <button onClick={() => handleDeleteNovel(novel.id)} className={styles.deleteBtn}>
-                              🗑️ حذف
+                              {Icons.delete} حذف
                             </button>
                             <button onClick={() => openChaptersInline(novel)} className={styles.chaptersBtn}>
-                              📖 فصول
+                              {Icons.chapters} فصول
                             </button>
                           </div>
                         </td>
@@ -873,17 +943,15 @@ export default function AdminPage() {
               </div>
             )}
 
-            {/* قسم الفصول المضمن */}
             {selectedNovel && (
               <div className={styles.chaptersInlineSection}>
                 <div className={styles.chaptersHeader}>
-                  <h3 className={styles.chaptersTitle}>📖 فصول: {selectedNovel.title}</h3>
+                  <h3 className={styles.chaptersTitle}>فصول: {selectedNovel.title}</h3>
                   <button onClick={closeChaptersInline} className={styles.closeChaptersBtn}>
-                    ✕ إغلاق
+                    {Icons.close} إغلاق
                   </button>
                 </div>
 
-                {/* نموذج إضافة/تعديل فصل */}
                 <form onSubmit={handleChapterSubmit} className={styles.chapterForm}>
                   <div className={styles.formGrid}>
                     <div className={styles.formGroup}>
@@ -937,7 +1005,7 @@ export default function AdminPage() {
                   </div>
                   <div className={styles.formActions}>
                     <button type="submit" className={styles.submitBtn}>
-                      {editingChapter ? "تحديث الفصل" : "➕ إضافة الفصل"}
+                      {editingChapter ? "تحديث الفصل" : Icons.add} {editingChapter ? "تحديث الفصل" : "إضافة الفصل"}
                     </button>
                     <button type="button" onClick={resetChapterForm} className={styles.resetBtn}>
                       إعادة تعيين
@@ -945,7 +1013,6 @@ export default function AdminPage() {
                   </div>
                 </form>
 
-                {/* قائمة الفصول */}
                 {loadingChapters ? (
                   <div className={styles.loadingState}>
                     <div className={styles.loader}></div>
@@ -953,7 +1020,6 @@ export default function AdminPage() {
                   </div>
                 ) : chapters.length === 0 ? (
                   <div className={styles.emptyState}>
-                    <span className={styles.emptyIcon}>📭</span>
                     <p>لا توجد فصول مضافة بعد.</p>
                   </div>
                 ) : (
@@ -968,19 +1034,19 @@ export default function AdminPage() {
                               <img src={ch.image} alt={ch.title} />
                             </div>
                           )}
-                          {ch.word_file && <span className={styles.fileType}>📄</span>}
+                          {ch.word_file && <span>{Icons.download}</span>}
                         </div>
                         <div className={styles.chapterActions}>
                           <button onClick={() => openEditChapter(ch)} className={styles.editBtn}>
-                            ✏️ تعديل
+                            {Icons.edit} تعديل
                           </button>
                           {ch.word_file && (
                             <a href={ch.word_file} target="_blank" className={styles.downloadLink}>
-                              📥 تحميل
+                              {Icons.download} تحميل
                             </a>
                           )}
                           <button onClick={() => handleDeleteChapter(ch.id)} className={`${styles.deleteBtn} ${styles.small}`}>
-                            🗑️
+                            {Icons.delete}
                           </button>
                         </div>
                       </div>
@@ -992,15 +1058,15 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* محتوى المستخدمين مع شريط بحث */}
+        {/* محتوى المستخدمين */}
         {activeTab === "users" && (
           <div className={styles.tabPane}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>
-                <span className={styles.sectionIcon}>👥</span> إدارة المستخدمين
+                <span className={styles.sectionIcon}>{Icons.users}</span> إدارة المستخدمين
               </h2>
               <button onClick={refreshUsers} className={styles.refreshBtn} disabled={loadingUsers}>
-                🔄 تحديث
+                {Icons.refresh} تحديث
               </button>
             </div>
 
@@ -1021,7 +1087,6 @@ export default function AdminPage() {
               </div>
             ) : filteredUsers.length === 0 ? (
               <div className={styles.emptyState}>
-                <span className={styles.emptyIcon}>👥</span>
                 <p>لا توجد مستخدمين بعد</p>
               </div>
             ) : (
@@ -1062,7 +1127,7 @@ export default function AdminPage() {
                         <td>{new Date(user.created_at).toLocaleDateString("ar-EG")}</td>
                         <td>
                           <button onClick={() => handleDeleteUser(user.id)} className={styles.deleteBtn} disabled={updating === user.id}>
-                            🗑️ حذف
+                            {Icons.delete} حذف
                           </button>
                         </td>
                       </tr>
