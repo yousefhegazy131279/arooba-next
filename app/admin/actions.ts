@@ -1,23 +1,37 @@
 "use server";
 
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: { autoRefreshToken: false, persistSession: false },
-  }
-);
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
 // ---- المستخدمين ----
 export async function getUsers() {
-  const { data, error } = await supabaseAdmin
-    .from("users_with_emails")
-    .select("*")
-    .order("created_at", { ascending: false });
-  if (error) throw new Error(error.message);
-  return data || [];
+  try {
+    const { data: authUsers, error: authError } = await supabaseAdmin.auth.admin.listUsers();
+    if (authError) throw new Error(authError.message);
+
+    if (!authUsers?.users) return [];
+
+    const { data: profiles } = await supabaseAdmin.from("profiles").select("*");
+
+    const users = authUsers.users.map((authUser) => {
+      const profile = profiles?.find((p) => p.id === authUser.id) || {};
+      return {
+        id: authUser.id,
+        email: authUser.email || "", // ✅ دائماً string
+        username: profile.username || authUser.email?.split("@")[0] || "مستخدم",
+        full_name: profile.full_name || "",
+        avatar_url: profile.avatar_url || "",
+        role: profile.role || "user",
+        created_at: profile.created_at || authUser.created_at,
+      };
+    });
+
+    return users.sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+  } catch (error: any) {
+    console.error("Error in getUsers:", error);
+    throw new Error(error.message || "فشل تحميل المستخدمين");
+  }
 }
 
 export async function updateUserRole(userId: string, newRole: string) {
@@ -30,11 +44,17 @@ export async function updateUserRole(userId: string, newRole: string) {
 }
 
 export async function deleteUser(userId: string) {
-  const { error } = await supabaseAdmin
+  // حذف المستخدم من جدول profiles أولاً (لأنه مرتبط بـ auth.users عبر ON DELETE CASCADE)
+  const { error: profileError } = await supabaseAdmin
     .from("profiles")
     .delete()
     .eq("id", userId);
-  if (error) throw new Error(error.message);
+  if (profileError) throw new Error(profileError.message);
+
+  // حذف المستخدم من auth.users (يحتاج إلى admin privileges)
+  const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(userId);
+  if (authError) throw new Error(authError.message);
+
   return { success: true };
 }
 
@@ -168,16 +188,16 @@ export async function deleteMessage(id: number) {
 
 // ---- رفع الملفات (أغلفة، ملفات الفصول، صور الفصول) ----
 function sanitizeFileName(fileName: string): string {
-  const lastDot = fileName.lastIndexOf('.');
+  const lastDot = fileName.lastIndexOf(".");
   const name = lastDot === -1 ? fileName : fileName.slice(0, lastDot);
-  const ext = lastDot === -1 ? '' : fileName.slice(lastDot);
+  const ext = lastDot === -1 ? "" : fileName.slice(lastDot);
   const cleanName = name
-    .replace(/[^\w\u0600-\u06FF\-]/g, '_')
-    .replace(/_+/g, '_')
-    .replace(/^_|_$/g, '');
+    .replace(/[^\w\u0600-\u06FF\-]/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_|_$/g, "");
   const timestamp = Date.now();
   const random = Math.random().toString(36).substring(2, 8);
-  return `${timestamp}_${random}_${cleanName || 'file'}${ext}`;
+  return `${timestamp}_${random}_${cleanName || "file"}${ext}`;
 }
 
 export async function uploadCover(file: File): Promise<string> {
@@ -188,9 +208,11 @@ export async function uploadCover(file: File): Promise<string> {
     console.error("listBuckets error:", listError);
     throw new Error("فشل الاتصال بـ Supabase Storage: " + listError.message);
   }
-  const bucketExists = buckets?.some(b => b.name === "covers");
+  const bucketExists = buckets?.some((b) => b.name === "covers");
   if (!bucketExists) {
-    const { error: createError } = await supabaseAdmin.storage.createBucket("covers", { public: true });
+    const { error: createError } = await supabaseAdmin.storage.createBucket("covers", {
+      public: true,
+    });
     if (createError) {
       console.error("createBucket error:", createError);
       throw new Error("Bucket 'covers' غير موجود ولم نتمكن من إنشائه: " + createError.message);
@@ -212,8 +234,10 @@ export async function uploadCover(file: File): Promise<string> {
 
 export async function uploadChapterFile(file: File): Promise<string> {
   const { data: buckets, error: listError } = await supabaseAdmin.storage.listBuckets();
-  if (!listError && !buckets?.some(b => b.name === "chapters")) {
-    const { error: createError } = await supabaseAdmin.storage.createBucket("chapters", { public: true });
+  if (!listError && !buckets?.some((b) => b.name === "chapters")) {
+    const { error: createError } = await supabaseAdmin.storage.createBucket("chapters", {
+      public: true,
+    });
     if (createError) {
       console.error("createBucket error for chapters:", createError);
     }
@@ -230,8 +254,10 @@ export async function uploadChapterFile(file: File): Promise<string> {
 
 export async function uploadChapterImage(file: File): Promise<string> {
   const { data: buckets, error: listError } = await supabaseAdmin.storage.listBuckets();
-  if (!listError && !buckets?.some(b => b.name === "chapter-images")) {
-    const { error: createError } = await supabaseAdmin.storage.createBucket("chapter-images", { public: true });
+  if (!listError && !buckets?.some((b) => b.name === "chapter-images")) {
+    const { error: createError } = await supabaseAdmin.storage.createBucket("chapter-images", {
+      public: true,
+    });
     if (createError) {
       console.error("createBucket error for chapter-images:", createError);
       throw new Error("لم نتمكن من إنشاء bucket لصور الفصول: " + createError.message);
@@ -251,7 +277,8 @@ export async function uploadChapterImage(file: File): Promise<string> {
 export async function getFavorites(userId: string) {
   const { data, error } = await supabaseAdmin
     .from("favorites")
-    .select(`
+    .select(
+      `
       id,
       novel_id,
       created_at,
@@ -263,18 +290,18 @@ export async function getFavorites(userId: string) {
         category,
         chapters_count
       )
-    `)
+    `
+    )
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
   if (error) throw new Error(error.message);
-  
-  // تحويل البيانات إلى الشكل المطلوب
+
   return (data || []).map((item: any) => ({
     id: item.id,
     novel_id: item.novel_id,
     created_at: item.created_at,
-    novels: item.novels
+    novels: item.novels,
   }));
 }
 

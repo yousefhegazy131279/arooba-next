@@ -30,20 +30,34 @@ export default function UsersTab() {
   const { users, loadingUsers, fetchUsers, updateUserRoleAction, deleteUserById } = useAdminData();
   const [searchQuery, setSearchQuery] = useState("");
   const [updating, setUpdating] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchUsers();
+    const loadUsers = async () => {
+      try {
+        await fetchUsers();
+        setError(null);
+      } catch (err: any) {
+        console.error("Error loading users:", err);
+        setError(err.message || "فشل تحميل المستخدمين");
+      }
+    };
+    loadUsers();
   }, [fetchUsers]);
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     setUpdating(userId);
-    await updateUserRoleAction(userId, newRole);
-    setUpdating(null);
+    try {
+      await updateUserRoleAction(userId, newRole);
+    } finally {
+      setUpdating(null);
+    }
   };
 
-  const filteredUsers = users.filter(u =>
-    u.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    u.email?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredUsers = users.filter(
+    (u) =>
+      u.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      u.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (loadingUsers) {
@@ -51,6 +65,30 @@ export default function UsersTab() {
       <div className={styles.loadingState}>
         <div className={styles.loader}></div>
         <p>جاري تحميل المستخدمين...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.errorState}>
+        <p>⚠️ {error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className={styles.retryBtn}
+          style={{
+            marginTop: "1rem",
+            padding: "0.5rem 1.5rem",
+            background: "var(--gold)",
+            border: "none",
+            borderRadius: "2rem",
+            cursor: "pointer",
+            fontWeight: "bold",
+            color: "var(--bg-primary)",
+          }}
+        >
+          إعادة المحاولة
+        </button>
       </div>
     );
   }
@@ -81,13 +119,25 @@ export default function UsersTab() {
         <div className={styles.tableResponsive}>
           <table className={styles.adminTable}>
             <thead>
-              <tr><th>#</th><th>اسم المستخدم</th><th>البريد الإلكتروني</th><th>الدور</th><th>تاريخ التسجيل</th><th>إجراءات</th></tr>
+              <tr>
+                <th>#</th>
+                <th>اسم المستخدم</th>
+                <th>البريد الإلكتروني</th>
+                <th>الدور</th>
+                <th>تاريخ التسجيل</th>
+                <th>إجراءات</th>
+              </tr>
             </thead>
             <tbody>
               {filteredUsers.map((user, idx) => (
                 <tr key={user.id}>
                   <td>{idx + 1}</td>
-                  <td><div className={styles.userCell}><span className={styles.userAvatar}>{user.username?.charAt(0) || "?"}</span>{user.username}</div></td>
+                  <td>
+                    <div className={styles.userCell}>
+                      <span className={styles.userAvatar}>{user.username?.charAt(0) || "?"}</span>
+                      {user.username}
+                    </div>
+                  </td>
                   <td>{user.email}</td>
                   <td>
                     <select
@@ -102,7 +152,11 @@ export default function UsersTab() {
                   </td>
                   <td>{new Date(user.created_at).toLocaleDateString("ar-EG")}</td>
                   <td>
-                    <button onClick={() => deleteUserById(user.id)} className={styles.deleteBtn} disabled={updating === user.id}>
+                    <button
+                      onClick={() => deleteUserById(user.id)}
+                      className={styles.deleteBtn}
+                      disabled={updating === user.id}
+                    >
                       <DeleteIcon /> حذف
                     </button>
                   </td>

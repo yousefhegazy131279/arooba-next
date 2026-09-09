@@ -104,7 +104,7 @@ export function useAdminData() {
   const deleteSuggestionById = useCallback(async (id: number) => {
     try {
       await deleteSuggestion(id);
-      setSuggestions(prev => prev.filter(s => s.id !== id));
+      setSuggestions((prev) => prev.filter((s) => s.id !== id));
       alert("تم حذف الاقتراح بنجاح");
     } catch (err: any) {
       alert("فشل الحذف: " + err.message);
@@ -127,7 +127,9 @@ export function useAdminData() {
   const updateMessageStatusById = useCallback(async (id: number, status: string) => {
     try {
       await updateMessageStatus(id, status);
-      setMessages(prev => prev.map(m => m.id === id ? { ...m, status: status as any } : m));
+      setMessages((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, status: status as any } : m))
+      );
     } catch (err: any) {
       alert("فشل تحديث الحالة: " + err.message);
     }
@@ -137,7 +139,7 @@ export function useAdminData() {
     if (!confirm("هل أنت متأكد من حذف هذه الرسالة؟")) return;
     try {
       await deleteMessage(id);
-      setMessages(prev => prev.filter(m => m.id !== id));
+      setMessages((prev) => prev.filter((m) => m.id !== id));
       alert("تم حذف الرسالة بنجاح");
     } catch (err: any) {
       alert("فشل الحذف: " + err.message);
@@ -157,52 +159,61 @@ export function useAdminData() {
     }
   }, []);
 
-  const createNovelAction = useCallback(async (novelData: Omit<Novel, 'id' | 'created_at'>, coverFile?: File) => {
-    try {
-      let coverUrl = novelData.cover;
-      if (coverFile) {
-        const uploaded = await uploadCover(coverFile);
-        if (uploaded) coverUrl = uploaded;
-        else if (uploaded === null) coverUrl = "";
-        else throw new Error("فشل رفع الصورة");
+  const createNovelAction = useCallback(
+    async (novelData: Omit<Novel, "id" | "created_at">, coverFile?: File) => {
+      try {
+        let coverUrl = novelData.cover;
+        if (coverFile) {
+          const uploaded = await uploadCover(coverFile);
+          if (uploaded) coverUrl = uploaded;
+          else if (uploaded === null) coverUrl = "";
+          else throw new Error("فشل رفع الصورة");
+        }
+        const newNovel = { ...novelData, cover: coverUrl };
+        await createNovel(newNovel);
+        alert("تم إضافة الرواية بنجاح");
+        await fetchNovels();
+      } catch (err: any) {
+        alert("فشل إضافة الرواية: " + err.message);
       }
-      const newNovel = { ...novelData, cover: coverUrl };
-      await createNovel(newNovel);
-      alert("تم إضافة الرواية بنجاح");
-      await fetchNovels();
-    } catch (err: any) {
-      alert("فشل إضافة الرواية: " + err.message);
-    }
-  }, [fetchNovels]);
+    },
+    [fetchNovels]
+  );
 
-  const updateNovelAction = useCallback(async (id: string, novelData: Partial<Novel>, coverFile?: File) => {
-    try {
-      let coverUrl = novelData.cover;
-      if (coverFile) {
-        const uploaded = await uploadCover(coverFile);
-        if (uploaded) coverUrl = uploaded;
+  const updateNovelAction = useCallback(
+    async (id: string, novelData: Partial<Novel>, coverFile?: File) => {
+      try {
+        let coverUrl = novelData.cover;
+        if (coverFile) {
+          const uploaded = await uploadCover(coverFile);
+          if (uploaded) coverUrl = uploaded;
+        }
+        const updatedData = { ...novelData, cover: coverUrl };
+        await updateNovel(id, updatedData);
+        alert("تم تحديث الرواية بنجاح");
+        await fetchNovels();
+      } catch (err: any) {
+        alert("فشل تحديث الرواية: " + err.message);
       }
-      const updatedData = { ...novelData, cover: coverUrl };
-      await updateNovel(id, updatedData);
-      alert("تم تحديث الرواية بنجاح");
-      await fetchNovels();
-    } catch (err: any) {
-      alert("فشل تحديث الرواية: " + err.message);
-    }
-  }, [fetchNovels]);
+    },
+    [fetchNovels]
+  );
 
-  const deleteNovelById = useCallback(async (id: string) => {
-    if (!confirm("هل أنت متأكد من حذف هذه الرواية؟ سيتم حذف جميع فصولها أيضاً.")) return;
-    try {
-      await deleteNovel(id);
-      alert("تم حذف الرواية بنجاح");
-      await fetchNovels();
-    } catch (err: any) {
-      alert("فشل حذف الرواية: " + err.message);
-    }
-  }, [fetchNovels]);
+  const deleteNovelById = useCallback(
+    async (id: string) => {
+      if (!confirm("هل أنت متأكد من حذف هذه الرواية؟ سيتم حذف جميع فصولها أيضاً.")) return;
+      try {
+        await deleteNovel(id);
+        alert("تم حذف الرواية بنجاح");
+        await fetchNovels();
+      } catch (err: any) {
+        alert("فشل حذف الرواية: " + err.message);
+      }
+    },
+    [fetchNovels]
+  );
 
-  // دوال الفصول (تستخدم داخل NovelsTab)
+  // دوال الفصول
   const fetchChapters = useCallback(async (novelId: string): Promise<Chapter[]> => {
     try {
       return await getChapters(novelId);
@@ -212,46 +223,53 @@ export function useAdminData() {
     }
   }, []);
 
-  const createChapterAction = useCallback(async (chapterData: Omit<Chapter, 'id'>, file?: File, image?: File) => {
-    try {
-      let fileUrl = null, imageUrl = null;
-      if (file) {
-        const uploaded = await uploadChapterFile(file);
-        if (uploaded) fileUrl = uploaded;
-        else if (uploaded === null) fileUrl = null;
-        else throw new Error("فشل رفع الملف");
+  const createChapterAction = useCallback(
+    async (chapterData: Omit<Chapter, "id">, file?: File, image?: File) => {
+      try {
+        let fileUrl = null,
+          imageUrl = null;
+        if (file) {
+          const uploaded = await uploadChapterFile(file);
+          if (uploaded) fileUrl = uploaded;
+          else if (uploaded === null) fileUrl = null;
+          else throw new Error("فشل رفع الملف");
+        }
+        if (image) {
+          const uploaded = await uploadChapterImage(image);
+          if (uploaded) imageUrl = uploaded;
+        }
+        const newChapter = { ...chapterData, word_file: fileUrl, image: imageUrl };
+        await createChapter(newChapter);
+        alert("تم إضافة الفصل بنجاح");
+      } catch (err: any) {
+        alert("فشل إضافة الفصل: " + err.message);
       }
-      if (image) {
-        const uploaded = await uploadChapterImage(image);
-        if (uploaded) imageUrl = uploaded;
-      }
-      const newChapter = { ...chapterData, word_file: fileUrl, image: imageUrl };
-      await createChapter(newChapter);
-      alert("تم إضافة الفصل بنجاح");
-    } catch (err: any) {
-      alert("فشل إضافة الفصل: " + err.message);
-    }
-  }, []);
+    },
+    []
+  );
 
-  const updateChapterAction = useCallback(async (id: string, chapterData: Partial<Chapter>, file?: File, image?: File) => {
-    try {
-      let fileUrl = chapterData.word_file;
-      let imageUrl = chapterData.image;
-      if (file) {
-        const uploaded = await uploadChapterFile(file);
-        if (uploaded) fileUrl = uploaded;
+  const updateChapterAction = useCallback(
+    async (id: string, chapterData: Partial<Chapter>, file?: File, image?: File) => {
+      try {
+        let fileUrl = chapterData.word_file;
+        let imageUrl = chapterData.image;
+        if (file) {
+          const uploaded = await uploadChapterFile(file);
+          if (uploaded) fileUrl = uploaded;
+        }
+        if (image) {
+          const uploaded = await uploadChapterImage(image);
+          if (uploaded) imageUrl = uploaded;
+        }
+        const updatedData = { ...chapterData, word_file: fileUrl, image: imageUrl };
+        await updateChapter(id, updatedData);
+        alert("تم تحديث الفصل بنجاح");
+      } catch (err: any) {
+        alert("فشل تحديث الفصل: " + err.message);
       }
-      if (image) {
-        const uploaded = await uploadChapterImage(image);
-        if (uploaded) imageUrl = uploaded;
-      }
-      const updatedData = { ...chapterData, word_file: fileUrl, image: imageUrl };
-      await updateChapter(id, updatedData);
-      alert("تم تحديث الفصل بنجاح");
-    } catch (err: any) {
-      alert("فشل تحديث الفصل: " + err.message);
-    }
-  }, []);
+    },
+    []
+  );
 
   const deleteChapterById = useCallback(async (id: string) => {
     if (!confirm("هل أنت متأكد من حذف هذا الفصل؟")) return;
@@ -270,6 +288,7 @@ export function useAdminData() {
       const data = await getUsers();
       setUsers(data);
     } catch (err: any) {
+      console.error("Error fetching users:", err);
       alert("فشل تحميل المستخدمين: " + err.message);
     } finally {
       setLoadingUsers(false);
@@ -279,7 +298,7 @@ export function useAdminData() {
   const updateUserRoleAction = useCallback(async (userId: string, newRole: string) => {
     try {
       await updateUserRole(userId, newRole);
-      setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u));
+      setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u)));
       alert("تم تحديث الدور بنجاح");
     } catch (err: any) {
       alert("فشل تحديث الدور: " + err.message);
@@ -290,7 +309,7 @@ export function useAdminData() {
     if (!confirm("هل أنت متأكد من حذف هذا المستخدم؟")) return;
     try {
       await deleteUser(userId);
-      setUsers(prev => prev.filter(u => u.id !== userId));
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
       alert("تم حذف المستخدم بنجاح");
     } catch (err: any) {
       alert("فشل حذف المستخدم: " + err.message);
@@ -299,12 +318,7 @@ export function useAdminData() {
 
   // جلب كل البيانات مرة واحدة (للإحصائيات)
   const fetchAllData = useCallback(async () => {
-    await Promise.all([
-      fetchSuggestions(),
-      fetchMessages(),
-      fetchNovels(),
-      fetchUsers(),
-    ]);
+    await Promise.all([fetchSuggestions(), fetchMessages(), fetchNovels(), fetchUsers()]);
   }, [fetchSuggestions, fetchMessages, fetchNovels, fetchUsers]);
 
   return {
