@@ -6,6 +6,7 @@ import Link from 'next/link';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useAuthStore } from '@/app/stores/useAuthStore';
+import { safeRedirect } from '@/lib/safeRedirect';
 import { showToast } from '@/lib/toast';
 import styles from './Login.module.css';
 
@@ -35,8 +36,7 @@ export default function LoginForm() {
   // التوجيه بعد تسجيل الدخول - تنفيذ فوري
   useEffect(() => {
     if (isLoggedIn && !authLoading && !redirected) {
-      const decodedPath = decodeURIComponent(redirectTo);
-      console.log('Redirecting to:', decodedPath);
+      const decodedPath = safeRedirect(redirectTo);
       setRedirected(true);
       // استخدام window.location للتوجيه الفوري وتجنب أي تخزين مؤقت
       window.location.href = decodedPath;

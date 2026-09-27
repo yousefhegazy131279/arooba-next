@@ -1,3 +1,5 @@
+import { pageMetadata } from '@/lib/seo';
+export function generateMetadata() { return pageMetadata("تسجيل الدخول","سجّل دخولك لاستكمال القراءة والمشاركة.","/login",true); }
 import { Suspense } from 'react';
 import LoginForm from './LoginForm';
 

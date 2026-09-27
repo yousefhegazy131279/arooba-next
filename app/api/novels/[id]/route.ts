@@ -1,16 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/lib/supabaseServer';
+import { entityIdSchema } from '@/lib/validation';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const supabase = await createClient();
     // انتظار params
     const { id: rawId } = await params;
-    const id = parseInt(rawId, 10);
+    const parsed = entityIdSchema.safeParse(rawId);
+    const id = parsed.data;
 
-    if (isNaN(id)) {
+    if (!parsed.success) {
       return NextResponse.json({ error: 'معرّف غير صالح' }, { status: 400 });
     }
 

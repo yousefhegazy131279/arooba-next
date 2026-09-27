@@ -1,338 +1,159 @@
-"use server";
+'use server';
 
-import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { requireActionUser, requireAdmin } from '@/lib/actionAuth';
+import { entityIdSchema, uuidSchema, parseInput } from '@/lib/validation';
 
-// ---- المستخدمين ----
+const text = (max: number) => z.string().trim().min(1).max(max);
+const mediaUrl = z.union([z.literal(''), z.string().url().refine(url => url.startsWith('https://')), z.string().regex(/^\/(?!\/)/)]);
+const novelSchema = z.object({ title: text(250), author: z.string().trim().max(250), category: z.string().trim().max(100), description: z.string().trim().max(20000), cover: mediaUrl, chapters_count: z.number().int().min(0).optional() });
+const chapterSchema = z.object({ novel_id: entityIdSchema, chapter_number: z.number().int().min(1), title: text(250), content: text(500000), word_file: mediaUrl.nullable().optional(), image: mediaUrl.nullable().optional() });
+function refreshCatalog() { revalidatePath('/'); revalidatePath('/novels'); revalidatePath('/stories', 'layout'); revalidatePath('/sitemap.xml'); revalidatePath('/admin'); }
+function fail(error: { message: string } | null) { if (error) throw new Error('تعذّر حفظ أو تحميل البيانات. يرجى المحاولة مجددًا.'); }
+
 export async function getUsers() {
-  try {
-    const { data: authUsers, error: authError } = await supabaseAdmin.auth.admin.listUsers();
-    if (authError) throw new Error(authError.message);
-
-    if (!authUsers?.users) return [];
-
-    const { data: profiles } = await supabaseAdmin.from("profiles").select("*");
-
-    const users = authUsers.users.map((authUser) => {
-      const profile = profiles?.find((p) => p.id === authUser.id) || {};
-      return {
-        id: authUser.id,
-        email: authUser.email || "", // ✅ دائماً string
-        username: profile.username || authUser.email?.split("@")[0] || "مستخدم",
-        full_name: profile.full_name || "",
-        avatar_url: profile.avatar_url || "",
-        role: profile.role || "user",
-        created_at: profile.created_at || authUser.created_at,
-      };
-    });
-
-    return users.sort(
-      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    );
-  } catch (error: any) {
-    console.error("Error in getUsers:", error);
-    throw new Error(error.message || "فشل تحميل المستخدمين");
+  await requireAdmin('admin.read');
+  const { data: profiles, error } = await supabaseAdmin.from('profiles').select('id,username,full_name,avatar_url,role,created_at');
+  fail(error);
+  const result = [];
+  for (let page = 1; ; page++) {
+    const { data, error: authError } = await supabaseAdmin.auth.admin.listUsers({ page, perPage: 1000 });
+    fail(authError);
+    for (const user of data.users) {
+      const profile = profiles?.find(p => p.id === user.id);
+      result.push({ id: user.id, email: user.email || '', username: profile?.username || 'مستخدم', full_name: profile?.full_name || '', avatar_url: profile?.avatar_url || '', role: profile?.role || 'user', created_at: profile?.created_at || user.created_at });
+    }
+    if (data.users.length < 1000) break;
   }
+  return result.sort((a, b) => b.created_at.localeCompare(a.created_at));
 }
-
 export async function updateUserRole(userId: string, newRole: string) {
-  const { error } = await supabaseAdmin
-    .from("profiles")
-    .update({ role: newRole })
-    .eq("id", userId);
-  if (error) throw new Error(error.message);
-  return { success: true };
+  const { user } = await requireAdmin('admin.write');
+  const id = parseInput(uuidSchema, userId);
+  const role = parseInput(z.enum(['user', 'admin']), newRole);
+  if (id === user.id && role !== 'admin') throw new Error('لا يمكنك إزالة صلاحياتك الإدارية من هنا.');
+  const { error } = await supabaseAdmin.from('profiles').update({ role }).eq('id', id);
+  fail(error); revalidatePath('/admin'); return { success: true };
 }
-
 export async function deleteUser(userId: string) {
-  // حذف المستخدم من جدول profiles أولاً (لأنه مرتبط بـ auth.users عبر ON DELETE CASCADE)
-  const { error: profileError } = await supabaseAdmin
-    .from("profiles")
-    .delete()
-    .eq("id", userId);
-  if (profileError) throw new Error(profileError.message);
-
-  // حذف المستخدم من auth.users (يحتاج إلى admin privileges)
-  const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(userId);
-  if (authError) throw new Error(authError.message);
-
-  return { success: true };
+  const { user } = await requireAdmin('admin.write');
+  const id = parseInput(uuidSchema, userId);
+  if (id === user.id) throw new Error('لا يمكنك حذف حسابك من لوحة الإدارة.');
+  // Auth foreign keys cascade once; avoid partial profile deletion on failure.
+  const { error } = await supabaseAdmin.auth.admin.deleteUser(id);
+  fail(error); revalidatePath('/admin'); return { success: true };
 }
-
-// ---- الروايات ----
 export async function getNovels() {
-  const { data, error } = await supabaseAdmin
-    .from("novels")
-    .select("*")
-    .order("created_at", { ascending: false });
-  if (error) throw new Error(error.message);
-  return data || [];
+  await requireAdmin('admin.read');
+  const { data, error } = await supabaseAdmin.from('novels').select('*').order('created_at', { ascending: false });
+  fail(error); return data || [];
 }
-
-export async function createNovel(novel: any) {
-  const { data, error } = await supabaseAdmin
-    .from("novels")
-    .insert([novel])
-    .select()
-    .single();
-  if (error) throw new Error(error.message);
-  return data;
+export async function createNovel(novel: unknown) {
+  await requireAdmin('admin.write');
+  const { data, error } = await supabaseAdmin.from('novels').insert(parseInput(novelSchema, novel)).select().single();
+  fail(error); refreshCatalog(); return data;
 }
-
-export async function updateNovel(id: string, novel: any) {
-  const { data, error } = await supabaseAdmin
-    .from("novels")
-    .update(novel)
-    .eq("id", id)
-    .select()
-    .single();
-  if (error) throw new Error(error.message);
-  return data;
+export async function updateNovel(id: string, novel: unknown) {
+  await requireAdmin('admin.write');
+  const { data, error } = await supabaseAdmin.from('novels').update(parseInput(novelSchema.partial(), novel)).eq('id', parseInput(entityIdSchema, id)).select().single();
+  fail(error); refreshCatalog(); return data;
 }
-
 export async function deleteNovel(id: string) {
-  const { error } = await supabaseAdmin
-    .from("novels")
-    .delete()
-    .eq("id", id);
-  if (error) throw new Error(error.message);
-  return { success: true };
+  await requireAdmin('admin.write');
+  const { error } = await supabaseAdmin.from('novels').delete().eq('id', parseInput(entityIdSchema, id));
+  fail(error); refreshCatalog(); return { success: true };
 }
-
-// ---- الفصول ----
 export async function getChapters(novelId: string) {
-  const { data, error } = await supabaseAdmin
-    .from("chapters")
-    .select("*")
-    .eq("novel_id", novelId)
-    .order("chapter_number", { ascending: true });
-  if (error) throw new Error(error.message);
-  return data || [];
+  await requireAdmin('admin.read');
+  const { data, error } = await supabaseAdmin.from('chapters').select('*').eq('novel_id', parseInput(entityIdSchema, novelId)).order('chapter_number');
+  fail(error); return data || [];
 }
-
-export async function createChapter(chapter: any) {
-  const { data, error } = await supabaseAdmin
-    .from("chapters")
-    .insert([chapter])
-    .select()
-    .single();
-  if (error) throw new Error(error.message);
-  return data;
+export async function createChapter(chapter: unknown) {
+  await requireAdmin('admin.write');
+  const { data, error } = await supabaseAdmin.from('chapters').insert(parseInput(chapterSchema, chapter)).select().single();
+  fail(error); refreshCatalog(); return data;
 }
-
-export async function updateChapter(id: string, chapter: any) {
-  const { data, error } = await supabaseAdmin
-    .from("chapters")
-    .update(chapter)
-    .eq("id", id)
-    .select()
-    .single();
-  if (error) throw new Error(error.message);
-  return data;
+export async function updateChapter(id: string, chapter: unknown) {
+  await requireAdmin('admin.write');
+  const { data, error } = await supabaseAdmin.from('chapters').update(parseInput(chapterSchema.partial(), chapter)).eq('id', parseInput(entityIdSchema, id)).select().single();
+  fail(error); refreshCatalog(); return data;
 }
-
 export async function deleteChapter(id: string) {
-  const { error } = await supabaseAdmin
-    .from("chapters")
-    .delete()
-    .eq("id", id);
-  if (error) throw new Error(error.message);
-  return { success: true };
+  await requireAdmin('admin.write');
+  const { error } = await supabaseAdmin.from('chapters').delete().eq('id', parseInput(entityIdSchema, id));
+  fail(error); refreshCatalog(); return { success: true };
 }
-
-// ---- الاقتراحات ----
 export async function getSuggestions() {
-  const { data, error } = await supabaseAdmin
-    .from("suggestions")
-    .select("*")
-    .order("created_at", { ascending: false });
-  if (error) throw new Error(error.message);
-  return data || [];
+  await requireAdmin('admin.read');
+  const { data, error } = await supabaseAdmin.from('suggestions').select('*').order('created_at', { ascending: false });
+  fail(error); return data || [];
 }
-
 export async function deleteSuggestion(id: number) {
-  const { error } = await supabaseAdmin
-    .from("suggestions")
-    .delete()
-    .eq("id", id);
-  if (error) throw new Error(error.message);
-  return { success: true };
+  await requireAdmin('admin.write');
+  const { error } = await supabaseAdmin.from('suggestions').delete().eq('id', parseInput(z.number().int().positive(), id));
+  fail(error); revalidatePath('/admin'); return { success: true };
 }
-
-// ---- الرسائل ----
 export async function getMessages() {
-  const { data, error } = await supabaseAdmin
-    .from("messages")
-    .select("*")
-    .order("created_at", { ascending: false });
-  if (error) throw new Error(error.message);
-  return data || [];
+  await requireAdmin('admin.read');
+  const { data, error } = await supabaseAdmin.from('messages').select('*').order('created_at', { ascending: false });
+  fail(error); return data || [];
 }
-
 export async function updateMessageStatus(id: number, status: string) {
-  const { error } = await supabaseAdmin
-    .from("messages")
-    .update({ status })
-    .eq("id", id);
-  if (error) throw new Error(error.message);
-  return { success: true };
+  await requireAdmin('admin.write');
+  const { error } = await supabaseAdmin.from('messages').update({ status: parseInput(z.enum(['unread', 'read', 'replied']), status) }).eq('id', parseInput(z.number().int().positive(), id));
+  fail(error); revalidatePath('/admin'); return { success: true };
 }
-
 export async function deleteMessage(id: number) {
-  const { error } = await supabaseAdmin
-    .from("messages")
-    .delete()
-    .eq("id", id);
-  if (error) throw new Error(error.message);
-  return { success: true };
+  await requireAdmin('admin.write');
+  const { error } = await supabaseAdmin.from('messages').delete().eq('id', parseInput(z.number().int().positive(), id));
+  fail(error); revalidatePath('/admin'); return { success: true };
 }
-
-// ---- رفع الملفات (أغلفة، ملفات الفصول، صور الفصول) ----
-function sanitizeFileName(fileName: string): string {
-  const lastDot = fileName.lastIndexOf(".");
-  const name = lastDot === -1 ? fileName : fileName.slice(0, lastDot);
-  const ext = lastDot === -1 ? "" : fileName.slice(lastDot);
-  const cleanName = name
-    .replace(/[^\w\u0600-\u06FF\-]/g, "_")
-    .replace(/_+/g, "_")
-    .replace(/^_|_$/g, "");
-  const timestamp = Date.now();
-  const random = Math.random().toString(36).substring(2, 8);
-  return `${timestamp}_${random}_${cleanName || "file"}${ext}`;
+async function upload(file: File, bucket: string, document = false) {
+  await requireAdmin('admin.upload');
+  if (!(file instanceof File) || file.size === 0 || file.size > 4 * 1024 * 1024) throw new Error('الحد الأقصى للملف 4 ميجابايت.');
+  const allowed = document ? ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'] : ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+  if (!allowed.includes(file.type)) throw new Error('نوع الملف غير مدعوم.');
+  const extensions: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'application/pdf': 'pdf', 'application/msword': 'doc', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx', 'text/plain': 'txt' };
+  const path = crypto.randomUUID() + '.' + extensions[file.type];
+  const { error } = await supabaseAdmin.storage.from(bucket).upload(path, file, { contentType: file.type });
+  fail(error);
+  return supabaseAdmin.storage.from(bucket).getPublicUrl(path).data.publicUrl;
 }
+export async function uploadCover(file: File) { return upload(file, 'covers'); }
+export async function uploadChapterFile(file: File) { return upload(file, 'chapters', true); }
+export async function uploadChapterImage(file: File) { return upload(file, 'chapter-images'); }
 
-export async function uploadCover(file: File): Promise<string> {
-  console.log("Starting uploadCover for file:", file.name, "size:", file.size);
-
-  const { data: buckets, error: listError } = await supabaseAdmin.storage.listBuckets();
-  if (listError) {
-    console.error("listBuckets error:", listError);
-    throw new Error("فشل الاتصال بـ Supabase Storage: " + listError.message);
-  }
-  const bucketExists = buckets?.some((b) => b.name === "covers");
-  if (!bucketExists) {
-    const { error: createError } = await supabaseAdmin.storage.createBucket("covers", {
-      public: true,
-    });
-    if (createError) {
-      console.error("createBucket error:", createError);
-      throw new Error("Bucket 'covers' غير موجود ولم نتمكن من إنشائه: " + createError.message);
-    }
-  }
-
-  const safeName = sanitizeFileName(file.name);
-  const { error: uploadError } = await supabaseAdmin.storage
-    .from("covers")
-    .upload(safeName, file);
-  if (uploadError) {
-    console.error("upload error:", uploadError);
-    throw new Error(uploadError.message);
-  }
-
-  const { data: publicUrl } = supabaseAdmin.storage.from("covers").getPublicUrl(safeName);
-  return publicUrl.publicUrl;
+async function favoriteContext(requestedUserId: string, write = false) {
+  const ctx = await requireActionUser(write ? 'favorites.write' : undefined);
+  if (parseInput(uuidSchema, requestedUserId) !== ctx.user.id) throw new Error('غير مصرح.');
+  return ctx;
 }
-
-export async function uploadChapterFile(file: File): Promise<string> {
-  const { data: buckets, error: listError } = await supabaseAdmin.storage.listBuckets();
-  if (!listError && !buckets?.some((b) => b.name === "chapters")) {
-    const { error: createError } = await supabaseAdmin.storage.createBucket("chapters", {
-      public: true,
-    });
-    if (createError) {
-      console.error("createBucket error for chapters:", createError);
-    }
-  }
-
-  const safeName = sanitizeFileName(file.name);
-  const { error } = await supabaseAdmin.storage
-    .from("chapters")
-    .upload(safeName, file);
-  if (error) throw new Error(error.message);
-  const { data: publicUrl } = supabaseAdmin.storage.from("chapters").getPublicUrl(safeName);
-  return publicUrl.publicUrl;
-}
-
-export async function uploadChapterImage(file: File): Promise<string> {
-  const { data: buckets, error: listError } = await supabaseAdmin.storage.listBuckets();
-  if (!listError && !buckets?.some((b) => b.name === "chapter-images")) {
-    const { error: createError } = await supabaseAdmin.storage.createBucket("chapter-images", {
-      public: true,
-    });
-    if (createError) {
-      console.error("createBucket error for chapter-images:", createError);
-      throw new Error("لم نتمكن من إنشاء bucket لصور الفصول: " + createError.message);
-    }
-  }
-
-  const safeName = sanitizeFileName(file.name);
-  const { error } = await supabaseAdmin.storage
-    .from("chapter-images")
-    .upload(safeName, file);
-  if (error) throw new Error(error.message);
-  const { data: publicUrl } = supabaseAdmin.storage.from("chapter-images").getPublicUrl(safeName);
-  return publicUrl.publicUrl;
-}
-
-// ---- المفضلات ----
 export async function getFavorites(userId: string) {
-  const { data, error } = await supabaseAdmin
-    .from("favorites")
-    .select(
-      `
-      id,
-      novel_id,
-      created_at,
-      novels (
-        id,
-        title,
-        author,
-        cover,
-        category,
-        chapters_count
-      )
-    `
-    )
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
-
-  if (error) throw new Error(error.message);
-
-  return (data || []).map((item: any) => ({
-    id: item.id,
-    novel_id: item.novel_id,
-    created_at: item.created_at,
-    novels: item.novels,
-  }));
+  const { supabase, user } = await favoriteContext(userId);
+  const { data, error } = await supabase.from('favorites').select('id,novel_id,created_at,novels(id,title,author,cover,category,chapters_count)').eq('user_id', user.id).order('created_at', { ascending: false });
+  fail(error);
+  type Novel = { id: string; title: string; author: string; cover: string; category: string; chapters_count: number };
+  return (data || []).flatMap(item => {
+    const novel = Array.isArray(item.novels) ? item.novels[0] : item.novels;
+    return novel ? [{ id: item.id as string, novel_id: item.novel_id as string, created_at: item.created_at as string, novels: novel as Novel }] : [];
+  });
 }
-
 export async function addFavorite(userId: string, novelId: string) {
-  const { error } = await supabaseAdmin
-    .from("favorites")
-    .insert({ user_id: userId, novel_id: novelId });
-
-  if (error) throw new Error(error.message);
-  return { success: true };
+  const { supabase, user } = await favoriteContext(userId, true);
+  const { error } = await supabase.from('favorites').insert({ user_id: user.id, novel_id: parseInput(entityIdSchema, novelId) });
+  if (error?.code !== '23505') fail(error);
+  revalidatePath('/profile/favorites'); return { success: true };
 }
-
 export async function removeFavorite(userId: string, novelId: string) {
-  const { error } = await supabaseAdmin
-    .from("favorites")
-    .delete()
-    .eq("user_id", userId)
-    .eq("novel_id", novelId);
-
-  if (error) throw new Error(error.message);
-  return { success: true };
+  const { supabase, user } = await favoriteContext(userId, true);
+  const { error } = await supabase.from('favorites').delete().eq('user_id', user.id).eq('novel_id', parseInput(entityIdSchema, novelId));
+  fail(error); revalidatePath('/profile/favorites'); return { success: true };
 }
-
 export async function isFavorite(userId: string, novelId: string) {
-  const { data, error } = await supabaseAdmin
-    .from("favorites")
-    .select("id")
-    .eq("user_id", userId)
-    .eq("novel_id", novelId)
-    .maybeSingle();
-
-  if (error) throw new Error(error.message);
-  return !!data;
+  const { supabase, user } = await favoriteContext(userId);
+  const { data, error } = await supabase.from('favorites').select('id').eq('user_id', user.id).eq('novel_id', parseInput(entityIdSchema, novelId)).maybeSingle();
+  fail(error); return !!data;
 }
+

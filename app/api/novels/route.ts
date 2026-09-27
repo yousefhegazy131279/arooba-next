@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabaseClient'
+import { createClient } from '@/lib/supabaseServer';
+import { entityIdSchema } from '@/lib/validation';
 
 export async function GET() {
   try {
+    const supabase = await createClient();
     // جلب جميع الروايات من جدول novels
     const { data, error } = await supabase
       .from('novels')

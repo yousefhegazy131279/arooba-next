@@ -180,3 +180,19 @@ body {
 .react-hot-toast {
   direction: rtl !important;
 }
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+.confirmation-dialog { margin:auto; width:min(92vw,460px); padding:28px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color); border-radius:18px; }
+.confirmation-dialog::backdrop { background:#0009; }
+.confirmation-dialog p { margin:18px 0; line-height:1.9; }
+.confirmation-dialog > div { display:flex; gap:12px; justify-content:flex-end; }
+.confirmation-dialog button { padding:9px 20px; cursor:pointer; border:1px solid var(--border-color); border-radius:10px; color:var(--text-primary); background:var(--bg-card); }
+.confirmation-dialog .confirmation-accept { color:#111; background:var(--gold); }
+:focus-visible { outline:3px solid var(--gold); outline-offset:4px; }
+.list-skeleton { width:min(1120px,92%); margin:35px auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:22px; }
+.skeleton-card { border:1px solid var(--border-color); padding:16px; border-radius:18px; }
+.skeleton-card div,.skeleton-card span { background:var(--bg-card-hover); display:block; border-radius:8px; animation:skeletonPulse 1.4s ease-in-out infinite alternate; }
+.skeleton-card div { height:180px; }
+.skeleton-card span { height:16px; margin-top:16px; }
+.skeleton-card span:last-child { width:65%; }
+@keyframes skeletonPulse { to { opacity:.3; } }
+@media (max-width:480px) { .react-hot-toast>div { min-width:0!important; max-width:calc(100vw - 32px)!important; } }

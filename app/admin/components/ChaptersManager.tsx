@@ -1,4 +1,5 @@
 "use client";
+import { showToast } from '@/lib/toast';
 
 import { useEffect, useState } from "react";
 import { useAdminData, Chapter } from "../hooks/useAdminData";
@@ -50,7 +51,7 @@ export default function ChaptersManager({ novelId, novelTitle, onClose }: Props)
     e.preventDefault();
     const chapterNumber = parseInt(formData.chapter_number);
     if (isNaN(chapterNumber)) {
-      alert("رقم الفصل غير صالح");
+      showToast.error("رقم الفصل غير صالح");
       return;
     }
     const chapterData = {

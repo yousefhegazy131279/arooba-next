@@ -1,4 +1,5 @@
 'use client';
+import { showToast } from '@/lib/toast';
 
 import { useState, useEffect } from 'react';
 import { useAuthStore } from '@/app/stores/useAuthStore';
@@ -76,46 +77,24 @@ export function RatingSection({
 
   const handleRating = async (rating: number) => {
     if (!isLoggedIn) {
-      alert('يجب تسجيل الدخول أولاً لتقييم المحتوى');
+      showToast.error('يجب تسجيل الدخول أولاً لتقييم المحتوى');
       return;
     }
     if (!user) {
-      alert('يوجد خطأ في حساب المستخدم');
+      showToast.error('يوجد خطأ في حساب المستخدم');
       return;
     }
 
     setLoading(true);
-    const column = targetType === 'novel' ? 'novel_id' : 'chapter_id';
-    const existing = userRating !== null;
-
     try {
-      if (existing) {
-        // تحديث التقييم
-        const { error } = await supabase
-          .from('ratings')
-          .update({ rating })
-          .eq('user_id', user.id)
-          .eq(column, targetId);
-
-        if (error) throw error;
-      } else {
-        // إضافة تقييم جديد
-        const { error } = await supabase
-          .from('ratings')
-          .insert({
-            user_id: user.id,
-            [column]: targetId,
-            rating,
-          });
-
-        if (error) throw error;
-      }
-
+      const response = await fetch('/api/ratings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rating, ...(targetType === 'chapter' ? { chapter_id: targetId, ...(novelId ? { novel_id: novelId } : {}) } : { novel_id: targetId }) }) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'تعذر حفظ التقييم');
       setUserRating(rating);
       await fetchStats(); // إعادة جلب المتوسط
     } catch (err: any) {
       console.error('Rating error:', err.message, err);
-      alert(`فشل في حفظ التقييم: ${err.message || 'خطأ غير معروف'}`);
+      showToast.error(`فشل في حفظ التقييم: ${err.message || 'خطأ غير معروف'}`);
     } finally {
       setLoading(false);
     }

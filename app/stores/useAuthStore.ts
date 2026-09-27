@@ -64,10 +64,7 @@ export const useAuthStore = create<AuthState>()(
             full_name: profile?.full_name || '',
             role: profile?.role || 'user',
             avatar: profile?.avatar_url,
-          };
-
-          console.log('User logged in:', userData);
-
+          };
           set({
             user: userData,
             isLoggedIn: true,
@@ -114,10 +111,7 @@ export const useAuthStore = create<AuthState>()(
             full_name: profile?.full_name || full_name,
             role: profile?.role || 'user',
             avatar: profile?.avatar_url,
-          };
-
-          console.log('User registered:', userData);
-
+          };
           set({
             user: userData,
             isLoggedIn: true,
@@ -164,10 +158,7 @@ export const useAuthStore = create<AuthState>()(
             full_name: profile?.full_name || '',
             role: profile?.role || 'user',
             avatar: profile?.avatar_url,
-          };
-
-          console.log('Fetched user:', userData);
-
+          };
           set({
             user: userData,
             isLoggedIn: true,

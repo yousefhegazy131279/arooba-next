@@ -1,4 +1,5 @@
 'use client';
+import { showToast } from '@/lib/toast';
 
 import { useState, useEffect } from 'react';
 import { useAuthStore } from '@/app/stores/useAuthStore';
@@ -32,7 +33,7 @@ export default function FavoriteButton({ novelId, onToggle }: FavoriteButtonProp
 
   const handleToggle = async () => {
     if (!isLoggedIn) {
-      alert('يجب تسجيل الدخول لإضافة الرواية إلى المفضلة');
+      showToast.error('يجب تسجيل الدخول لإضافة الرواية إلى المفضلة');
       return;
     }
 
@@ -48,7 +49,7 @@ export default function FavoriteButton({ novelId, onToggle }: FavoriteButtonProp
       onToggle?.(!isFav);
     } catch (error) {
       console.error('Error toggling favorite:', error);
-      alert('حدث خطأ، حاول مرة أخرى');
+      showToast.error('حدث خطأ، حاول مرة أخرى');
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,6 @@
 "use client";
+import { askConfirmation } from '@/lib/confirm';
+import { showToast } from '@/lib/toast';
 
 import { useState, useEffect, useCallback } from "react";
 import {
@@ -95,7 +97,7 @@ export function useAdminData() {
       setSuggestions(data);
     } catch (err: any) {
       console.error(err);
-      alert("فشل تحميل الاقتراحات: " + err.message);
+      showToast.error("فشل تحميل الاقتراحات: " + err.message);
     } finally {
       setLoadingSuggestions(false);
     }
@@ -105,9 +107,9 @@ export function useAdminData() {
     try {
       await deleteSuggestion(id);
       setSuggestions((prev) => prev.filter((s) => s.id !== id));
-      alert("تم حذف الاقتراح بنجاح");
+      showToast.success("تم حذف الاقتراح بنجاح");
     } catch (err: any) {
-      alert("فشل الحذف: " + err.message);
+      showToast.error("فشل الحذف: " + err.message);
     }
   }, []);
 
@@ -118,7 +120,7 @@ export function useAdminData() {
       const data = await getMessages();
       setMessages(data);
     } catch (err: any) {
-      alert("فشل تحميل الرسائل: " + err.message);
+      showToast.error("فشل تحميل الرسائل: " + err.message);
     } finally {
       setLoadingMessages(false);
     }
@@ -131,18 +133,18 @@ export function useAdminData() {
         prev.map((m) => (m.id === id ? { ...m, status: status as any } : m))
       );
     } catch (err: any) {
-      alert("فشل تحديث الحالة: " + err.message);
+      showToast.error("فشل تحديث الحالة: " + err.message);
     }
   }, []);
 
   const deleteMessageById = useCallback(async (id: number) => {
-    if (!confirm("هل أنت متأكد من حذف هذه الرسالة؟")) return;
+    if (!await askConfirmation("هل أنت متأكد من حذف هذه الرسالة؟")) return;
     try {
       await deleteMessage(id);
       setMessages((prev) => prev.filter((m) => m.id !== id));
-      alert("تم حذف الرسالة بنجاح");
+      showToast.success("تم حذف الرسالة بنجاح");
     } catch (err: any) {
-      alert("فشل الحذف: " + err.message);
+      showToast.error("فشل الحذف: " + err.message);
     }
   }, []);
 
@@ -153,7 +155,7 @@ export function useAdminData() {
       const data = await getNovels();
       setNovels(data);
     } catch (err: any) {
-      alert("فشل تحميل الروايات: " + err.message);
+      showToast.error("فشل تحميل الروايات: " + err.message);
     } finally {
       setLoadingNovels(false);
     }
@@ -171,10 +173,10 @@ export function useAdminData() {
         }
         const newNovel = { ...novelData, cover: coverUrl };
         await createNovel(newNovel);
-        alert("تم إضافة الرواية بنجاح");
+        showToast.success("تم إضافة الرواية بنجاح");
         await fetchNovels();
       } catch (err: any) {
-        alert("فشل إضافة الرواية: " + err.message);
+        showToast.error("فشل إضافة الرواية: " + err.message);
       }
     },
     [fetchNovels]
@@ -190,10 +192,10 @@ export function useAdminData() {
         }
         const updatedData = { ...novelData, cover: coverUrl };
         await updateNovel(id, updatedData);
-        alert("تم تحديث الرواية بنجاح");
+        showToast.success("تم تحديث الرواية بنجاح");
         await fetchNovels();
       } catch (err: any) {
-        alert("فشل تحديث الرواية: " + err.message);
+        showToast.error("فشل تحديث الرواية: " + err.message);
       }
     },
     [fetchNovels]
@@ -201,13 +203,13 @@ export function useAdminData() {
 
   const deleteNovelById = useCallback(
     async (id: string) => {
-      if (!confirm("هل أنت متأكد من حذف هذه الرواية؟ سيتم حذف جميع فصولها أيضاً.")) return;
+      if (!await askConfirmation("هل أنت متأكد من حذف هذه الرواية؟ سيتم حذف جميع فصولها أيضاً.")) return;
       try {
         await deleteNovel(id);
-        alert("تم حذف الرواية بنجاح");
+        showToast.success("تم حذف الرواية بنجاح");
         await fetchNovels();
       } catch (err: any) {
-        alert("فشل حذف الرواية: " + err.message);
+        showToast.error("فشل حذف الرواية: " + err.message);
       }
     },
     [fetchNovels]
@@ -218,7 +220,7 @@ export function useAdminData() {
     try {
       return await getChapters(novelId);
     } catch (err: any) {
-      alert("فشل تحميل الفصول: " + err.message);
+      showToast.error("فشل تحميل الفصول: " + err.message);
       return [];
     }
   }, []);
@@ -240,9 +242,9 @@ export function useAdminData() {
         }
         const newChapter = { ...chapterData, word_file: fileUrl, image: imageUrl };
         await createChapter(newChapter);
-        alert("تم إضافة الفصل بنجاح");
+        showToast.success("تم إضافة الفصل بنجاح");
       } catch (err: any) {
-        alert("فشل إضافة الفصل: " + err.message);
+        showToast.error("فشل إضافة الفصل: " + err.message);
       }
     },
     []
@@ -263,21 +265,21 @@ export function useAdminData() {
         }
         const updatedData = { ...chapterData, word_file: fileUrl, image: imageUrl };
         await updateChapter(id, updatedData);
-        alert("تم تحديث الفصل بنجاح");
+        showToast.success("تم تحديث الفصل بنجاح");
       } catch (err: any) {
-        alert("فشل تحديث الفصل: " + err.message);
+        showToast.error("فشل تحديث الفصل: " + err.message);
       }
     },
     []
   );
 
   const deleteChapterById = useCallback(async (id: string) => {
-    if (!confirm("هل أنت متأكد من حذف هذا الفصل؟")) return;
+    if (!await askConfirmation("هل أنت متأكد من حذف هذا الفصل؟")) return;
     try {
       await deleteChapter(id);
-      alert("تم حذف الفصل بنجاح");
+      showToast.success("تم حذف الفصل بنجاح");
     } catch (err: any) {
-      alert("فشل حذف الفصل: " + err.message);
+      showToast.error("فشل حذف الفصل: " + err.message);
     }
   }, []);
 
@@ -289,7 +291,7 @@ export function useAdminData() {
       setUsers(data);
     } catch (err: any) {
       console.error("Error fetching users:", err);
-      alert("فشل تحميل المستخدمين: " + err.message);
+      showToast.error("فشل تحميل المستخدمين: " + err.message);
     } finally {
       setLoadingUsers(false);
     }
@@ -299,20 +301,20 @@ export function useAdminData() {
     try {
       await updateUserRole(userId, newRole);
       setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u)));
-      alert("تم تحديث الدور بنجاح");
+      showToast.success("تم تحديث الدور بنجاح");
     } catch (err: any) {
-      alert("فشل تحديث الدور: " + err.message);
+      showToast.error("فشل تحديث الدور: " + err.message);
     }
   }, []);
 
   const deleteUserById = useCallback(async (userId: string) => {
-    if (!confirm("هل أنت متأكد من حذف هذا المستخدم؟")) return;
+    if (!await askConfirmation("هل أنت متأكد من حذف هذا المستخدم؟")) return;
     try {
       await deleteUser(userId);
       setUsers((prev) => prev.filter((u) => u.id !== userId));
-      alert("تم حذف المستخدم بنجاح");
+      showToast.success("تم حذف المستخدم بنجاح");
     } catch (err: any) {
-      alert("فشل حذف المستخدم: " + err.message);
+      showToast.error("فشل حذف المستخدم: " + err.message);
     }
   }, []);
 

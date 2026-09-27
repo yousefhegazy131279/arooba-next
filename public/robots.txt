@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /profile
+Disallow: /api
+Disallow: /login
+Disallow: /register
+Disallow: /contact
+Disallow: /stories
+Disallow: /community/create
+Disallow: /community/notifications
+Disallow: /community/moderation
+
+Sitemap: https://arooba-hgz.vercel.app/sitemap.xml
+

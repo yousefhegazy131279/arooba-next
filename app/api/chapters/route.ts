@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/lib/supabaseServer';
+import { entityIdSchema } from '@/lib/validation';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -10,11 +11,12 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from('chapters')
       .select('*')
-      .eq('novel_id', parseInt(novelId))
-      .order('chapter_order', { ascending: true });
+      .eq('novel_id', entityIdSchema.parse(novelId))
+      .order('chapter_number', { ascending: true });
 
     if (error) throw error;
 
