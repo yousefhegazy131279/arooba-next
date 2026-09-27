@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { RatingSection } from './RatingSection';
 import { ChapterViewer } from './ChapterViewer';
 import styles from '../story-page.module.css';
@@ -171,6 +172,16 @@ export function ChapterList({ chapters, novelId }: ChapterListProps) {
 
                 {chapter.content && (
                   <div className={styles.chapterText}>{chapter.content}</div>
+                )}
+
+                {chapter.content && (
+                  <Link
+                    href={`/stories/${novelId}/chapters/${chapter.id}`}
+                    className={styles.btnDownload}
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    فتح القارئ التفاعلي
+                  </Link>
                 )}
 
                 {chapter.word_file && (
