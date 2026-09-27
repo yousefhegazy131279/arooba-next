@@ -1,0 +1,67 @@
+.readerLead {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.8;
+  margin: 0;
+}
+
+.pdfPage {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid #d9cbb4;
+  border-radius: 3px 12px 12px 3px;
+  box-shadow: 0 15px 45px #0002;
+}
+
+.pdfTheme_light { background: #fff; }
+.pdfTheme_sepia { background: #efe4cf; }
+.pdfTheme_dark { background: #10181f; }
+
+.pdfCanvas {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  box-shadow: 0 1px 8px #0002;
+}
+
+.pdfPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  color: var(--text-muted);
+  background: inherit;
+}
+
+.pdfPageNumber {
+  position: absolute;
+  inset-inline-start: 14px;
+  bottom: 10px;
+  z-index: 2;
+  min-width: 28px;
+  padding: 3px 7px;
+  border-radius: 12px;
+  background: #111b;
+  color: #fff;
+  font-size: 11px;
+  text-align: center;
+}
+
+.readerMessage {
+  width: min(100%, 700px);
+  margin: 30px auto;
+  padding: 48px 24px;
+  border: 1px solid #b86060;
+  border-radius: 14px;
+  color: #e78d8d;
+  background: var(--bg-secondary);
+  text-align: center;
+  line-height: 2;
+}

@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { RatingSection } from './RatingSection';
-import { ChapterViewer } from './ChapterViewer';
 import styles from '../story-page.module.css';
 
 interface Chapter {
@@ -25,7 +24,6 @@ interface ChapterListProps {
 
 export function ChapterList({ chapters, novelId }: ChapterListProps) {
   const [expandedChapter, setExpandedChapter] = useState<string | null>(null);
-  const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
 
   const toggleChapter = (id: string) => {
     setExpandedChapter(expandedChapter === id ? null : id);
@@ -105,6 +103,17 @@ export function ChapterList({ chapters, novelId }: ChapterListProps) {
               </div>
 
               <div className={styles.chapterActions}>
+                {(chapter.content?.trim() || chapter.word_file) && (
+                  <Link
+                    href={`/stories/${novelId}/chapters/${chapter.id}`}
+                    className={`${styles.actionBtn} ${styles.read}`}
+                    onClick={(event) => event.stopPropagation()}
+                    title="ابدأ القراءة"
+                    aria-label={`ابدأ قراءة ${chapter.title}`}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                  </Link>
+                )}
                 {chapter.word_file && (
                   <>
                     <a
@@ -174,7 +183,7 @@ export function ChapterList({ chapters, novelId }: ChapterListProps) {
                   <div className={styles.chapterText}>{chapter.content}</div>
                 )}
 
-                {chapter.content && (
+                {(chapter.content?.trim() || chapter.word_file) && (
                   <Link
                     href={`/stories/${novelId}/chapters/${chapter.id}`}
                     className={styles.btnDownload}
@@ -235,12 +244,6 @@ export function ChapterList({ chapters, novelId }: ChapterListProps) {
         ))}
       </div>
 
-      {selectedChapter && (
-        <ChapterViewer
-          chapter={selectedChapter}
-          onClose={() => setSelectedChapter(null)}
-        />
-      )}
     </div>
   );
 }

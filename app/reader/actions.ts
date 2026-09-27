@@ -22,10 +22,10 @@ async function readerUser(expectedUserId: string, bucket?: string) {
   if (auth.user.id !== expected) throw new Error('تغير الحساب. أعد فتح القارئ للمزامنة.');
   return auth;
 }
-async function chapterText(supabase: Awaited<ReturnType<typeof requireActionUser>>['supabase'], chapterId: string) {
-  const { data, error } = await supabase.from('chapters').select('novel_id, content').eq('id', chapterId).single();
+async function chapterSource(supabase: Awaited<ReturnType<typeof requireActionUser>>['supabase'], chapterId: string) {
+  const { data, error } = await supabase.from('chapters').select('novel_id,content,word_file').eq('id', chapterId).single();
   if (error || !data) throw new Error('تعذر العثور على الفصل.');
-  return { novelId: String(data.novel_id), text: normalizeReaderContent(data.content || '') };
+  return { novelId: String(data.novel_id), text: normalizeReaderContent(data.content || ''), hasPdf: Boolean(data.word_file) };
 }
 
 export async function getReaderState(chapterId: string, expectedUserId: string): Promise<ReaderState> {
@@ -44,8 +44,8 @@ export async function getReaderState(chapterId: string, expectedUserId: string):
 export async function saveReadingProgress(input: { chapterId: string; novelId: string; position: number; page: number }, expectedUserId: string) {
   const value = parseInput(z.object({ chapterId: entityIdSchema, novelId: entityIdSchema, position: positionSchema, page: pageSchema }), input);
   const { supabase, user } = await readerUser(expectedUserId, 'reader.progress');
-  const chapter = await chapterText(supabase, value.chapterId);
-  if (chapter.novelId !== value.novelId || value.position > chapter.text.length) throw new Error('موضع القراءة غير صالح.');
+  const chapter = await chapterSource(supabase, value.chapterId);
+  if (chapter.novelId !== value.novelId || (!chapter.hasPdf && value.position > chapter.text.length)) throw new Error('موضع القراءة غير صالح.');
   const { error } = await supabase.from('reading_progress').upsert({ user_id: user.id, novel_id: value.novelId, chapter_id: value.chapterId, position: value.position, page_number: value.page, last_read_at: new Date().toISOString() }, { onConflict: 'user_id,chapter_id' });
   if (error) throw new Error('لم يتم حفظ موضع القراءة.');
 }
@@ -60,8 +60,8 @@ export async function saveReaderSettings(input: ReaderSettings, expectedUserId: 
 export async function addBookmark(input: { chapterId: string; page: number; position: number; note: string }, expectedUserId: string): Promise<Bookmark> {
   const value = parseInput(z.object({ chapterId: entityIdSchema, page: pageSchema, position: positionSchema, note: z.string().trim().max(500) }), input);
   const { supabase, user } = await readerUser(expectedUserId, 'reader.bookmark');
-  const chapter = await chapterText(supabase, value.chapterId);
-  if (value.position > chapter.text.length) throw new Error('موضع الفاصل غير صالح.');
+  const chapter = await chapterSource(supabase, value.chapterId);
+  if (!chapter.hasPdf && value.position > chapter.text.length) throw new Error('موضع الفاصل غير صالح.');
   const { data, error } = await supabase.from('bookmarks').insert({ user_id: user.id, chapter_id: value.chapterId, page_number: value.page, position: value.position, note: value.note }).select('id,page_number,position,note').single();
   if (error) throw new Error('لم تتم إضافة الفاصل.');
   revalidatePath('/profile');
@@ -79,7 +79,7 @@ export async function deleteBookmark(bookmarkId: string, expectedUserId: string)
 export async function addHighlight(input: { chapterId: string; start: number; end: number; color: Highlight['color'] }, expectedUserId: string): Promise<Highlight> {
   const value = parseInput(z.object({ chapterId: entityIdSchema, start: positionSchema, end: positionSchema, color: z.enum(['yellow', 'green', 'blue', 'pink']) }).refine(data => data.end > data.start && data.end - data.start <= 5000), input);
   const { supabase, user } = await readerUser(expectedUserId, 'reader.highlight');
-  const chapter = await chapterText(supabase, value.chapterId);
+  const chapter = await chapterSource(supabase, value.chapterId);
   if (value.end > chapter.text.length) throw new Error('النص المحدد غير صالح.');
   const { data, error } = await supabase.from('highlights').insert({ user_id: user.id, chapter_id: value.chapterId, text: chapter.text.slice(value.start, value.end), start_offset: value.start, end_offset: value.end, color: value.color }).select('id,text,color,start_offset,end_offset').single();
   if (error) throw new Error('لم يتم حفظ التظليل.');

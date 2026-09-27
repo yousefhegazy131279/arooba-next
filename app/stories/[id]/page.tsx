@@ -102,5 +102,5 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
  const { id } = await params; const novel = await getNovel(id);
- return pageMetadata(novel?.title || 'الرواية غير موجودة', (novel?.description || 'رواية من مكتبة عُروبة').slice(0,160), '/stories/' + id, true);
+ return pageMetadata(novel?.title || 'الرواية غير موجودة', (novel?.description || 'رواية من مكتبة عُروبة').slice(0,160), '/stories/' + id);
 }
