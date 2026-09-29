@@ -218,14 +218,14 @@ export default function PdfBookReader({ fileUrl, chapterTitle, novelTitle, chapt
       const indexed = await searchIndex();
       const ocrMatch = indexed ? nextPdfMatch(indexed, needle, current) : null;
       if (ocrMatch !== null) {
-        navigate(ocrMatch);
+        navigate(ocrMatch, false);
         showToast.success(`تم العثور على العبارة في الصفحة ${ocrMatch + 1}`);
         return;
       }
       for (let step = 1; step <= total; step++) {
         const index = (current + step) % total;
         if (normalizePdfSearch(await pageText(index + 1)).includes(needle)) {
-          navigate(index);
+          navigate(index, false);
           showToast.success(`تم العثور على العبارة في الصفحة ${index + 1}`);
           return;
         }

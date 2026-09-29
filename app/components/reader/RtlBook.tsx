@@ -22,7 +22,16 @@ const RtlBook = forwardRef<RtlBookHandle, Props>(function RtlBook({ page, total,
   const previous = adjacentSpread(page, total, single, -1);
 
   function goTo(target: number, animate = true) {
-    if (locked.current || target < 0 || target >= total) return;
+    if (target < 0 || target >= total) return;
+    if (locked.current) {
+      if (animate) return;
+      if (timer.current) clearTimeout(timer.current);
+      timer.current = null;
+      locked.current = false;
+      setTurn(null);
+      onChange(target);
+      return;
+    }
     const destination = bookSpread(target, total, single).right;
     if (!animate || destination === spread.right || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { onChange(target); return; }
     locked.current = true;
