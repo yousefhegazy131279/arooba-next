@@ -4,13 +4,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { getFeedPage } from '@/app/community/actions';
 import { useAuthStore } from '@/app/stores/useAuthStore';
-import type { CommunityCursor, CommunityPost } from '@/lib/community-types';
+import type { CommunityCursor, CommunityPost, CommunityRole } from '@/lib/community-types';
 import CommunityIcon from './CommunityIcon';
 import FeedSkeleton from './FeedSkeleton';
 import PostCard from './PostCard';
 import styles from './Community.module.css';
 
-export default function Feed({ username }: { username?: string }) {
+export default function Feed({ username, kind }: { username?: string; kind?: CommunityRole }) {
   const userId = useAuthStore(state => state.user?.id);
   const [posts, setPosts] = useState<CommunityPost[]>([]);
   const [cursor, setCursor] = useState<CommunityCursor | null>(null);
@@ -28,7 +28,7 @@ export default function Feed({ username }: { username?: string }) {
     setLoading(true);
     setError('');
     try {
-      const page = await getFeedPage(10, reset ? null : cursor, username);
+      const page = await getFeedPage(10, reset ? null : cursor, username, kind);
       if (request !== generation.current) return;
       setPosts(previous => {
         const combined = reset ? page.posts : [...previous, ...page.posts];
@@ -41,7 +41,7 @@ export default function Feed({ username }: { username?: string }) {
     } finally {
       if (request === generation.current) { busy.current = false; setLoading(false); }
     }
-  }, [cursor, username]);
+  }, [cursor, username, kind]);
 
   // Each identity/filter change starts an independent cursor stream; stale responses are ignored.
   useEffect(() => {
@@ -49,7 +49,7 @@ export default function Feed({ username }: { username?: string }) {
     return () => { generation.current += 1; busy.current = false; };
     // A new cursor must not restart the feed. It is only used by load-more requests.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [username, userId]);
+  }, [username, userId, kind]);
 
   useEffect(() => {
     if (!sentinel.current || loading || error || !hasMore) return;

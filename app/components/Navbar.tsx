@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import styles from "./Navbar.module.css";
+import NotificationBell from './community/NotificationBell';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -79,7 +80,8 @@ const Navbar = () => {
 
   // إغلاق القائمة عند تغيير المسار
   useEffect(() => {
-    setMenuOpen(false);
+    const frame = requestAnimationFrame(() => setMenuOpen(false));
+    return () => cancelAnimationFrame(frame);
   }, [pathname]);
 
   // مراقبة التمرير
@@ -151,6 +153,7 @@ const Navbar = () => {
 
       {/* القائمة اليسرى + زر الهامبرغر */}
       <div className={styles.navLeft}>
+        <NotificationBell />
         <button
           className={`${styles.hamburger} ${menuOpen ? styles.active : ""}`}
           onClick={() => setMenuOpen(!menuOpen)}

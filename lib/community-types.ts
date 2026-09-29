@@ -4,7 +4,15 @@ export interface CommunityUser {
   avatar_url: string | null;
 }
 
-export interface CommunityProfile extends CommunityUser { id: string }
+export type CommunityRole = 'reader' | 'writer';
+export type CommunityReaction = 'approve' | 'meh' | 'boo';
+export interface CommunityAttachment {
+  path: string;
+  name: string;
+  type: 'image' | 'video' | 'pdf' | 'docx';
+}
+
+export interface CommunityProfile extends CommunityUser { id: string; community_role?: CommunityRole | null }
 
 export interface CommunityPost {
   id: string;
@@ -15,6 +23,10 @@ export interface CommunityPost {
   likes_count: number;
   comments_count: number;
   is_liked: boolean;
+  author_kind: CommunityRole;
+  attachments: CommunityAttachment[];
+  reactions: Record<CommunityReaction, number>;
+  my_reaction: CommunityReaction | null;
   user: CommunityUser;
   is_hidden?: boolean;
 }

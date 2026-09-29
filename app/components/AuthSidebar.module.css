@@ -351,3 +351,12 @@
   object-fit: cover;
   border: 2px solid var(--gold);
 }
+
+@media (max-width: 600px) {
+  .authContainer { top: auto; bottom: 0; transform: none; }
+  .authToggleBtn { top: auto; bottom: 18px; right: 12px; transform: none; }
+  .authToggleBtn:hover { transform: scale(1.06); }
+  .authSidebar { top: auto; bottom: 0; transform: none; max-height: 80vh; overflow-y: auto; }
+  .authToggleBtn.shifted { right: 250px; }
+  .authToggleBtn.shifted:hover { transform: scale(1.06); }
+}

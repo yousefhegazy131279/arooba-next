@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useAdminData } from "../hooks/useAdminData";
+import { getCommunityStats } from '../actions';
+import { showToast } from '@/lib/toast';
 import styles from "../Admin.module.css";
 
 // أيقونات
@@ -45,11 +47,13 @@ const StarIcon = () => (
 export default function AdminStats() {
   const { suggestions, messages, novels, users, fetchAllData } = useAdminData();
   const [loading, setLoading] = useState(true);
+  const [community, setCommunity] = useState<Awaited<ReturnType<typeof getCommunityStats>> | null>(null);
 
   useEffect(() => {
     const load = async () => {
-      await fetchAllData();
-      setLoading(false);
+      try { await Promise.all([fetchAllData(), getCommunityStats().then(setCommunity)]); }
+      catch { showToast.error('تعذر تحميل إحصائيات المجتمع'); }
+      finally { setLoading(false); }
     };
     load();
   }, [fetchAllData]);
@@ -68,7 +72,6 @@ export default function AdminStats() {
   const totalMessages = messages.length;
   const totalSuggestions = suggestions.length;
   const totalChapters = novels.reduce((acc, n) => acc + (n.chapters_count || 0), 0);
-  const avgRating = 4.5;
 
   return (
     <div>
@@ -82,7 +85,6 @@ export default function AdminStats() {
           <div className={styles.statInfo}>
             <span className={styles.statLabel}>إجمالي الروايات</span>
             <strong className={styles.statValue}>{totalNovels}</strong>
-            <div className={`${styles.statTrend} ${styles.up}`}>+{Math.floor(Math.random() * 10)}%</div>
           </div>
         </div>
         <div className={styles.statCard}>
@@ -113,13 +115,13 @@ export default function AdminStats() {
             <strong className={styles.statValue}>{totalSuggestions}</strong>
           </div>
         </div>
-        <div className={styles.statCard}>
-          <div className={styles.statIcon}><StarIcon /></div>
-          <div className={styles.statInfo}>
-            <span className={styles.statLabel}>متوسط التقييم</span>
-            <strong className={styles.statValue}>{avgRating} / 5</strong>
-          </div>
-        </div>
+        {community && ([
+          ['القرّاء', community.readers], ['الكتّاب', community.writers],
+          ['منشورات المجتمع', community.posts], ['أعمال الكتّاب', community.works],
+          ['تعليقات المجتمع', community.comments], ['أوافق', community.approved],
+          ['عادي', community.meh], ['لا يعجبني', community.boo],
+          ['بلاغات تنتظر المراجعة', community.pendingReports], ['إشعارات غير مقروءة', community.unreadNotifications],
+        ] as const).map(([label, value]) => <div className={styles.statCard} key={label}><div className={styles.statIcon}><StarIcon /></div><div className={styles.statInfo}><span className={styles.statLabel}>{label}</span><strong className={styles.statValue}>{value}</strong></div></div>)}
       </div>
     </div>
   );

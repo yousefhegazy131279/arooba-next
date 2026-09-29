@@ -13,6 +13,26 @@ const chapterSchema = z.object({ novel_id: entityIdSchema, chapter_number: z.num
 function refreshCatalog() { revalidatePath('/'); revalidatePath('/novels'); revalidatePath('/stories', 'layout'); revalidatePath('/sitemap.xml'); revalidatePath('/admin'); }
 function fail(error: { message: string } | null) { if (error) throw new Error('تعذّر حفظ أو تحميل البيانات. يرجى المحاولة مجددًا.'); }
 
+export async function getCommunityStats() {
+  await requireAdmin('admin.read');
+  const queries = [
+    supabaseAdmin.from('profiles').select('*', { count: 'exact', head: true }).eq('community_role', 'reader'),
+    supabaseAdmin.from('profiles').select('*', { count: 'exact', head: true }).eq('community_role', 'writer'),
+    supabaseAdmin.from('posts').select('*', { count: 'exact', head: true }).eq('is_hidden', false),
+    supabaseAdmin.from('posts').select('*', { count: 'exact', head: true }).eq('author_kind', 'writer').eq('is_hidden', false),
+    supabaseAdmin.from('comments').select('*', { count: 'exact', head: true }),
+    supabaseAdmin.from('post_reactions').select('*', { count: 'exact', head: true }).eq('reaction', 'approve'),
+    supabaseAdmin.from('post_reactions').select('*', { count: 'exact', head: true }).eq('reaction', 'meh'),
+    supabaseAdmin.from('post_reactions').select('*', { count: 'exact', head: true }).eq('reaction', 'boo'),
+    supabaseAdmin.from('reports').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+    supabaseAdmin.from('notifications').select('*', { count: 'exact', head: true }).eq('is_read', false),
+  ];
+  const results = await Promise.all(queries);
+  for (const result of results) fail(result.error);
+  const [readers, writers, posts, works, comments, approved, meh, boo, pendingReports, unreadNotifications] = results.map(result => result.count || 0);
+  return { readers, writers, posts, works, comments, approved, meh, boo, pendingReports, unreadNotifications };
+}
+
 export async function getUsers() {
   await requireAdmin('admin.read');
   const { data: profiles, error } = await supabaseAdmin.from('profiles').select('id,username,full_name,avatar_url,role,created_at');

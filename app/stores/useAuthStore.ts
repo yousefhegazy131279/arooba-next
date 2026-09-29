@@ -9,6 +9,7 @@ interface User {
   username?: string;
   full_name?: string;
   role: string;
+  community_role?: 'reader' | 'writer' | null;
   avatar?: string;
 }
 
@@ -26,7 +27,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       user: null,
       loading: true,
       isLoggedIn: false,
@@ -49,7 +50,7 @@ export const useAuthStore = create<AuthState>()(
 
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
-            .select('username, full_name, role, avatar_url')
+            .select('username, full_name, role, avatar_url, community_role')
             .eq('id', data.user.id)
             .single();
 
@@ -64,6 +65,7 @@ export const useAuthStore = create<AuthState>()(
             full_name: profile?.full_name || '',
             role: profile?.role || 'user',
             avatar: profile?.avatar_url,
+            community_role: profile?.community_role,
           };
           set({
             user: userData,
@@ -73,10 +75,10 @@ export const useAuthStore = create<AuthState>()(
           });
           
           return { success: true };
-        } catch (err: any) {
+        } catch (err: unknown) {
           console.error('Login error:', err);
           set({ loading: false });
-          return { success: false, error: err.message };
+          return { success: false, error: err instanceof Error ? err.message : 'تعذر تسجيل الدخول' };
         }
       },
 
@@ -96,7 +98,7 @@ export const useAuthStore = create<AuthState>()(
 
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
-            .select('username, full_name, role, avatar_url')
+            .select('username, full_name, role, avatar_url, community_role')
             .eq('id', data.user!.id)
             .single();
 
@@ -111,6 +113,7 @@ export const useAuthStore = create<AuthState>()(
             full_name: profile?.full_name || full_name,
             role: profile?.role || 'user',
             avatar: profile?.avatar_url,
+            community_role: profile?.community_role,
           };
           set({
             user: userData,
@@ -120,10 +123,10 @@ export const useAuthStore = create<AuthState>()(
           });
           
           return { success: true };
-        } catch (err: any) {
+        } catch (err: unknown) {
           console.error('Registration error:', err);
           set({ loading: false });
-          return { success: false, error: err.message };
+          return { success: false, error: err instanceof Error ? err.message : 'تعذر إنشاء الحساب' };
         }
       },
 
@@ -143,7 +146,7 @@ export const useAuthStore = create<AuthState>()(
 
           const { data: profile, error } = await supabase
             .from('profiles')
-            .select('username, full_name, role, avatar_url')
+            .select('username, full_name, role, avatar_url, community_role')
             .eq('id', user.id)
             .single();
 
@@ -158,6 +161,7 @@ export const useAuthStore = create<AuthState>()(
             full_name: profile?.full_name || '',
             role: profile?.role || 'user',
             avatar: profile?.avatar_url,
+            community_role: profile?.community_role,
           };
           set({
             user: userData,
@@ -189,7 +193,7 @@ supabase.auth.onAuthStateChange((event, session) => {
     const fetchProfileAndUpdate = async () => {
       const { data: profile } = await supabase
         .from('profiles')
-        .select('username, full_name, role, avatar_url')
+        .select('username, full_name, role, avatar_url, community_role')
         .eq('id', session.user.id)
         .single();
 
@@ -200,6 +204,7 @@ supabase.auth.onAuthStateChange((event, session) => {
         full_name: profile?.full_name || '',
         role: profile?.role || 'user',
         avatar: profile?.avatar_url,
+        community_role: profile?.community_role,
       };
 
       useAuthStore.setState({

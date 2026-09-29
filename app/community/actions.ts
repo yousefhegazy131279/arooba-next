@@ -6,13 +6,13 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabaseServer';
 import { actionDatabaseError, requireActionUser, requireAdmin } from '@/lib/actionAuth';
 import { commentContentSchema, parseInput, postContentSchema, reportReasonSchema, usernameSchema, uuidSchema } from '@/lib/validation';
-import type { CommunityComment, CommunityCursor, CommunityFeedPage, CommunityNotification, CommunityPost, CommunityProfile, CommunityReport, CommunityUser } from '@/lib/community-types';
+import type { CommunityAttachment, CommunityComment, CommunityCursor, CommunityFeedPage, CommunityNotification, CommunityPost, CommunityProfile, CommunityReaction, CommunityRole, CommunityReport, CommunityUser } from '@/lib/community-types';
 
-const postFields = 'id,user_id,content,created_at,updated_at,likes_count,comments_count,is_hidden';
+const postFields = 'id,user_id,content,created_at,updated_at,likes_count,comments_count,is_hidden,author_kind,attachments';
 const limitSchema = z.number().int().min(1).max(50);
 const offsetSchema = z.number().int().min(0).max(10000);
 const cursorSchema = z.object({ id: uuidSchema, created_at: z.string().datetime({ offset: true }) });
-type PostRow = Omit<CommunityPost, 'user' | 'is_liked'>;
+type PostRow = Omit<CommunityPost, 'user' | 'is_liked' | 'reactions' | 'my_reaction'>;
 type CommentRow = Omit<CommunityComment, 'user'>;
 const unknownUser: CommunityUser = { username: null, full_name: 'قارئ عُروبة', avatar_url: null };
 
@@ -29,12 +29,24 @@ async function profilesFor(supabase: SupabaseClient, ids: string[]) {
 async function hydratePosts(supabase: SupabaseClient, rows: PostRow[], viewerId?: string): Promise<CommunityPost[]> {
   const profiles = await profilesFor(supabase, rows.map(row => row.user_id));
   const likedIds = new Set<string>();
+  const reactions = new Map<string, { approve: number; meh: number; boo: number; mine: CommunityReaction | null }>();
+  if (rows.length) {
+    const { data, error } = await supabase.from('post_reactions').select('post_id,user_id,reaction').in('post_id', rows.map(row => row.id));
+    if (error) actionDatabaseError(error, 'تعذر تحميل تقييمات الأعمال');
+    for (const reaction of data || []) {
+      const tally = reactions.get(reaction.post_id) || { approve: 0, meh: 0, boo: 0, mine: null };
+      const kind = reaction.reaction as CommunityReaction;
+      tally[kind] += 1;
+      if (reaction.user_id === viewerId) tally.mine = kind;
+      reactions.set(reaction.post_id, tally);
+    }
+  }
   if (viewerId && rows.length) {
     const { data, error } = await supabase.from('likes').select('post_id').eq('user_id', viewerId).in('post_id', rows.map(row => row.id));
     if (error) actionDatabaseError(error, 'تعذر تحميل الإعجابات');
     for (const like of data || []) likedIds.add(like.post_id);
   }
-  return rows.map(row => ({ ...row, user: profiles.get(row.user_id) || unknownUser, is_liked: likedIds.has(row.id) }));
+  return rows.map(row => ({ ...row, attachments: row.attachments || [], user: profiles.get(row.user_id) || unknownUser, is_liked: likedIds.has(row.id), reactions: reactions.get(row.id) || { approve: 0, meh: 0, boo: 0 }, my_reaction: reactions.get(row.id)?.mine || null }));
 }
 
 async function readContext() {
@@ -52,17 +64,34 @@ function refreshPost(postId?: string) {
 export async function getPublicProfile(username: string): Promise<CommunityProfile | null> {
   const value = parseInput(usernameSchema, username);
   const supabase = await createClient();
-  const { data, error } = await supabase.from('profiles').select('id,username,full_name,avatar_url').eq('username', value).maybeSingle();
+  const { data, error } = await supabase.from('profiles').select('id,username,full_name,avatar_url,community_role').eq('username', value).maybeSingle();
   if (error) actionDatabaseError(error, 'تعذر تحميل الملف الشخصي');
   return data;
 }
 
-export async function getFeedPage(limit = 10, cursor?: CommunityCursor | null, username?: string): Promise<CommunityFeedPage> {
+export async function getCommunityRole(): Promise<CommunityRole | null> {
+  const { supabase, user } = await requireActionUser();
+  const { data, error } = await supabase.from('profiles').select('community_role').eq('id', user.id).single();
+  if (error) actionDatabaseError(error, 'تعذر تحميل نوع العضوية');
+  return data?.community_role === 'reader' || data?.community_role === 'writer' ? data.community_role : null;
+}
+
+export async function setCommunityRole(role: CommunityRole) {
+  const chosen = parseInput(z.enum(['reader', 'writer']), role);
+  const { supabase, user } = await requireActionUser();
+  const { error } = await supabase.from('profiles').update({ community_role: chosen }).eq('id', user.id);
+  if (error) actionDatabaseError(error, 'تعذر تحديث نوع العضوية');
+  revalidatePath('/community');
+  return chosen;
+}
+
+export async function getFeedPage(limit = 10, cursor?: CommunityCursor | null, username?: string, kind?: CommunityRole): Promise<CommunityFeedPage> {
   const count = parseInput(limitSchema, limit);
   const after = cursor ? parseInput(cursorSchema, cursor) : null;
   const { supabase, user } = await readContext();
   let query = supabase.from('posts').select(postFields).eq('is_hidden', false)
     .order('created_at', { ascending: false }).order('id', { ascending: false }).limit(count + 1);
+  if (kind) query = query.eq('author_kind', parseInput(z.enum(['reader', 'writer']), kind));
   if (username !== undefined) {
     const profile = await getPublicProfile(username);
     if (!profile) return { posts: [], nextCursor: null };
@@ -104,14 +133,35 @@ export async function getPost(postId: string): Promise<CommunityPost | null> {
   return data ? (await hydratePosts(supabase, [data as PostRow], user?.id))[0] : null;
 }
 
-export async function createPost(content: string): Promise<CommunityPost> {
+export async function createPost(content: string, attachments: CommunityAttachment[] = []): Promise<CommunityPost> {
   const value = parseInput(postContentSchema, content);
+  const files = parseInput(z.array(z.object({
+    path: z.string().max(180), name: z.string().trim().min(1).max(160),
+    type: z.enum(['image', 'video', 'pdf', 'docx']),
+  })).max(4), attachments);
   // The database trigger enforces the quota, including direct REST writes.
   const { supabase, user } = await requireActionUser();
-  const { data, error } = await supabase.from('posts').insert({ user_id: user.id, content: value }).select(postFields).single();
+  const { data, error } = await supabase.from('posts').insert({ user_id: user.id, content: value, attachments: files }).select(postFields).single();
   if (error) actionDatabaseError(error, 'تعذر نشر المنشور');
   refreshPost();
   return (await hydratePosts(supabase, [data as PostRow], user.id))[0];
+}
+
+export async function reactToPost(postId: string, reaction: CommunityReaction | null) {
+  const id = parseInput(uuidSchema, postId);
+  const chosen = reaction === null ? null : parseInput(z.enum(['approve', 'meh', 'boo']), reaction);
+  const { supabase, user } = await requireActionUser();
+  const { data: existing, error: lookupError } = await supabase.from('post_reactions')
+    .select('reaction').eq('post_id', id).eq('user_id', user.id).maybeSingle();
+  if (lookupError) actionDatabaseError(lookupError, 'تعذر تحميل تقييمك');
+  const { error } = chosen === null
+    ? await supabase.from('post_reactions').delete().eq('post_id', id).eq('user_id', user.id)
+    : existing
+      ? await supabase.from('post_reactions').update({ reaction: chosen }).eq('post_id', id).eq('user_id', user.id)
+      : await supabase.from('post_reactions').insert({ post_id: id, user_id: user.id, reaction: chosen });
+  if (error) actionDatabaseError(error, 'تعذر حفظ تقييمك');
+  refreshPost(id);
+  return { success: true as const };
 }
 
 export async function updatePost(postId: string, content: string) {
@@ -127,8 +177,12 @@ export async function updatePost(postId: string, content: string) {
 export async function deletePost(postId: string) {
   const id = parseInput(uuidSchema, postId);
   const { supabase, user } = await requireActionUser();
+  const { data: post, error: lookupError } = await supabase.from('posts').select('attachments').eq('id', id).eq('user_id', user.id).single();
+  if (lookupError) actionDatabaseError(lookupError, 'تعذر تحميل ملفات المنشور');
   const { error } = await supabase.from('posts').delete().eq('id', id).eq('user_id', user.id).select('id').single();
   if (error) actionDatabaseError(error, 'تعذر حذف المنشور');
+  const paths = ((post.attachments || []) as CommunityAttachment[]).map(item => item.path);
+  if (paths.length) await supabase.storage.from('community-media').remove(paths);
   refreshPost(id);
   return { success: true as const };
 }

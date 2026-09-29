@@ -1,15 +1,15 @@
 'use client';
 
-import { useEffect, useState, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
-import AOS from 'aos';
-import { deletePost, reportPost, toggleLike, updatePost } from '@/app/community/actions';
+import { deletePost, reactToPost, reportPost, toggleLike, updatePost } from '@/app/community/actions';
 import { useAuthStore } from '@/app/stores/useAuthStore';
-import type { CommunityPost } from '@/lib/community-types';
+import type { CommunityPost, CommunityReaction } from '@/lib/community-types';
 import { askConfirmation } from '@/lib/confirm';
 import { showToast } from '@/lib/toast';
 import Avatar from './Avatar';
 import CommunityIcon from './CommunityIcon';
+import PostMedia from './PostMedia';
 import styles from './Community.module.css';
 
 export const memberName = (user: CommunityPost['user']) => user?.full_name || user?.username || 'قارئ عُروبة';
@@ -25,13 +25,26 @@ export default function PostCard({ post, onChange, onDelete, detail = false }: {
   const own = user?.id === post.user_id;
   const name = memberName(post.user);
 
-  useEffect(() => { AOS.refresh(); }, []);
 
   async function like() {
     if (!user || busy) return;
     setBusy('like');
     try { const result = await toggleLike(post.id); onChange({ ...post, is_liked: result.liked, likes_count: result.likes_count }); }
     catch (err) { showToast.error(err instanceof Error ? err.message : 'تعذر تحديث الإعجاب.'); }
+    finally { setBusy(null); }
+  }
+
+  async function react(value: CommunityReaction) {
+    if (!user || busy || user.community_role !== 'reader') return;
+    setBusy('reaction');
+    try {
+      const chosen = post.my_reaction === value ? null : value;
+      await reactToPost(post.id, chosen);
+      const next = { ...post.reactions };
+      if (post.my_reaction) next[post.my_reaction] = Math.max(0, next[post.my_reaction] - 1);
+      if (chosen) next[chosen] += 1;
+      onChange({ ...post, reactions: next, my_reaction: chosen });
+    } catch (caught) { showToast.error(caught instanceof Error ? caught.message : 'تعذر حفظ التقييم.'); }
     finally { setBusy(null); }
   }
 
@@ -61,9 +74,11 @@ export default function PostCard({ post, onChange, onDelete, detail = false }: {
     finally { setBusy(null); }
   }
 
-  return <article className={styles.card} data-aos="fade-up" data-aos-once="true" data-aos-duration="450" aria-label={`منشور ${name}`}>
-    <header className={styles.cardHead}><Avatar src={post.user?.avatar_url} name={name} /><div>{post.user?.username ? <Link className={styles.author} href={`/community/user/${encodeURIComponent(post.user.username)}`}>{name}</Link> : <span className={styles.author}>{name}</span>}<Link href={`/community/post/${post.id}`} className={styles.meta}><time dateTime={post.created_at}>{dateLabel(post.created_at)}</time>{post.updated_at && post.updated_at !== post.created_at && ' · معدّل'}</Link></div></header>
+  return <article className={styles.card} aria-label={`منشور ${name}`}>
+    <header className={styles.cardHead}><Avatar src={post.user?.avatar_url} name={name} /><div>{post.user?.username ? <Link className={styles.author} href={`/community/user/${encodeURIComponent(post.user.username)}`}>{name}</Link> : <span className={styles.author}>{name}</span>}<Link href={`/community/post/${post.id}`} className={styles.meta}><time dateTime={post.created_at}>{dateLabel(post.created_at)}</time>{post.updated_at && post.updated_at !== post.created_at && ' · معدّل'}</Link></div><span className={styles.memberBadge}>{post.author_kind === 'writer' ? '✍ كاتب' : '◇ قارئ'}</span></header>
     {editing ? <form onSubmit={save} className={styles.form}><label className={styles.label} htmlFor={`edit-${post.id}`}>تعديل المنشور</label><textarea className={styles.textarea} id={`edit-${post.id}`} value={draft} onChange={event => setDraft(event.target.value)} maxLength={2000} required disabled={!!busy} autoFocus /><div className={styles.formFooter}><span className={styles.counter}>{draft.length.toLocaleString('ar')} / ٢٠٠٠</span><div className={styles.actions}><button className={styles.secondary} type="button" onClick={() => setEditing(false)} disabled={!!busy}>إلغاء</button><button className={styles.button} disabled={!!busy || !draft.trim()}>{busy === 'edit' ? 'جارٍ الحفظ…' : 'حفظ التعديل'}</button></div></div></form> : <p className={styles.content}>{post.content}</p>}
+    <PostMedia post={post} />
+    {post.author_kind === 'writer' && <div className={styles.reactionPanel}><p><strong>رأي القرّاء في هذا العمل</strong><span>أوافق: أعجبني · عادي: متوسط · لا يعجبني: يحتاج تحسيناً</span></p><div className={styles.reactionButtons}>{([['approve', 'أوافق', '👍'], ['meh', 'عادي', '😐'], ['boo', 'لا يعجبني', '👎']] as const).map(([kind, label, icon]) => <button key={kind} type="button" className={post.my_reaction === kind ? styles.reactionActive : styles.secondary} disabled={!!busy || !user || user.community_role !== 'reader' || own} onClick={() => void react(kind)} aria-pressed={post.my_reaction === kind} title={!user ? 'سجّل الدخول للتقييم' : user.community_role !== 'reader' ? 'اختر عضوية قارئ للتقييم' : label}>{icon} {label} <b>{post.reactions[kind]}</b></button>)}</div>{user && user.community_role !== 'reader' && !own && <Link className={styles.textLink} href="/community/create">اختر عضوية قارئ لتقييم الأعمال</Link>}</div>}
     <div className={`${styles.actions} ${styles.cardActions}`}>
       {user ? <button className={`${styles.iconButton} ${post.is_liked ? styles.liked : ''}`} onClick={like} disabled={!!busy} aria-pressed={post.is_liked} aria-label={`${post.is_liked ? 'إلغاء الإعجاب' : 'إعجاب'}، ${post.likes_count}`}><CommunityIcon name="heart" fill={post.is_liked ? 'currentColor' : 'none'} /><span>{post.likes_count.toLocaleString('ar')}</span></button> : <Link className={styles.iconButton} href="/login" aria-label="سجّل الدخول للإعجاب"><CommunityIcon name="heart" /><span>{post.likes_count.toLocaleString('ar')}</span></Link>}
       <Link className={styles.iconButton} href={detail ? '#comments' : `/community/post/${post.id}#comments`}><CommunityIcon name="comment" /><span>{post.comments_count.toLocaleString('ar')} تعليق</span></Link>
