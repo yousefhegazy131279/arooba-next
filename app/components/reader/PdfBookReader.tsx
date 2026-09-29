@@ -6,6 +6,7 @@ import type { PDFDocumentLoadingTask } from 'pdfjs-dist';
 import RtlBook, { type RtlBookHandle } from './RtlBook';
 import { useBookDimensions } from './useBookDimensions';
 import { bookSpread } from '@/lib/book-layout';
+import { nextPdfMatch, normalizePdfSearch, validPdfSearchIndex } from '@/lib/pdf-search';
 import { addBookmark, deleteBookmark } from '@/app/reader/actions';
 import { showToast } from '@/lib/toast';
 import type { ReaderPage } from '@/lib/reader';
@@ -102,6 +103,7 @@ export default function PdfBookReader({ fileUrl, chapterTitle, novelTitle, chapt
   const state = useReaderState(chapterId, novelId);
   const flip = useRef<RtlBookHandle>(null);
   const textCache = useRef(new Map<number, string>());
+  const indexedText = useRef(new Map<string, Promise<string[] | null>>());
   const [document, setDocument] = useState<PDFDocumentProxy | null>(null);
   const [total, setTotal] = useState(0);
   const [ratio, setRatio] = useState(.707);
@@ -194,14 +196,35 @@ export default function PdfBookReader({ fileUrl, chapterTitle, novelTitle, chapt
     return text;
   }
 
+  async function searchIndex() {
+    const cached = indexedText.current.get(fileUrl);
+    if (cached) return cached;
+    const loading = (async () => {
+      if (!/^\d+$/.test(chapterId)) return null;
+      const response = await fetch(`/reader-search/${chapterId}.json`);
+      if (!response.ok) return null;
+      const value: unknown = await response.json();
+      return validPdfSearchIndex(value, fileUrl, total) ? value.pages : null;
+    })().catch(() => null);
+    indexedText.current.set(fileUrl, loading);
+    return loading;
+  }
+
   async function findNext() {
-    const needle = query.trim().toLocaleLowerCase('ar');
+    const needle = normalizePdfSearch(query);
     if (!needle || !document || searching) return;
     setSearching(true);
     try {
+      const indexed = await searchIndex();
+      const ocrMatch = indexed ? nextPdfMatch(indexed, needle, current) : null;
+      if (ocrMatch !== null) {
+        navigate(ocrMatch);
+        showToast.success(`تم العثور على العبارة في الصفحة ${ocrMatch + 1}`);
+        return;
+      }
       for (let step = 1; step <= total; step++) {
         const index = (current + step) % total;
-        if ((await pageText(index + 1)).toLocaleLowerCase('ar').includes(needle)) {
+        if (normalizePdfSearch(await pageText(index + 1)).includes(needle)) {
           navigate(index);
           showToast.success(`تم العثور على العبارة في الصفحة ${index + 1}`);
           return;
