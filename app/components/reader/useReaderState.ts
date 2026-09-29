@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
@@ -34,17 +34,23 @@ export function useReaderState(chapterId: string, novelId: string) {
       setSettings(defaultReaderSettings);
       setPosition(0);
       setStatus('جارٍ استعادة موضع القراءة…');
+
       if (!id) {
         try {
           const saved = JSON.parse(localStorage.getItem(`arooba:reader:guest:${chapterId}`) || 'null');
           if (Number.isInteger(saved?.position) && saved.position >= 0) setPosition(saved.position);
           const prefs = JSON.parse(localStorage.getItem('arooba:reader:guest:settings') || 'null');
-          if (prefs && ['small', 'medium', 'large'].includes(prefs.font_size) && ['Cairo', 'Amiri', 'sans-serif'].includes(prefs.font_family) && ['light', 'dark', 'sepia'].includes(prefs.theme) && Number.isInteger(prefs.brightness) && prefs.brightness >= 40 && prefs.brightness <= 100) setSettings(prefs);
-        } catch { /* Storage can be blocked; reading still works. */ }
-        setStatus('حفظ محلي على هذا الجهاز. سجّل الدخول لمزامنة الفواصل والتظليلات.');
+          if (prefs && ['small', 'medium', 'large'].includes(prefs.font_size) &&
+              ['Cairo', 'Amiri', 'sans-serif'].includes(prefs.font_family) &&
+              ['light', 'dark', 'sepia'].includes(prefs.theme) &&
+              Number.isFinite(prefs.brightness) && prefs.brightness >= 40 && prefs.brightness <= 100)
+            setSettings(prefs);
+        } catch {}
+        setStatus('حفظ محلي على هذا الجهاز. سجّل الدخول لمزامنة الفواصل.');
         setReady(true);
         return;
       }
+
       try {
         const saved = await getReaderState(chapterId, id);
         if (!active || generation.current !== version) return;
@@ -53,22 +59,27 @@ export function useReaderState(chapterId: string, novelId: string) {
         setBookmarks(saved.bookmarks);
         setHighlights(saved.highlights);
         setCloudReady(true);
-        setStatus(saved.progress ? 'تمت استعادة موضع القراءة' : 'تتم مزامنة القراءة مع حسابك');
+        setStatus(saved.progress ? 'تمت استعادة موضع القراءة' : 'تتم مزامنة القراءة');
       } catch (error) {
-        if (active && generation.current === version) setStatus(error instanceof Error ? error.message : 'المزامنة غير متاحة حالياً');
+        if (active && generation.current === version)
+          setStatus(error instanceof Error ? error.message : 'المزامنة غير متاحة حالياً');
       } finally {
         if (active && generation.current === version) setReady(true);
       }
     };
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => { void load(session?.user.id || null); });
-    void supabase.auth.getSession().then(({ data }) => { if (currentId === undefined) void load(data.session?.user.id || null); }).catch(() => { if (currentId === undefined) void load(null); });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      void load(session?.user.id || null);
+    });
+    void supabase.auth.getSession()
+      .then(({ data }) => { if (currentId === undefined) void load(data.session?.user.id || null); })
+      .catch(() => { if (currentId === undefined) void load(null); });
     return () => { active = false; generation.current++; subscription.unsubscribe(); };
   }, [chapterId, retry]);
 
   useEffect(() => {
     if (!ready) return;
     if (!userId) {
-      try { localStorage.setItem(`arooba:reader:guest:${chapterId}`, JSON.stringify({ position })); } catch { /* Optional local persistence. */ }
+      try { localStorage.setItem(`arooba:reader:guest:${chapterId}`, JSON.stringify({ position })); } catch {}
       return;
     }
     if (!cloudReady) return;
@@ -76,22 +87,22 @@ export function useReaderState(chapterId: string, novelId: string) {
     const timer = setTimeout(() => {
       queue.current = queue.current.catch(() => {}).then(async () => {
         if (generation.current !== version) return;
-        setStatus('جارٍ حفظ موضع القراءة…');
         try {
           await saveReadingProgress({ chapterId, novelId, position, page: page.current }, userId);
           if (generation.current === version) setStatus('تم حفظ موضع القراءة');
         } catch (error) {
-          if (generation.current === version) setStatus(error instanceof Error ? error.message : 'تعذر حفظ التقدم');
+          if (generation.current === version)
+            setStatus(error instanceof Error ? error.message : 'تعذر حفظ التقدم');
         }
       });
-    }, 350);
+    }, 400);
     return () => clearTimeout(timer);
   }, [chapterId, novelId, userId, ready, cloudReady, position]);
 
   useEffect(() => {
     if (!ready) return;
     if (!userId) {
-      try { localStorage.setItem('arooba:reader:guest:settings', JSON.stringify(settings)); } catch { /* Optional local persistence. */ }
+      try { localStorage.setItem('arooba:reader:guest:settings', JSON.stringify(settings)); } catch {}
       return;
     }
     if (!cloudReady) return;
@@ -100,9 +111,12 @@ export function useReaderState(chapterId: string, novelId: string) {
       queue.current = queue.current.catch(() => {}).then(async () => {
         if (generation.current !== version) return;
         try { await saveReaderSettings(settings, userId); }
-        catch (error) { if (generation.current === version) setStatus(error instanceof Error ? error.message : 'تعذر حفظ الإعدادات'); }
+        catch (error) {
+          if (generation.current === version)
+            setStatus(error instanceof Error ? error.message : 'تعذر حفظ إعدادات القراءة');
+        }
       });
-    }, 650);
+    }, 700);
     return () => clearTimeout(timer);
   }, [settings, userId, ready, cloudReady]);
 
@@ -113,5 +127,11 @@ export function useReaderState(chapterId: string, novelId: string) {
     const result = await action(userId);
     if (generation.current === version) apply(result);
   }
-  return { userId, ready, cloudReady, settings, setSettings, position, setPosition, bookmarks, setBookmarks, highlights, setHighlights, status, page, mutate, retry: () => setRetry(value => value + 1) };
+
+  return {
+    userId, ready, cloudReady, settings, setSettings,
+    position, setPosition, bookmarks, setBookmarks,
+    highlights, setHighlights, status, page, mutate,
+    retry: () => setRetry(v => v + 1),
+  };
 }

@@ -13,9 +13,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border: 1px solid #d9cbb4;
-  border-radius: 3px 12px 12px 3px;
-  box-shadow: 0 15px 45px #0002;
+  direction: rtl;
 }
 
 .pdfTheme_light { background: #fff; }
@@ -26,8 +24,10 @@
   display: block;
   max-width: 100%;
   max-height: 100%;
-  box-shadow: 0 1px 8px #0002;
 }
+
+.pdfTheme_sepia .pdfCanvas { filter: sepia(.22); }
+.pdfTheme_dark .pdfCanvas { filter: invert(.9) hue-rotate(180deg); }
 
 .pdfPlaceholder {
   position: absolute;
@@ -45,14 +45,13 @@
   inset-inline-start: 14px;
   bottom: 10px;
   z-index: 2;
-  min-width: 28px;
-  padding: 3px 7px;
-  border-radius: 12px;
-  background: #111b;
-  color: #fff;
+  color: #796f5e;
   font-size: 11px;
   text-align: center;
+  pointer-events: none;
 }
+
+.pdfTheme_dark .pdfPageNumber { color: #c9c0ae; }
 
 .readerMessage {
   width: min(100%, 700px);

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabaseServer';
 import { pageMetadata } from '@/lib/seo';
 import ReaderClient from '@/app/components/reader/ReaderClient';
+import styles from '@/app/components/reader/reader.module.css';
 
 type Props = { params: Promise<{ id: string; chapterId: string }> };
 
@@ -25,7 +26,7 @@ export default async function ChapterReaderPage({ params }: Props) {
   const chapter = await getChapter(id, chapterId);
   if (!chapter) notFound();
   return <main style={{ minHeight: 'calc(100vh - 90px)', padding: '24px 0' }}>
-    <nav style={{ maxWidth: 1232, margin: '0 auto 8px', padding: '0 24px', display: 'flex', gap: 18, flexWrap: 'wrap' }} aria-label="روابط الفصل">
+    <nav className={styles.routeNav} aria-label="روابط الفصل">
       <Link href={`/stories/${id}`}>العودة إلى الرواية</Link>
       {chapter.word_file && <a href={chapter.word_file} target="_blank" rel="noopener noreferrer">فتح الملف الأصلي</a>}
     </nav>

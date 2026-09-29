@@ -1,0 +1,23 @@
+.stage { width:100%; display:flex; justify-content:center; padding:18px 0 26px; }
+.book { position:relative; flex-shrink:0; perspective:2200px; isolation:isolate; touch-action:pan-y; box-shadow:0 30px 65px #0005,0 6px 12px #0003; border-radius:5px; background:#f7f3e9; }
+.book::before { content:''; position:absolute; inset:5px -5px -7px; border-radius:5px; background:repeating-linear-gradient(to bottom,#cfc7b7 0 1px,#eee7d8 1px 3px); z-index:-1; box-shadow:0 3px 0 #665236; }
+.staticPage { position:absolute; top:0; width:50%; height:100%; overflow:hidden; background:#fffdf8; }
+.right { right:0; border-radius:0 4px 4px 0; }
+.left { left:0; border-radius:4px 0 0 4px; }
+.right::after,.left::after { content:''; position:absolute; inset:0; pointer-events:none; z-index:5; }
+.right::after { background:linear-gradient(to right,#5b452421,transparent 12%); }
+.left::after { background:linear-gradient(to left,#5b452426,transparent 12%); }
+.spine { position:absolute; left:calc(50% - 12px); top:0; width:24px; height:100%; z-index:6; pointer-events:none; background:linear-gradient(to right,transparent,#4b371629 43%,#4b37164d 50%,#4b371629 57%,transparent); }
+.turnLeaf { position:absolute; top:0; width:50%; height:100%; z-index:20; transform-style:preserve-3d; pointer-events:none; }
+.forward { left:0; transform-origin:right center; animation:turnForward 620ms cubic-bezier(.42,0,.26,1) forwards; }
+.backward { right:0; transform-origin:left center; animation:turnBackward 620ms cubic-bezier(.42,0,.26,1) forwards; }
+.face { position:absolute; inset:0; overflow:hidden; backface-visibility:hidden; -webkit-backface-visibility:hidden; background:#fffdf8; box-shadow:0 10px 24px #0003; }
+.front { transform:rotateY(0deg); }
+.back { transform:rotateY(180deg); }
+.endPaper { height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:16px; color:#9b855c; background:linear-gradient(100deg,#e8dec8,#f6f0e1); font-size:14px; direction:rtl; }
+.endPaper span:first-child { font-size:32px; }
+.book[data-single=true] .staticPage,.book[data-single=true] .turnLeaf { width:100%; }
+.book[data-single=true] .right { border-radius:4px; }
+@keyframes turnForward { from{transform:rotateY(0)} to{transform:rotateY(180deg)} }
+@keyframes turnBackward { from{transform:rotateY(0)} to{transform:rotateY(-180deg)} }
+@media(prefers-reduced-motion:reduce){.forward,.backward{animation-duration:1ms}}

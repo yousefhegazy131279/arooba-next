@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import HTMLFlipBook from 'react-pageflip';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
-import { useGesture } from '@use-gesture/react';
+import type { PDFDocumentLoadingTask } from 'pdfjs-dist';
+import RtlBook, { type RtlBookHandle } from './RtlBook';
+import { useBookDimensions } from './useBookDimensions';
+import { bookSpread } from '@/lib/book-layout';
 import { addBookmark, deleteBookmark } from '@/app/reader/actions';
 import { showToast } from '@/lib/toast';
 import type { ReaderPage } from '@/lib/reader';
 import BookmarkPanel from './BookmarkPanel';
 import ReaderControls from './ReaderControls';
-import ReaderSettings from './ReaderSettings';
 import { useReaderState } from './useReaderState';
 import type { BookReaderProps } from './BookReader';
 import styles from './reader.module.css';
 import pdfStyles from './pdf-reader.module.css';
 
 type Props = BookReaderProps & { fileUrl: string };
-type FlipHandle = { pageFlip: () => { flip: (index: number) => void; turnToPage: (index: number) => void } };
 
 type PdfPageProps = {
-  document: PDFDocumentProxy;
+  getCanvas: (pageNumber: number) => Promise<HTMLCanvasElement>;
   pageNumber: number;
   active: boolean;
   renderPage: boolean;
@@ -29,7 +29,38 @@ type PdfPageProps = {
   theme: 'light' | 'dark' | 'sepia';
 };
 
-const PdfPage = forwardRef<HTMLDivElement, PdfPageProps>(function PdfPage({ document, pageNumber, active, renderPage, width, height, brightness, theme }, ref) {
+
+// Cache neighbouring paper surfaces so turning a leaf doesn't briefly show a loading screen.
+function createPageRenderer(pdf: PDFDocumentProxy, width: number, height: number) {
+  const cache = new Map<number, Promise<HTMLCanvasElement>>();
+  return (number: number) => {
+    const existing = cache.get(number);
+    if (existing) return existing;
+    const rendering = pdf.getPage(number).then(async page => {
+      const base = page.getViewport({ scale: 1 });
+      const viewport = page.getViewport({ scale: Math.min((width - 16) / base.width, (height - 16) / base.height) });
+      const canvas = window.document.createElement('canvas');
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.floor(viewport.width * dpr);
+      canvas.height = Math.floor(viewport.height * dpr);
+      canvas.style.width = `${Math.floor(viewport.width)}px`;
+      canvas.style.height = `${Math.floor(viewport.height)}px`;
+      const context = canvas.getContext('2d');
+      if (!context) throw new Error('Canvas unavailable');
+      await page.render({ canvas, canvasContext: context, viewport, transform: dpr === 1 ? undefined : [dpr, 0, 0, dpr, 0, 0] }).promise;
+      return canvas;
+    }).catch(error => { cache.delete(number); throw error; });
+    cache.set(number, rendering);
+    // Keep only a few spreads in memory, even in a very long book.
+    if (cache.size > 10) cache.delete(cache.keys().next().value!);
+    return rendering;
+  };
+}
+
+const PdfPage = forwardRef<HTMLDivElement, PdfPageProps>(function PdfPage(
+  { getCanvas, pageNumber, active, renderPage, brightness, theme },
+  ref
+) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -37,115 +68,112 @@ const PdfPage = forwardRef<HTMLDivElement, PdfPageProps>(function PdfPage({ docu
   useEffect(() => {
     if (!renderPage) return;
     let cancelled = false;
-    let task: { cancel: () => void; promise: Promise<void> } | null = null;
-    void document.getPage(pageNumber).then(page => {
+    void getCanvas(pageNumber).then(rendered => {
       if (cancelled || !canvasRef.current) return;
-      const base = page.getViewport({ scale: 1 });
-      const scale = Math.max(.25, Math.min((width - 28) / base.width, (height - 48) / base.height));
-      const viewport = page.getViewport({ scale });
       const canvas = canvasRef.current;
-      const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.floor(viewport.width * pixelRatio);
-      canvas.height = Math.floor(viewport.height * pixelRatio);
-      canvas.style.width = `${Math.floor(viewport.width)}px`;
-      canvas.style.height = `${Math.floor(viewport.height)}px`;
+      canvas.width = rendered.width;
+      canvas.height = rendered.height;
+      canvas.style.width = rendered.style.width;
+      canvas.style.height = rendered.style.height;
       const context = canvas.getContext('2d');
-      if (!context) throw new Error('Canvas is unavailable');
-      task = page.render({ canvas, canvasContext: context, viewport, transform: pixelRatio === 1 ? undefined : [pixelRatio, 0, 0, pixelRatio, 0, 0] });
-      return task.promise;
-    }).then(() => { if (!cancelled) setReady(true); }).catch(error => {
-      if (!cancelled && !(error instanceof Error && error.name === 'RenderingCancelledException')) setFailed(true);
-    });
-    return () => { cancelled = true; task?.cancel(); };
-  }, [document, pageNumber, renderPage, width, height]);
+      if (!context) throw new Error('Canvas unavailable');
+      context.drawImage(rendered, 0, 0);
+      setReady(true);
+    }).catch(() => { if (!cancelled) setFailed(true); });
+    return () => { cancelled = true; };
+  }, [getCanvas, pageNumber, renderPage]);
 
-  return <div ref={ref} className={`${pdfStyles.pdfPage} ${pdfStyles[`pdfTheme_${theme}`]}`} aria-hidden={!active} style={{ filter: `brightness(${brightness}%)` }}>
-    {renderPage && <canvas ref={canvasRef} className={pdfStyles.pdfCanvas} aria-label={`صفحة ${pageNumber}`} />}
-    {!ready && !failed && <div className={pdfStyles.pdfPlaceholder}>جارٍ تحميل الصفحة {pageNumber}…</div>}
-    {failed && <div className={pdfStyles.pdfPlaceholder}>تعذر عرض الصفحة {pageNumber}</div>}
-    <span className={pdfStyles.pdfPageNumber}>{pageNumber}</span>
-  </div>;
+  return (
+    <div
+      ref={ref}
+      className={`${pdfStyles.pdfPage} ${pdfStyles[`pdfTheme_${theme}`]}`}
+      aria-hidden={!active}
+      style={{ filter: `brightness(${brightness}%)` }}
+    >
+      {renderPage && <canvas ref={canvasRef} className={pdfStyles.pdfCanvas} aria-label={`صفحة ${pageNumber}`} />}
+      {!ready && !failed && <div className={pdfStyles.pdfPlaceholder}>جارٍ تحميل الصفحة {pageNumber}…</div>}
+      {failed && <div className={pdfStyles.pdfPlaceholder}>تعذر عرض الصفحة {pageNumber}</div>}
+      <span className={pdfStyles.pdfPageNumber}>{pageNumber}</span>
+    </div>
+  );
 });
 
 export default function PdfBookReader({ fileUrl, chapterTitle, novelTitle, chapterId, novelId }: Props) {
   const state = useReaderState(chapterId, novelId);
-  const container = useRef<HTMLDivElement>(null);
-  const flip = useRef<FlipHandle>(null);
+  const flip = useRef<RtlBookHandle>(null);
   const textCache = useRef(new Map<number, string>());
   const [document, setDocument] = useState<PDFDocumentProxy | null>(null);
   const [total, setTotal] = useState(0);
-  const [width, setWidth] = useState(560);
-  const [height, setHeight] = useState(760);
+  const [ratio, setRatio] = useState(.707);
+  const [focused, setFocused] = useState(false);
+  const { container, width, height, single } = useBookDimensions(ratio, focused);
   const [panel, setPanel] = useState<'settings' | 'bookmarks' | null>(null);
   const [loading, setLoading] = useState('جارٍ تحميل ملف الرواية…');
   const [error, setError] = useState('');
   const [query, setQuery] = useState('');
   const [searching, setSearching] = useState(false);
   const [busy, setBusy] = useState(false);
+
   const setPosition = state.setPosition;
   const readerReady = state.ready;
   const current = total ? Math.min(total - 1, Math.max(0, state.position)) : 0;
+  const spread = bookSpread(current, total, single);
+  const getCanvas = useMemo(() => document ? createPageRenderer(document, width, height) : null, [document, width, height]);
+  useEffect(() => {
+    if (!getCanvas) return;
+    const step = single ? 1 : 2;
+    for (let index = Math.max(0, spread.right - step); index < Math.min(total, spread.right + step * 2); index++)
+      void getCanvas(index + 1).catch(() => {});
+  }, [getCanvas, spread.right, single, total]);
 
+  // تحميل مستند PDF
   useEffect(() => {
     let active = true;
-    let loaded: PDFDocumentProxy | null = null;
-    setError('');
-    setLoading('جارٍ تحميل ملف الرواية…');
+    let task: PDFDocumentLoadingTask | null = null;
     textCache.current.clear();
-    void import('pdfjs-dist').then(pdfjs => {
-      pdfjs.GlobalWorkerOptions.workerSrc = `${window.location.origin}/pdf.worker.min.mjs`;
-      const task = pdfjs.getDocument({ url: fileUrl });
-      task.onProgress = ({ loaded: bytes, total: size }: { loaded: number; total: number }) => {
-        if (active && size) setLoading(`جارٍ تحميل ملف الرواية… ${Math.round((bytes / size) * 100)}٪`);
-      };
-      return task.promise;
-    }).then(pdf => {
-      if (!active) { void pdf.cleanup(); return; }
-      loaded = pdf;
-      setDocument(pdf);
-      setTotal(pdf.numPages);
-      setLoading('');
-    }).catch(() => {
-      if (active) setError('تعذر تحميل صفحات الرواية. يمكنك فتح الملف الأصلي من الرابط أعلى القارئ.');
-    });
-    return () => { active = false; if (loaded) void loaded.cleanup(); };
+    void import('pdfjs-dist')
+      .then(pdfjs => {
+        pdfjs.GlobalWorkerOptions.workerSrc = `${window.location.origin}/pdf.worker.min.mjs`;
+        // Render embedded glyph outlines directly so Arabic ligatures survive browser font loading.
+        task = pdfjs.getDocument({ url: fileUrl, disableFontFace: true });
+        task.onProgress = ({ loaded: bytes, total: size }: { loaded: number; total: number }) => {
+          if (active && size) setLoading(`جارٍ تحميل ملف الرواية… ${Math.round((bytes / size) * 100)}٪`);
+        };
+        return task.promise;
+      })
+      .then(async pdf => {
+        const firstPage = await pdf.getPage(1);
+        const viewport = firstPage.getViewport({ scale: 1 });
+        if (!active) return;
+        setRatio(viewport.width / viewport.height);
+        setDocument(pdf);
+        setTotal(pdf.numPages);
+        setLoading('');
+      })
+      .catch(() => { if (active) setError('تعذر تحميل صفحات الرواية.'); });
+    return () => { active = false; if (task) void task.destroy(); };
   }, [fileUrl]);
-
-  useEffect(() => {
-    const element = container.current;
-    if (!element) return;
-    const observer = new ResizeObserver(entries => {
-      const available = entries[0]?.contentRect.width || 560;
-      setWidth(Math.max(260, Math.min(620, Math.floor(available))));
-      setHeight(Math.max(440, Math.min(820, Math.floor(window.innerHeight * .78))));
-    });
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, []);
 
   useEffect(() => { state.page.current = current + 1; }, [current, state.page]);
 
   const navigate = useCallback((index: number, animate = true) => {
     if (!total || index < 0 || index >= total) return;
-    setPosition(index);
-    const controller = flip.current?.pageFlip();
-    if (controller) {
-      const target = total - 1 - index;
-      if (animate) controller.flip(target);
-      else controller.turnToPage(target);
-    }
+    if (flip.current) flip.current.goTo(index, animate);
+    else setPosition(index);
   }, [setPosition, total]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { setFocused(false); return; }
       const target = event.target as HTMLElement;
-      if (target.closest('input,textarea,select,[contenteditable="true"]') || event.ctrlKey || event.altKey || event.metaKey) return;
-      if (event.key === 'ArrowLeft') { event.preventDefault(); navigate(current + 1); }
-      if (event.key === 'ArrowRight') { event.preventDefault(); navigate(current - 1); }
+      if (target.closest('input,textarea,select,[contenteditable="true"]') ||
+          event.ctrlKey || event.altKey || event.metaKey) return;
+      if (event.key === 'ArrowLeft') { event.preventDefault(); navigate(spread.right + (single ? 1 : 2)); }
+      if (event.key === 'ArrowRight') { event.preventDefault(); navigate(spread.right - (single ? 1 : 2)); }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [current, navigate]);
+  }, [spread.right, single, navigate]);
 
   useEffect(() => {
     if (!readerReady || !total) return;
@@ -153,13 +181,7 @@ export default function PdfBookReader({ fileUrl, chapterTitle, novelTitle, chapt
     if (!match) return;
     const page = Math.min(total, Math.max(1, Number(match[1]))) - 1;
     setPosition(page);
-    requestAnimationFrame(() => flip.current?.pageFlip()?.turnToPage(total - 1 - page));
   }, [readerReady, setPosition, total]);
-
-  const swipe = useGesture({ onDrag: ({ direction: [x], event }) => {
-    if ((event.target as HTMLElement).closest('button,input,select,textarea')) return;
-    navigate(current + (x > 0 ? 1 : -1));
-  } }, { drag: { threshold: 70, axis: 'x', filterTaps: true } });
 
   async function pageText(pageNumber: number) {
     const cached = textCache.current.get(pageNumber);
@@ -167,7 +189,7 @@ export default function PdfBookReader({ fileUrl, chapterTitle, novelTitle, chapt
     if (!document) return '';
     const page = await document.getPage(pageNumber);
     const content = await page.getTextContent();
-    const text = content.items.map(item => 'str' in item ? item.str : '').join(' ');
+    const text = content.items.map(item => ('str' in item ? item.str : '')).join(' ');
     textCache.current.set(pageNumber, text);
     return text;
   }
@@ -185,8 +207,8 @@ export default function PdfBookReader({ fileUrl, chapterTitle, novelTitle, chapt
           return;
         }
       }
-      showToast.error('لم يتم العثور على العبارة في صفحات الفصل.');
-    } catch { showToast.error('تعذر البحث داخل الملف حالياً.'); }
+      showToast.error('لم يتم العثور على العبارة.');
+    } catch { showToast.error('تعذر البحث داخل الملف.'); }
     finally { setSearching(false); }
   }
 
@@ -202,32 +224,127 @@ export default function PdfBookReader({ fileUrl, chapterTitle, novelTitle, chapt
     const url = new URL(window.location.href);
     url.hash = `page=${current + 1}`;
     try {
-      if (navigator.share) await navigator.share({ title: `${novelTitle} — ${chapterTitle}`, text: `صفحة ${current + 1}`, url: url.toString() });
-      else { await navigator.clipboard.writeText(url.toString()); showToast.success('تم نسخ رابط الصفحة'); }
-    } catch (caught) { if (!(caught instanceof Error && caught.name === 'AbortError')) showToast.error('تعذرت مشاركة الصفحة.'); }
+      if (navigator.share) {
+        await navigator.share({ title: `${novelTitle} — ${chapterTitle}`, text: `صفحة ${current + 1}`, url: url.toString() });
+      } else {
+        await navigator.clipboard.writeText(url.toString());
+        showToast.success('تم نسخ رابط الصفحة');
+      }
+    } catch (caught) {
+      if (!(caught instanceof Error && caught.name === 'AbortError'))
+        showToast.error('تعذرت مشاركة الصفحة.');
+    }
   }
 
-  const bookmarkPages = useMemo<ReaderPage[]>(() => Array.from({ length: total }, (_, index) => ({ text: '', start: index, end: index + 1 })), [total]);
+  const bookmarkPages = useMemo<ReaderPage[]>(
+    () => Array.from({ length: total }, (_, i) => ({ text: '', start: i, end: i + 1 })),
+    [total]
+  );
 
-  return <section className={styles.reader} dir="rtl" aria-label="قارئ ملف الرواية">
-    <header className={styles.header}><div><span className={styles.eyebrow}>{novelTitle}</span><h1>{chapterTitle}</h1><p className={pdfStyles.readerLead}>يعرض القارئ صفحات ملف الرواية الأصلي بترتيبها الكامل.</p></div><div className={styles.toolbar}><button aria-expanded={panel === 'settings'} onClick={() => setPanel(panel === 'settings' ? null : 'settings')}>إعدادات العرض</button><button aria-expanded={panel === 'bookmarks'} onClick={() => setPanel(panel === 'bookmarks' ? null : 'bookmarks')}>الفواصل</button><button onClick={() => void sharePage()} disabled={!total}>مشاركة الصفحة</button></div></header>
-    <form className={styles.searchRow} onSubmit={event => { event.preventDefault(); void findNext(); }}><label htmlFor="pdf-search">بحث داخل الرواية</label><input id="pdf-search" type="search" maxLength={200} placeholder="ابحث عن كلمة أو عبارة…" value={query} onChange={event => setQuery(event.target.value)} /><button disabled={!query.trim() || searching || !document}>{searching ? 'جارٍ البحث…' : 'النتيجة التالية'}</button></form>
-    {panel === 'settings' && <ReaderSettings settings={state.settings} onChange={state.setSettings} />}
-    <div className={styles.layout}>
-      <div className={styles.readingArea}>
-        <div ref={container} className={styles.bookContainer} {...swipe()}>
-          {error ? <div className={pdfStyles.readerMessage} role="alert">{error}</div> : !document || !state.ready ? <div className={styles.skeleton} role="status"><span /><span /><span /><span /><p>{loading || 'جارٍ استعادة موضع القراءة…'}</p></div> : <HTMLFlipBook key={`${document.fingerprints[0]}-${width}-${height}`} ref={flip} className={styles.flipBook} style={{}} width={width} height={height} size="fixed" minWidth={width} maxWidth={width} minHeight={height} maxHeight={height} startPage={total - 1 - current} drawShadow flippingTime={420} usePortrait startZIndex={1} autoSize={false} maxShadowOpacity={.24} showCover={false} mobileScrollSupport={false} clickEventForward useMouseEvents={false} swipeDistance={70} showPageCorners disableFlipByClick onFlip={(event: { data: number }) => state.setPosition(total - 1 - event.data)}>
-            {Array.from({ length: total }, (_, index) => {
-              const pageNumber = total - index;
-              return <PdfPage key={pageNumber} document={document} pageNumber={pageNumber} active={pageNumber === current + 1} renderPage={Math.abs(pageNumber - (current + 1)) <= 2} width={width} height={height} brightness={state.settings.brightness} theme={state.settings.theme} />;
-            })}
-          </HTMLFlipBook>}
+  return (
+    <section className={`${styles.reader} ${focused ? styles.focused : ''}`} dir="rtl" aria-label="قارئ ملف الرواية">
+      <header className={styles.header}>
+        <div>
+          <span className={styles.eyebrow}>{novelTitle}</span>
+          <h1>{chapterTitle}</h1>
+          <p className={pdfStyles.readerLead}>اقرأ من الصفحة اليمنى إلى اليسرى، واقلب الورقة لتكمل الحكاية.</p>
         </div>
-        {total > 0 && <ReaderControls page={current} total={total} onChange={navigate} />}
-        <p className={styles.hint}>السهم الأيسر للصفحة التالية، والأيمن للسابقة. يمكنك أيضاً السحب أفقياً.</p>
-        <p className={styles.status} role="status">{state.status}{state.ready && state.userId && !state.cloudReady && <button onClick={state.retry}>إعادة المزامنة</button>}</p>
+        <div className={styles.toolbar}>
+          <button aria-pressed={focused} onClick={() => setFocused(!focused)}>{focused ? 'الخروج من وضع القراءة' : 'وضع القراءة'}</button>
+          <button aria-expanded={panel === 'settings'} onClick={() => setPanel(panel === 'settings' ? null : 'settings')}>
+            إعدادات العرض
+          </button>
+          <button aria-expanded={panel === 'bookmarks'} onClick={() => setPanel(panel === 'bookmarks' ? null : 'bookmarks')}>
+            الفواصل
+          </button>
+          <button onClick={() => void sharePage()} disabled={!total}>مشاركة الصفحة</button>
+        </div>
+      </header>
+
+      <form
+        className={styles.searchRow}
+        onSubmit={event => { event.preventDefault(); void findNext(); }}
+      >
+        <label htmlFor="pdf-search">بحث داخل الرواية</label>
+        <input
+          id="pdf-search"
+          type="search"
+          maxLength={200}
+          placeholder="ابحث عن كلمة أو عبارة…"
+          value={query}
+          onChange={event => setQuery(event.target.value)}
+        />
+        <button disabled={!query.trim() || searching || !document}>
+          {searching ? 'جارٍ البحث…' : 'النتيجة التالية'}
+        </button>
+      </form>
+
+      {panel === 'settings' && <fieldset className={styles.settings}><legend>راحة القراءة</legend><label>خلفية الورق<select value={state.settings.theme} onChange={event => state.setSettings({ ...state.settings, theme: event.target.value as 'light' | 'dark' | 'sepia' })}><option value="light">نهاري</option><option value="sepia">ورق دافئ</option><option value="dark">ليلي</option></select></label><label>السطوع {state.settings.brightness}%<input aria-label="السطوع" type="range" min="40" max="100" value={state.settings.brightness} onChange={event => state.setSettings({ ...state.settings, brightness: Number(event.target.value) })} /></label></fieldset>}
+
+      <div className={styles.layout}>
+        <div className={styles.readingArea}>
+          <div ref={container} className={styles.bookContainer}>
+            {error ? (
+              <div className={pdfStyles.readerMessage} role="alert">{error}</div>
+            ) : !document || !getCanvas || !state.ready ? (
+              <div className={styles.skeleton} role="status">
+                <span /><span /><span /><span />
+                <p>{loading || 'جارٍ استعادة موضع القراءة…'}</p>
+              </div>
+            ) : (
+              <RtlBook
+                ref={flip}
+                width={width}
+                height={height}
+                single={single}
+                page={current}
+                total={total}
+                onChange={setPosition}
+                renderPage={(index, active) => <PdfPage key={`${index}-${width}-${height}`} pageNumber={index + 1} active={active} renderPage width={width} height={height} brightness={state.settings.brightness} theme={state.settings.theme} getCanvas={getCanvas} />}
+              />
+            )}
+          </div>
+
+          {total > 0 && <ReaderControls page={spread.right} endPage={spread.left} step={single ? 1 : 2} total={total} onChange={navigate} />}
+          <p className={styles.hint}>للتالي اسحب الصفحة اليسرى نحو اليمين، أو استخدم السهم الأيسر. للسابق استخدم السهم الأيمن.</p>
+          <p className={styles.status} role="status">
+            {state.status}
+            {state.ready && state.userId && !state.cloudReady && (
+              <button onClick={state.retry}>إعادة المزامنة</button>
+            )}
+          </p>
+        </div>
+
+        {panel === 'bookmarks' && (
+          <BookmarkPanel
+            bookmarks={state.bookmarks}
+            highlights={[]}
+            pages={bookmarkPages}
+            busy={busy}
+            onJump={position => navigate(position, false)}
+            onAdd={note =>
+              void perform(() =>
+                state.mutate(
+                  id => addBookmark({ chapterId, page: current + 1, position: current, note }, id),
+                  bookmark => {
+                    state.setBookmarks(items => [bookmark, ...items]);
+                    showToast.success('تمت إضافة الفاصل');
+                  }
+                )
+              )
+            }
+            onDelete={bookmarkId =>
+              void perform(() =>
+                state.mutate(
+                  id => deleteBookmark(bookmarkId, id),
+                  () => state.setBookmarks(items => items.filter(item => item.id !== bookmarkId))
+                )
+              )
+            }
+            onDeleteHighlight={() => undefined}
+          />
+        )}
       </div>
-      {panel === 'bookmarks' && <BookmarkPanel bookmarks={state.bookmarks} highlights={[]} pages={bookmarkPages} busy={busy} onJump={position => navigate(position, false)} onAdd={note => void perform(() => state.mutate(id => addBookmark({ chapterId, page: current + 1, position: current, note }, id), bookmark => { state.setBookmarks(items => [bookmark, ...items]); showToast.success('تمت إضافة الفاصل'); }))} onDelete={bookmarkId => void perform(() => state.mutate(id => deleteBookmark(bookmarkId, id), () => state.setBookmarks(items => items.filter(item => item.id !== bookmarkId))))} onDeleteHighlight={() => undefined} />}
-    </div>
-  </section>;
+    </section>
+  );
 }
