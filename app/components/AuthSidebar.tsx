@@ -8,6 +8,8 @@ import 'aos/dist/aos.css';
 import { useAuthStore } from '@/app/stores/useAuthStore';
 import { useThemeStore } from '@/app/stores/useThemeStore';
 import { supabase } from '@/lib/supabaseClient';
+import Avatar from './community/Avatar';
+import SidebarDirectMessages from './community/SidebarDirectMessages';
 import styles from './AuthSidebar.module.css';
 
 const AuthSidebar = () => {
@@ -35,8 +37,6 @@ const AuthSidebar = () => {
         }
       };
       fetchAvatar();
-    } else {
-      setAvatarUrl(null);
     }
   }, [isLoggedIn, user, isOpen]); // يعيد الجلب عند فتح القائمة أو تغيير المستخدم
 
@@ -97,7 +97,7 @@ const AuthSidebar = () => {
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
-  const displayName = user?.username || (user as any)?.user_metadata?.username || user?.email?.split('@')[0] || 'مستخدم';
+  const displayName = user?.username || user?.full_name || user?.email?.split('@')[0] || 'مستخدم';
   const userInitial = displayName !== 'مستخدم' ? displayName.charAt(0) : '?';
 
   if (loading) {
@@ -136,7 +136,7 @@ const AuthSidebar = () => {
           <div className={styles.userProfile} data-aos="fade-left" data-aos-duration="600">
             <div className={styles.avatarWrapper}>
               {isLoggedIn && avatarUrl ? (
-                <img src={avatarUrl} alt="Avatar" className={styles.avatarImg} />
+                <Avatar src={avatarUrl} name={displayName} className={styles.avatarImg} size={80} />
               ) : !isLoggedIn ? (
                 <div className={`${styles.avatar} ${styles.guestAvatar}`}>
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -226,6 +226,8 @@ const AuthSidebar = () => {
                   </span>
                   <span className={styles.btnText}>المجتمع</span>
                 </Link>
+
+                <SidebarDirectMessages userId={user!.id} isOpen={isOpen} onNavigate={() => setIsOpen(false)} />
 
                 <button onClick={handleLogout} className={`${styles.actionBtn} ${styles.logoutBtn}`}>
                   <span className={styles.btnIcon}>

@@ -344,6 +344,17 @@
   color: white;
 }
 
+.directSection{display:grid;gap:5px;min-width:0}
+.messageBtn{border-color:var(--gold);background:var(--gold-glow)}
+.dmBadge,.recentMessage>b{margin-inline-start:auto;background:var(--gold);color:#18202b;border-radius:100px;padding:2px 7px;font-size:.7rem}
+.recentMessages{display:grid;gap:3px;max-height:170px;overflow-y:auto;border:1px solid var(--border-color);border-radius:12px;padding:5px}
+.recentMessage{display:flex;align-items:center;gap:7px;text-decoration:none;color:var(--text-primary);padding:6px;border-radius:8px;min-width:0}
+.recentMessage:hover{background:var(--bg-card-hover)}
+.recentMessage img,.recentMessage>span:first-child{width:30px;height:30px;flex:none}
+.recentMessage>span:nth-child(2){display:grid;min-width:0;flex:1}
+.recentMessage strong,.recentMessage small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.75rem}
+.recentMessage small{color:var(--text-muted);font-size:.68rem}
+
 .avatarImg {
   width: 90px;
   height: 90px;

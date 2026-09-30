@@ -12,5 +12,5 @@ export function CreatePostLink() {
 
 export function CommunityLinks() {
   const { user, isAdmin } = useAuthStore();
-  return <nav className={styles.sideNav} aria-label="روابط المجتمع"><Link className={styles.textLink} href="/novels">اكتشف روايتك القادمة</Link>{user && <Link className={styles.textLink} href="/community/notifications"><CommunityIcon name="bell" />الإشعارات</Link>}{user?.username && <Link className={styles.textLink} href={`/community/user/${encodeURIComponent(user.username)}`}>منشوراتي</Link>}{isAdmin && <Link className={styles.textLink} href="/community/moderation"><CommunityIcon name="shield" />إدارة البلاغات</Link>}</nav>;
+  return <nav className={styles.sideNav} aria-label="روابط المجتمع"><Link className={styles.textLink} href="/community/members">👥 اكتشف الأعضاء</Link>{user && <Link className={styles.textLink} href="/community/messages">✉ الرسائل الخاصة</Link>}<Link className={styles.textLink} href="/novels">اكتشف روايتك القادمة</Link>{user && <Link className={styles.textLink} href="/community/notifications"><CommunityIcon name="bell" />الإشعارات</Link>}{user?.username && <Link className={styles.textLink} href={`/community/user/${encodeURIComponent(user.username)}`}>ملفي في المجتمع</Link>}{isAdmin && <Link className={styles.textLink} href="/community/moderation"><CommunityIcon name="shield" />إدارة البلاغات</Link>}</nav>;
 }
