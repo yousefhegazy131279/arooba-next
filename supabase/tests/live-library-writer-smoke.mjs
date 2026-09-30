@@ -38,8 +38,9 @@ try {
   assert.equal(hiddenShelf.data.length, 0);
   const work = await first.client.from('writer_works').insert({ user_id: first.id, title: 'رواية اختبار خاصة' }).select('id').single();
   assert.ifError(work.error);
-  const chapter = await first.client.from('writer_chapters').insert({ work_id: work.data.id, position: 1, title: 'البداية', body: 'نص عربي للاختبار' }).select('id').single();
+  const chapter = await first.client.from('writer_chapters').insert({ work_id: work.data.id, position: 1, title: 'البداية', body: 'نص عربي للاختبار', body_rich: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'نص عربي للاختبار', marks: [{ type: 'bold' }] }] }] } }).select('id,body_rich').single();
   assert.ifError(chapter.error);
+  assert.equal(chapter.data.body_rich.content[0].content[0].marks[0].type, 'bold');
   const stolen = await second.client.from('writer_chapters').select('body').eq('work_id', work.data.id);
   assert.ifError(stolen.error);
   assert.equal(stolen.data.length, 0);
