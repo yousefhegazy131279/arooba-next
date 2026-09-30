@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { getDirectAttachmentUrl, getDirectInbox, getDirectMessagePage, markDirectMessagesRead, sendDirectMessage } from '@/app/community/social/actions';
+import { clearDirectConversation, getDirectAttachmentUrl, getDirectInbox, getDirectMessagePage, markDirectMessagesRead, sendDirectMessage } from '@/app/community/social/actions';
 import { supabase } from '@/lib/supabaseClient';
 import type { DirectAttachment, DirectAttachmentKind, DirectConversation, DirectMessage, DirectMessagePage, SocialMember } from '@/lib/social-types';
 import Avatar from './Avatar';
@@ -53,6 +53,7 @@ export default function DirectMessages({ userId, initialInbox, initialSelectedId
   const [file, setFile] = useState<File | null>(null);
   const [showEmojis, setShowEmojis] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [clearing, setClearing] = useState(false);
   const [recording, setRecording] = useState(false);
   const [error, setError] = useState('');
   const [pending, startTransition] = useTransition();
@@ -108,6 +109,21 @@ export default function DirectMessages({ userId, initialInbox, initialSelectedId
     setSelectedId(id); setThread(null); setError(''); setFile(null); setBody('');
     window.history.replaceState(null, '', `/community/messages?thread=${id}`);
     void refreshThread(id);
+  };
+  const clearThread = async () => {
+    if (!selectedId || clearing || !window.confirm('هل تريد حذف هذه المحادثة من صندوقك؟ ستظل رسائلها متاحة للطرف الآخر، وستظهر المحادثة لديك مجددًا عند وصول رسالة جديدة.')) return;
+    const id = selectedId;
+    setClearing(true); setError('');
+    try {
+      await clearDirectConversation(id);
+      selectedRef.current = null;
+      setSelectedId(null); setThread(null); setBody(''); setFile(null); setInboxPage(0);
+      setInbox(current => ({ conversations: current.conversations.filter(item => item.id !== id), total: Math.max(0, current.total - 1) }));
+      window.history.replaceState(null, '', '/community/messages');
+      window.dispatchEvent(new Event('direct-inbox-changed'));
+      void getDirectInbox().then(setInbox).catch(() => {});
+    } catch (issue) { setError(issue instanceof Error ? issue.message : 'تعذّر حذف المحادثة'); }
+    finally { setClearing(false); }
   };
   const loadMoreMessages = () => {
     if (!selectedId || !thread?.nextCursor) return;
@@ -178,7 +194,7 @@ export default function DirectMessages({ userId, initialInbox, initialSelectedId
         {inbox.total > inbox.conversations.length && <button className={styles.loadMore} onClick={async () => { const next = inboxPage + 1; try { const older = await getDirectInbox(next); setInbox(current => ({ total: older.total, conversations: [...current.conversations, ...older.conversations.filter(item => !current.conversations.some(existing => existing.id === item.id))] })); setInboxPage(next); } catch (issue) { setError(issue instanceof Error ? issue.message : 'تعذّر تحميل المحادثات'); } }}>محادثات أقدم</button>}
       </aside>
       <section className={`${styles.threadPanel} ${!selectedId ? styles.mobileHide : ''}`} aria-label="المحادثة">
-        {selectedId && peer ? <><header className={styles.threadHeader}><button type="button" className={styles.backButton} onClick={() => { setSelectedId(null); setThread(null); window.history.replaceState(null, '', '/community/messages'); }} aria-label="العودة إلى المحادثات">→</button><Avatar name={displayName(peer)} src={peer.avatar_url} /><div><strong>{displayName(peer)}</strong><small>{peer.community_role === 'writer' ? 'كاتب' : 'قارئ'}</small></div>{peer.username && <Link href={`/community/user/${encodeURIComponent(peer.username)}`} className={styles.profileLink}>عرض الملف</Link>}</header>
+        {selectedId && peer ? <><header className={styles.threadHeader}><button type="button" className={styles.backButton} onClick={() => { setSelectedId(null); setThread(null); window.history.replaceState(null, '', '/community/messages'); }} aria-label="العودة إلى المحادثات">→</button><Avatar name={displayName(peer)} src={peer.avatar_url} /><div><strong>{displayName(peer)}</strong><small>{peer.community_role === 'writer' ? 'كاتب' : 'قارئ'}</small></div>{peer.username && <Link href={`/community/user/${encodeURIComponent(peer.username)}`} className={styles.profileLink}>عرض الملف</Link>}<button type="button" className={styles.clearConversation} onClick={() => void clearThread()} disabled={clearing || busy} title="إخفاء المحادثة من صندوقك فقط">{clearing ? 'جارٍ الحذف…' : 'حذف المحادثة'}</button></header>
           <div className={styles.messageList} ref={scrollRef} aria-live="polite">{thread?.nextCursor && <button className={styles.loadMore} disabled={pending} onClick={loadMoreMessages}>رسائل أقدم</button>}{!thread ? <p className={styles.empty}>جارٍ تحميل المحادثة…</p> : thread.messages.length === 0 ? <p className={styles.empty}>ابدأ برسالة لطيفة عن كتاب أو قصة تحبها 📚</p> : thread.messages.map(message => <article key={message.id} className={`${styles.messageBubble} ${message.sender_id === userId ? styles.myMessage : styles.theirMessage}`}><MessageAttachment message={message} />{message.body && <p>{message.body}</p>}<footer><time dateTime={message.created_at}>{time(message.created_at)}</time>{message.sender_id === userId && <span>{message.is_read ? '✓✓ تمت القراءة' : '✓ أُرسلت'}</span>}</footer></article>)}</div>
           <form className={styles.composer} onSubmit={send}><div className={styles.composerTop}>{file && <span className={styles.selectedFile}>📎 {file.name} <button type="button" onClick={() => { setFile(null); if (inputRef.current) inputRef.current.value = ''; }}>×</button></span>}{recording && <span className={styles.recording}>● جارٍ تسجيل رسالة صوتية…</span>}{error && <span role="alert" className={styles.error}>{error}</span>}</div><div className={styles.composerRow}><input ref={inputRef} type="file" hidden accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={event => { setFile(event.target.files?.[0] || null); setError(''); }} /><button type="button" className={styles.toolButton} onClick={() => inputRef.current?.click()} aria-label="إرفاق ملف" title="صورة، فيديو، PDF أو Word">📎</button><button type="button" className={`${styles.toolButton} ${recording ? styles.recordingButton : ''}`} onClick={toggleRecording} aria-label={recording ? 'إيقاف التسجيل' : 'تسجيل رسالة صوتية'} title={recording ? 'إيقاف التسجيل' : 'رسالة صوتية'}>{recording ? '■' : '🎙'}</button><div className={styles.emojiWrap}><button type="button" className={styles.toolButton} onClick={() => setShowEmojis(value => !value)} aria-label="إضافة رمز تعبيري">😊</button>{showEmojis && <div className={styles.emojiPicker}>{emojis.map(emoji => <button type="button" key={emoji} onClick={() => { setBody(value => value + emoji); setShowEmojis(false); }}>{emoji}</button>)}</div>}</div><textarea value={body} onChange={event => setBody(event.target.value)} maxLength={5000} rows={1} placeholder="اكتب رسالة…" aria-label="نص الرسالة" onKeyDown={event => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); event.currentTarget.form?.requestSubmit(); } }} /><button className={styles.sendButton} type="submit" disabled={busy || recording || (!body.trim() && !file)}>{busy ? 'جارٍ الإرسال' : 'إرسال'}</button></div></form>
         </> : <div className={styles.threadEmpty}><span>✉</span><h2>حديث جديد يبدأ هنا</h2><p>اختر محادثة أو تعرّف إلى عضو جديد من المجتمع.</p><Link href="/community/members" className={styles.primaryButton}>اكتشف الأعضاء</Link></div>}

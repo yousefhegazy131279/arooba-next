@@ -292,6 +292,10 @@
     border-radius: 1.5rem;
     padding: 1.5rem;
   }
+  .featuredHint { color: var(--text-secondary); font-size: .83rem; margin: .45rem 0 0; line-height: 1.6; }
+  .featuredButton { display: block; width: calc(100% - 1.6rem); margin: 0 .8rem .8rem; padding: .55rem; border: 1px solid var(--gold); border-radius: .7rem; background: transparent; color: var(--gold); font: inherit; font-size: .78rem; font-weight: 700; cursor: pointer; }
+  .featuredButton[aria-pressed="true"] { background: var(--gold); color: #18202b; }
+  .featuredButton:disabled { opacity: .6; cursor: wait; }
   .sectionHeader {
     display: flex;
     justify-content: space-between;

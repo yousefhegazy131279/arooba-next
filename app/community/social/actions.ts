@@ -34,22 +34,39 @@ export async function getMemberDirectory(input: { search: string; role: 'all' | 
 export async function getSocialProfile(username: string) {
   const value = parseInput(usernameSchema, username);
   const supabase = await createClient();
-  const { data, error } = await supabase.from('profiles').select(memberFields).eq('username', value).maybeSingle();
+  const { data, error } = await supabase.from('profiles').select(`${memberFields},favorite_novel_id,created_at`).eq('username', value).maybeSingle();
   if (error) actionDatabaseError(error, 'تعذّر تحميل الملف الشخصي');
   if (!data?.username) return null;
   const { data: { user } } = await supabase.auth.getUser();
-  const [followers, following, posts, followState, blockState] = await Promise.all([
+  const [followers, following, posts, followState, blockState, favoriteNovel] = await Promise.all([
     supabase.from('user_follows').select('follower_id', { count: 'exact', head: true }).eq('followed_id', data.id),
     supabase.from('user_follows').select('followed_id', { count: 'exact', head: true }).eq('follower_id', data.id),
     supabase.from('posts').select('id', { count: 'exact', head: true }).eq('user_id', data.id).eq('is_hidden', false),
     user ? supabase.from('user_follows').select('follower_id').eq('follower_id', user.id).eq('followed_id', data.id).maybeSingle() : Promise.resolve({ data: null, error: null }),
     user ? supabase.from('user_blocks').select('blocker_id').eq('blocker_id', user.id).eq('blocked_id', data.id).maybeSingle() : Promise.resolve({ data: null, error: null }),
+    data.favorite_novel_id ? supabase.from('novels').select('id,title,author,cover').eq('id', data.favorite_novel_id).maybeSingle() : Promise.resolve({ data: null, error: null }),
   ]);
-  for (const result of [followers, following, posts, followState, blockState]) {
+  for (const result of [followers, following, posts, followState, blockState, favoriteNovel]) {
     if (result.error) actionDatabaseError(result.error, 'تعذّر تحميل نشاط العضو');
   }
-  return { member: data as SocialMember, followers: followers.count || 0, following: following.count || 0,
+  return { member: data as SocialMember & { created_at: string; favorite_novel_id: number | null }, favoriteNovel: favoriteNovel.data, followers: followers.count || 0, following: following.count || 0,
     posts: posts.count || 0, isFollowing: !!followState.data, isBlocked: !!blockState.data, isOwn: user?.id === data.id };
+}
+
+export async function setFavoriteNovel(novelId: number | null) {
+  const id = parseInput(z.number().int().positive().safe().nullable(), novelId);
+  const { supabase, user } = await requireActionUser();
+  if (id !== null) {
+    const { data: favorite, error: favoriteError } = await supabase.from('favorites')
+      .select('novel_id').eq('user_id', user.id).eq('novel_id', id).maybeSingle();
+    if (favoriteError) actionDatabaseError(favoriteError, 'تعذّر التحقق من الرواية');
+    if (!favorite) throw new Error('أضف الرواية إلى مفضلاتك أولًا');
+  }
+  const { error } = await supabase.from('profiles').update({ favorite_novel_id: id }).eq('id', user.id);
+  if (error) actionDatabaseError(error, 'تعذّر تحديث الرواية المفضلة');
+  revalidatePath('/community/user/[username]', 'page');
+  revalidatePath('/profile');
+  return { favorite_novel_id: id };
 }
 
 export async function setFollow(memberId: string, following: boolean) {
@@ -92,7 +109,7 @@ export async function startConversation(memberId: string) {
 export async function getDirectInbox(page = 0): Promise<{ conversations: DirectConversation[]; total: number }> {
   const index = parseInput(z.number().int().min(0).max(1000), page);
   const { supabase, user } = await requireActionUser();
-  const { data, count, error } = await supabase.from('direct_conversations')
+  const { data, count, error } = await supabase.from('my_direct_inbox')
     .select('id,user_low,user_high,last_message_at,last_message_preview,created_at', { count: 'exact' })
     .or(`user_low.eq.${user.id},user_high.eq.${user.id}`)
     .order('last_message_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false })
@@ -112,6 +129,15 @@ export async function getDirectInbox(page = 0): Promise<{ conversations: DirectC
     last_message_at: row.last_message_at, last_message_preview: row.last_message_preview,
     unread_count: unread[position].count || 0,
   })) };
+}
+
+export async function clearDirectConversation(conversationId: string) {
+  const id = parseInput(uuidSchema, conversationId);
+  const { supabase } = await requireActionUser();
+  const { error } = await supabase.rpc('clear_direct_conversation', { p_conversation: id });
+  if (error) actionDatabaseError(error, 'تعذّر إخفاء المحادثة');
+  revalidatePath('/community/messages');
+  return { success: true as const };
 }
 
 export async function getDirectUnreadCount() {

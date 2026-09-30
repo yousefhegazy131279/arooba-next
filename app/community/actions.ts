@@ -245,7 +245,13 @@ export async function getNotifications(): Promise<CommunityNotification[]> {
   const { data, error } = await supabase.from('notifications').select('id,type,post_id,actor_id,content,is_read,created_at')
     .eq('user_id', user.id).order('created_at', { ascending: false }).limit(50);
   if (error) actionDatabaseError(error, 'تعذر تحميل الإشعارات');
-  return (data || []) as CommunityNotification[];
+  const actorIds = [...new Set((data || []).map(item => item.actor_id).filter((id): id is string => !!id))];
+  if (!actorIds.length) return (data || []) as CommunityNotification[];
+  const { data: actors, error: actorsError } = await supabase.from('profiles')
+    .select('id,username,full_name,avatar_url').in('id', actorIds);
+  if (actorsError) actionDatabaseError(actorsError, 'تعذر تحميل أصحاب الإشعارات');
+  const byId = new Map((actors || []).map(actor => [actor.id, actor]));
+  return (data || []).map(item => ({ ...item, actor: item.actor_id ? byId.get(item.actor_id) || null : null })) as CommunityNotification[];
 }
 
 export async function markNotificationsRead(ids?: string[]) {

@@ -51,6 +51,7 @@ export interface CommunityNotification {
   content: string | null;
   is_read: boolean;
   created_at: string;
+  actor?: { username: string; full_name: string | null; avatar_url: string | null } | null;
 }
 
 export interface CommunityReport {

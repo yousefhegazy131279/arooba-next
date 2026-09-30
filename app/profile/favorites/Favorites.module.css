@@ -288,6 +288,9 @@
   font-size: 0.85rem;
   margin-bottom: 1rem;
 }
+.featuredBtn { width: 100%; padding: .6rem; margin-bottom: 1rem; border: 1px solid var(--gold); border-radius: .65rem; background: transparent; color: var(--gold); font: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; }
+.featuredBtn[aria-pressed="true"] { background: var(--gold); color: #18202b; }
+.featuredBtn:disabled { opacity: .6; cursor: wait; }
 
 .cardFooter {
   display: flex;

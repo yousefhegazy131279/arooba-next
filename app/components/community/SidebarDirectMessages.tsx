@@ -21,8 +21,9 @@ export default function SidebarDirectMessages({ userId, isOpen, onNavigate }: { 
     };
     void refresh();
     const channel = supabase.channel(`sidebar-dm-${userId}`).on('postgres_changes', { event: '*', schema: 'public', table: 'direct_messages', filter: `recipient_id=eq.${userId}` }, () => { void refresh(); }).subscribe();
+    window.addEventListener('direct-inbox-changed', refresh);
     const timer = window.setInterval(refresh, 30000);
-    return () => { active = false; window.clearInterval(timer); void supabase.removeChannel(channel); };
+    return () => { active = false; window.clearInterval(timer); window.removeEventListener('direct-inbox-changed', refresh); void supabase.removeChannel(channel); };
   }, [userId]);
   useEffect(() => { if (isOpen) { void Promise.all([getDirectUnreadCount(), getDirectInbox()]).then(([count, inbox]) => { setUnread(count); setRecent(inbox.conversations.slice(0, 3)); }).catch(() => {}); } }, [isOpen]);
   return <div className={styles.directSection}><Link href="/community/messages" className={`${styles.actionBtn} ${styles.messageBtn}`} onClick={onNavigate}><span className={styles.btnIcon} aria-hidden="true">✉</span><span className={styles.btnText}>الرسائل الخاصة</span>{unread > 0 && <b className={styles.dmBadge}>{unread > 99 ? '99+' : unread}</b>}</Link>{isOpen && recent.length > 0 && <div className={styles.recentMessages}>{recent.map(item => <Link key={item.id} href={`/community/messages?thread=${item.id}`} onClick={onNavigate} className={styles.recentMessage}><Avatar name={item.peer.full_name || item.peer.username || 'ع'} src={item.peer.avatar_url} size={30} /><span><strong>{item.peer.full_name || item.peer.username || 'عضو عُروبة'}</strong><small>{item.last_message_preview || 'ابدأ الحديث'}</small></span>{item.unread_count > 0 && <b>{item.unread_count}</b>}</Link>)}</div>}</div>;

@@ -7,9 +7,13 @@ import Link from "next/link";
 import ListSkeleton from "@/app/components/ListSkeleton";
 import { useAuthStore } from "@/app/stores/useAuthStore";
 import { supabase } from "@/lib/supabaseClient";
+import { setFavoriteNovel } from "@/app/community/social/actions";
 import styles from "./profile.module.css";
 import AOS from "aos";
 import "aos/dist/aos.css";
+
+type Profile = { id: string; username: string | null; full_name: string | null; avatar_url: string | null; bio: string | null; created_at: string; favorite_novel_id: number | null };
+type FavoriteNovel = { id: number; title: string; author: string | null; cover: string | null };
 
 // أيقونات SVG حديثة
 const CameraIcon = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg>;
@@ -22,14 +26,15 @@ const LogoutIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="n
 export default function ProfilePage() {
   const { user, isLoggedIn, loading: authLoading } = useAuthStore();
   const router = useRouter();
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [editingBio, setEditingBio] = useState(false);
   const [bio, setBio] = useState("");
   const [stats, setStats] = useState({ favorites: 0, ratings: 0 });
-  const [favorites, setFavorites] = useState<any[]>([]);
+  const [favorites, setFavorites] = useState<FavoriteNovel[]>([]);
   const [loadingFavs, setLoadingFavs] = useState(false);
+  const [savingFeatured, setSavingFeatured] = useState(false);
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true, offset: 50 });
@@ -45,7 +50,7 @@ export default function ProfilePage() {
     setLoading(true);
     const { data, error } = await supabase.from("profiles").select("*").eq("id", user?.id).single();
     if (!error && data) {
-      setProfile(data);
+      setProfile(data as Profile);
       setBio(data.bio || "");
     }
     setLoading(false);
@@ -86,10 +91,10 @@ export default function ProfilePage() {
       const orderedNovels = novelIds
         .map((id) => novelsData?.find((novel) => novel.id === id))
         .filter(Boolean);
-      setFavorites(orderedNovels);
-    } catch (err: any) {
+      setFavorites(orderedNovels as FavoriteNovel[]);
+    } catch (err: unknown) {
       console.error("Error fetching favorites:", err);
-      showToast.error(err?.message || "حدث خطأ أثناء تحميل المفضلات");
+      showToast.error(err instanceof Error ? err.message : "حدث خطأ أثناء تحميل المفضلات");
       setFavorites([]);
     } finally {
       setLoadingFavs(false);
@@ -113,7 +118,7 @@ export default function ProfilePage() {
     const { error: updateError } = await supabase.from("profiles").update({ avatar_url: avatarUrl }).eq("id", user.id);
     if (updateError) showToast.error("فشل تحديث الصورة: " + updateError.message);
     else {
-      setProfile({ ...profile, avatar_url: avatarUrl });
+      setProfile(current => current ? { ...current, avatar_url: avatarUrl } : current);
       window.dispatchEvent(new Event("avatar-updated"));
     }
     setUploading(false);
@@ -126,11 +131,23 @@ export default function ProfilePage() {
     else setEditingBio(false);
   };
 
-  const handleRemoveFavorite = async (novelId: string) => {
+  const handleRemoveFavorite = async (novelId: number) => {
     if (!user) return;
-    await supabase.from("favorites").delete().eq("user_id", user.id).eq("novel_id", novelId);
+    const { error } = await supabase.from("favorites").delete().eq("user_id", user.id).eq("novel_id", novelId);
+    if (error) { showToast.error("تعذّر إزالة الرواية من المفضلات"); return; }
+    if (profile?.favorite_novel_id === novelId) setProfile(current => current ? { ...current, favorite_novel_id: null } : current);
     setFavorites((prev) => prev.filter((fav) => fav.id !== novelId));
     setStats((prev) => ({ ...prev, favorites: prev.favorites - 1 }));
+  };
+
+  const chooseFeaturedNovel = async (novelId: number | null) => {
+    setSavingFeatured(true);
+    try {
+      const result = await setFavoriteNovel(novelId);
+      setProfile(current => current ? { ...current, favorite_novel_id: result.favorite_novel_id } : current);
+      showToast.success(novelId === null ? "أُزيلت الرواية من ملف المجتمع" : "ظهرت روايتك المفضلة في ملف المجتمع");
+    } catch (issue) { showToast.error(issue instanceof Error ? issue.message : "تعذّر حفظ الرواية المفضلة"); }
+    finally { setSavingFeatured(false); }
   };
 
   const handleLogout = async () => {
@@ -174,7 +191,7 @@ export default function ProfilePage() {
             </div>
             <h2 className={styles.userName}>{profile?.full_name || profile?.username || "مستخدم"}</h2>
             <p className={styles.userEmail}>{user?.email}</p>
-            <p className={styles.userSince}>عضو منذ {new Date(profile?.created_at).toLocaleDateString("ar-EG")}</p>
+            {profile?.created_at && <p className={styles.userSince}>عضو منذ {new Date(profile.created_at).toLocaleDateString("ar-EG")}</p>}
             <button onClick={handleLogout} className={styles.logoutBtn}>
               <LogoutIcon /> خروج
             </button>
@@ -232,7 +249,7 @@ export default function ProfilePage() {
           {/* قائمة المفضلات */}
           <div className={styles.favoritesSection} data-aos="fade-up" data-aos-delay="200">
             <div className={styles.sectionHeader}>
-              <h3>📚 رواياتي المفضلة</h3>
+              <div><h3>📚 رواياتي المفضلة</h3><p className={styles.featuredHint}>اختر رواية واحدة لتظهر للقرّاء والكتّاب في ملفك بالمجتمع.</p></div>
               {stats.favorites > 6 && (
                 <Link href="/profile/favorites" className={styles.viewAllLink}>
                   عرض الكل ({stats.favorites})
@@ -261,6 +278,7 @@ export default function ProfilePage() {
                         <p className={styles.favAuthor}>{novel.author}</p>
                       </div>
                     </Link>
+                    <button type="button" className={styles.featuredButton} disabled={savingFeatured} aria-pressed={String(profile?.favorite_novel_id) === String(novel.id)} onClick={() => void chooseFeaturedNovel(String(profile?.favorite_novel_id) === String(novel.id) ? null : Number(novel.id))}>{String(profile?.favorite_novel_id) === String(novel.id) ? '★ روايتي المختارة · إزالة' : '☆ عرضها في ملف المجتمع'}</button>
                     <button onClick={() => handleRemoveFavorite(novel.id)} className={styles.removeFavBtn} title="إزالة من المفضلة">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <line x1="18" y1="6" x2="6" y2="18" />

@@ -1,4 +1,5 @@
 import { cache } from 'react';
+/* eslint-disable @next/next/no-img-element -- Novel covers use externally hosted URLs. */
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -15,6 +16,9 @@ const loadProfile = cache(getSocialProfile);
 function routeUsername(value: string) {
   try { return decodeURIComponent(value); } catch { return value; }
 }
+function coverUrl(value: string) {
+  return value.startsWith('https://') || value.startsWith('http://') || value.startsWith('/') ? value : `/covers/${value}`;
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params;
@@ -28,5 +32,15 @@ export default async function UserPostsPage({ params }: Props) {
   const profile = await loadProfile(routeUsername(username));
   if (!profile) notFound();
   const name = profile.member.full_name || profile.member.username || 'عضو عُروبة';
-  return <div className={styles.narrow}><Link href="/community/members" className={`${styles.textLink} ${styles.back}`}><CommunityIcon name="back" />الأعضاء</Link><header className={social.profileHero}><div className={social.profileIdentity}><Avatar name={name} src={profile.member.avatar_url} size={88} className={social.profileAvatar} /><div><span className={styles.eyebrow}>{profile.member.community_role === 'writer' ? 'كاتب في عُروبة' : 'قارئ في عُروبة'}</span><h1>{name}</h1><span className={social.handle}>@{profile.member.username}</span></div></div><p>{profile.member.bio || 'عضو في مجتمع القرّاء والكتّاب.'}</p><div className={social.stats}><span><strong>{profile.posts}</strong> منشور</span><span><strong>{profile.followers}</strong> متابع</span><span><strong>{profile.following}</strong> يتابع</span></div><ProfileSocialActions memberId={profile.member.id} username={profile.member.username} isOwn={profile.isOwn} initialFollow={profile.isFollowing} initialBlocked={profile.isBlocked} /></header><h2 className={styles.sectionTitle}>منشورات {name}</h2><Feed username={profile.member.username} /></div>;
+  return <div className={styles.narrow}>
+    <Link href="/community/members" className={`${styles.textLink} ${styles.back}`}><CommunityIcon name="back" />الأعضاء</Link>
+    <header className={social.profileHero}>
+      <div className={social.profileIdentity}><Avatar name={name} src={profile.member.avatar_url} size={88} className={social.profileAvatar} /><div><span className={styles.eyebrow}>{profile.member.community_role === 'writer' ? 'كاتب في عُروبة' : 'قارئ في عُروبة'}</span><h1>{name}</h1><span className={social.handle}>@{profile.member.username}</span></div></div>
+      <p>{profile.member.bio || 'عضو في مجتمع القرّاء والكتّاب.'}</p>
+      <div className={social.stats}><span><strong>{profile.posts}</strong> منشور</span><span><strong>{profile.followers}</strong> متابع</span><span><strong>{profile.following}</strong> يتابع</span><span>انضم في {new Intl.DateTimeFormat('ar-EG', { year: 'numeric', month: 'long' }).format(new Date(profile.member.created_at))}</span></div>
+      <ProfileSocialActions memberId={profile.member.id} username={profile.member.username} isOwn={profile.isOwn} initialFollow={profile.isFollowing} initialBlocked={profile.isBlocked} />
+    </header>
+    {profile.favoriteNovel ? <section className={social.favoriteFeature} aria-label="الرواية المفضلة"><span className={styles.eyebrow}>★ الرواية المفضلة لدى {name}</span><div className={social.favoriteFeatureBody}>{profile.favoriteNovel.cover ? <img src={coverUrl(profile.favoriteNovel.cover)} alt={`غلاف ${profile.favoriteNovel.title}`} /> : <span className={social.favoritePlaceholder}>📖</span>}<div><h2>{profile.favoriteNovel.title}</h2><p>{profile.favoriteNovel.author}</p><Link className={social.outlineButton} href={`/stories/${profile.favoriteNovel.id}`}>اكتشف الرواية ←</Link></div></div></section> : profile.isOwn ? <section className={social.favoriteFeature}><h2>ما الرواية التي تحبها أكثر؟</h2><p>اخترها من مفضلاتك لتظهر هنا لزوار ملفك.</p><Link className={social.outlineButton} href="/profile">اختيار رواية مفضلة</Link></section> : null}
+    <h2 className={styles.sectionTitle}>منشورات {name}</h2><Feed username={profile.member.username} />
+  </div>;
 }

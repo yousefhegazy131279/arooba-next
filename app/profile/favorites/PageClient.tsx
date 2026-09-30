@@ -10,6 +10,8 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useAuthStore } from '@/app/stores/useAuthStore';
 import { getFavorites, removeFavorite } from '@/app/admin/actions';
+import { setFavoriteNovel } from '@/app/community/social/actions';
+import { supabase } from '@/lib/supabaseClient';
 import styles from './Favorites.module.css';
 
 interface Favorite {
@@ -31,6 +33,8 @@ export default function FavoritesPage() {
   const router = useRouter();
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [loading, setLoading] = useState(true);
+  const [featuredId, setFeaturedId] = useState<number | null>(null);
+  const [savingFeatured, setSavingFeatured] = useState(false);
 
   useEffect(() => {
     AOS.init({
@@ -60,8 +64,12 @@ export default function FavoritesPage() {
   const fetchFavorites = async () => {
     setLoading(true);
     try {
-      const data = await getFavorites(user!.id);
+      const [data, selected] = await Promise.all([
+        getFavorites(user!.id),
+        supabase.from('profiles').select('favorite_novel_id').eq('id', user!.id).single(),
+      ]);
       setFavorites(data);
+      if (!selected.error) setFeaturedId(selected.data?.favorite_novel_id ?? null);
     } catch (error) {
       console.error('Error fetching favorites:', error);
     } finally {
@@ -74,10 +82,21 @@ export default function FavoritesPage() {
     try {
       await removeFavorite(user!.id, novelId);
       setFavorites(prev => prev.filter(f => f.novel_id !== novelId));
+      if (featuredId === Number(novelId)) setFeaturedId(null);
     } catch (error) {
       console.error('Error removing favorite:', error);
       showToast.error('حدث خطأ، حاول مرة أخرى');
     }
+  };
+
+  const chooseFeatured = async (novelId: number | null) => {
+    setSavingFeatured(true);
+    try {
+      const result = await setFavoriteNovel(novelId);
+      setFeaturedId(result.favorite_novel_id);
+      showToast.success(novelId === null ? 'أُزيلت الرواية من ملف المجتمع' : 'ظهرت الرواية في ملفك بالمجتمع');
+    } catch (issue) { showToast.error(issue instanceof Error ? issue.message : 'تعذّر حفظ الرواية المفضلة'); }
+    finally { setSavingFeatured(false); }
   };
 
   const goToStory = (id: string) => {
@@ -118,7 +137,7 @@ export default function FavoritesPage() {
             </svg>
           </div>
           <h1 className={styles.title} data-aos="fade-up" data-aos-delay="200">المفضلات</h1>
-          <p className={styles.subtitle} data-aos="fade-up" data-aos-delay="300">رواياتك المفضلة في مكان واحد</p>
+          <p className={styles.subtitle} data-aos="fade-up" data-aos-delay="300">رواياتك المفضلة في مكان واحد. اختر واحدة لتظهر في ملفك بالمجتمع.</p>
           <div className={styles.titleDecoration} data-aos="zoom-in" data-aos-delay="400">
             <span className={styles.decorationLine}></span>
             <span className={styles.decorationStar}>✨</span>
@@ -178,6 +197,7 @@ export default function FavoritesPage() {
                 <div className={styles.cardInfo}>
                   <h3 onClick={() => goToStory(fav.novels.id)}>{fav.novels.title}</h3>
                   <p className={styles.author}>{fav.novels.author || 'غير محدد'}</p>
+                  <button type="button" className={styles.featuredBtn} disabled={savingFeatured} aria-pressed={featuredId === Number(fav.novels.id)} onClick={() => void chooseFeatured(featuredId === Number(fav.novels.id) ? null : Number(fav.novels.id))}>{featuredId === Number(fav.novels.id) ? '★ روايتي المختارة · إزالة' : '☆ عرضها في ملف المجتمع'}</button>
                   <div className={styles.cardFooter}>
                     <div className={styles.stats}>
                       <span className={styles.chapters}>

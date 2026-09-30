@@ -7,6 +7,7 @@ const migrations = await Promise.all([
   '../migrations/202609270001_community_reader.sql',
   '../migrations/202609290001_community_creators.sql',
   '../migrations/202609300001_social_direct_messages.sql',
+  '../migrations/202609300002_social_profile_inbox.sql',
 ].map(path => readFile(new URL(path, import.meta.url), 'utf8')));
 const alice = '11111111-1111-4111-8111-111111111111';
 const bob = '22222222-2222-4222-8222-222222222222';
@@ -36,8 +37,12 @@ test('private messaging enforces membership, media ownership, read receipts and 
       grant insert,select,delete on storage.objects to authenticated;
       create table public.profiles(id uuid primary key references auth.users(id),role text default 'user',username text,full_name text,avatar_url text);
       create table public.novels(id bigint primary key);
+      create table public.favorites(user_id uuid references auth.users(id),novel_id bigint references public.novels(id),created_at timestamptz default now(),primary key(user_id,novel_id));
       create table public.chapters(id bigint primary key,novel_id bigint references novels(id),content text);
       grant select on public.profiles,public.novels,public.chapters to anon,authenticated;
+      grant select,insert,delete on public.favorites to authenticated;
+      alter table public.favorites enable row level security;
+      create policy favorites_own on public.favorites for all to authenticated using(auth.uid()=user_id) with check(auth.uid()=user_id);
       grant insert,update on public.profiles to authenticated;
       alter table public.profiles enable row level security;
       create policy profiles_read on public.profiles for select using(true);
@@ -63,6 +68,23 @@ test('private messaging enforces membership, media ownership, read receipts and 
     assert.equal((await as(db, eve, 'select * from storage.objects where bucket_id=$1', ['direct-media'])).rows.length, 0);
     await assert.rejects(as(db, bob, 'insert into direct_messages(conversation_id,sender_id,attachment_path,attachment_name,attachment_kind,attachment_size) values($1,$2,$3,$4,$5,$6)', [conversation, bob, mediaPath, 'stolen.pdf', 'pdf', 100]), /Invalid message attachment/);
     await as(db, alice, 'insert into direct_messages(conversation_id,sender_id,attachment_path,attachment_name,attachment_kind,attachment_size) values($1,$2,$3,$4,$5,$6)', [conversation, alice, mediaPath, 'story.pdf', 'pdf', 100]);
+    await assert.rejects(as(db, eve, 'select clear_direct_conversation($1)', [conversation]), /Conversation unavailable/);
+    await as(db, alice, 'select clear_direct_conversation($1)', [conversation]);
+    assert.equal((await as(db, alice, 'select * from my_direct_inbox')).rows.length, 0);
+    assert.equal((await as(db, alice, 'select * from direct_messages')).rows.length, 0);
+    assert.equal((await as(db, alice, "select * from storage.objects where bucket_id='direct-media'")).rows.length, 0);
+    assert.equal((await as(db, bob, 'select * from my_direct_inbox')).rows.length, 1);
+    assert.equal((await as(db, bob, 'select * from direct_messages')).rows.length, 2);
+    await as(db, bob, "insert into direct_messages(conversation_id,sender_id,body) values($1,$2,'After clear')", [conversation, bob]);
+    assert.equal((await as(db, alice, 'select * from my_direct_inbox')).rows.length, 1);
+    assert.deepEqual((await as(db, alice, 'select body from direct_messages')).rows.map(row => row.body), ['After clear']);
+    assert.equal((await as(db, alice, 'select count(*)::int as n from direct_messages where not is_read')).rows[0].n, 1);
+    await db.exec("reset role; insert into public.novels(id) values (4)");
+    await as(db, alice, 'insert into favorites(user_id,novel_id) values($1,4)', [alice]);
+    await as(db, alice, 'update profiles set favorite_novel_id=4 where id=$1', [alice]);
+    assert.equal(Number((await as(db, bob, 'select favorite_novel_id from profiles where id=$1', [alice])).rows[0].favorite_novel_id), 4);
+    await as(db, alice, 'delete from favorites where user_id=$1 and novel_id=4', [alice]);
+    assert.equal((await as(db, alice, 'select favorite_novel_id from profiles where id=$1', [alice])).rows[0].favorite_novel_id, null);
     await as(db, bob, 'insert into user_blocks(blocker_id,blocked_id) values($1,$2)', [bob, alice]);
     assert.equal((await as(db, alice, 'select * from user_follows')).rows.length, 0);
     await assert.rejects(as(db, alice, "insert into direct_messages(conversation_id,sender_id,body) values($1,$2,'Blocked')", [conversation, alice]), /Messaging unavailable/);

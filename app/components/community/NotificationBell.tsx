@@ -22,13 +22,24 @@ export default function NotificationBell() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${userId}` }, payload => {
         void refresh();
         if (payload.eventType === 'INSERT') {
-          const item = payload.new as { content?: string; post_id?: string };
-          const message = item.content || 'لديك إشعار جديد في مجتمع عُروبة';
-          showToast.success(message);
-          if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-            const notification = new Notification('عُروبة', { body: message, tag: item.post_id || 'community' });
-            notification.onclick = () => { window.focus(); window.location.href = item.post_id ? `/community/post/${item.post_id}` : '/community/notifications'; };
-          }
+          const item = payload.new as { id: string; type?: string; content?: string; post_id?: string; actor_id?: string };
+          void (async () => {
+            let message = item.content || 'لديك إشعار جديد في مجتمع عُروبة';
+            let destination = item.post_id ? `/community/post/${item.post_id}` : '/community/notifications';
+            if (item.type === 'follow' && item.actor_id) {
+              const { data: actor } = await supabase.from('profiles').select('username,full_name').eq('id', item.actor_id).maybeSingle();
+              if (actor) {
+                message = `${actor.full_name || actor.username || 'عضو جديد'} يتابعك الآن في مجتمع عُروبة`;
+                if (actor.username) destination = `/community/user/${encodeURIComponent(actor.username)}`;
+              }
+            }
+            if (!live) return;
+            showToast.success(message);
+            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+              const notification = new Notification('عُروبة', { body: message, tag: item.id });
+              notification.onclick = () => { window.focus(); window.location.href = destination; };
+            }
+          })();
         }
       }).subscribe();
     return () => { live = false; void supabase.removeChannel(channel); };
