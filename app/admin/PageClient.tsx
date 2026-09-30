@@ -4,7 +4,7 @@ import { useState, lazy, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/app/stores/useAuthStore";
 import { useThemeStore } from "@/app/stores/useThemeStore";
-import AdminSidebar from "./components/AdminSidebar";
+import AdminSidebar, { type AdminTabId } from "./components/AdminSidebar";
 import AdminStats from "./components/AdminStats";
 import styles from "./Admin.module.css";
 
@@ -14,13 +14,11 @@ const MessagesTab = lazy(() => import("./components/MessagesTab"));
 const NovelsTab = lazy(() => import("./components/NovelsTab"));
 const UsersTab = lazy(() => import("./components/UsersTab"));
 
-type TabId = "stats" | "suggestions" | "messages" | "novels" | "users";
-
-export default function AdminPage() {
+export default function AdminPage({ initialTab }: { initialTab: AdminTabId }) {
   const { isAdmin, isLoggedIn, loading: authLoading } = useAuthStore();
   const { isDark, toggleTheme } = useThemeStore();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<TabId>("stats");
+  const [activeTab, setActiveTab] = useState<AdminTabId>(initialTab);
 
   if (authLoading) {
     return (
@@ -49,7 +47,7 @@ export default function AdminPage() {
   };
 
   return (
-    <div className={styles.adminPage}>
+    <div className={`${styles.adminPage} ${!isDark ? styles.light : ''}`}>
       <div className={styles.themeToggleWrapper}>
         <button onClick={toggleTheme} className={styles.themeToggleBtn}>
           {isDark ? "☀️" : "🌙"}

@@ -946,3 +946,33 @@
     width: 100%;
   }
 }
+
+.navItem {
+  width: 100%;
+  background: transparent;
+  font: inherit;
+  text-align: right;
+  text-decoration: none;
+  border-top: 0;
+  border-right: 0;
+  border-bottom: 0;
+}
+.sidebar { top: 80px; height: calc(100vh - 80px); }
+.sidebarMobileToggle { display: none; }
+@media (max-width: 768px) {
+  .sidebarOpen { transform: translateX(0); }
+  .sidebarMobileToggle {
+    display: block;
+    position: fixed;
+    left: 1rem;
+    bottom: 1rem;
+    z-index: 110;
+    border: 1px solid var(--admin-border);
+    border-radius: 999px;
+    padding: .7rem 1rem;
+    background: var(--admin-gold);
+    color: var(--admin-bg);
+    font-weight: 800;
+    box-shadow: var(--admin-shadow);
+  }
+}

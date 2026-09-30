@@ -1,10 +1,13 @@
 "use client";
 
+import { useState } from 'react';
+import Link from 'next/link';
 import styles from "../Admin.module.css";
 
+export type AdminTabId = 'stats' | 'suggestions' | 'messages' | 'novels' | 'users';
 interface Props {
-  activeTab: string;
-  onTabChange: (tab: "stats" | "suggestions" | "messages" | "novels" | "users") => void;
+  activeTab: AdminTabId | 'community';
+  onTabChange: (tab: AdminTabId) => void;
 }
 
 // أيقونات SVG بسيطة
@@ -41,8 +44,13 @@ const UsersIcon = () => (
     <path d="M16 3.13a4 4 0 0 1 0 7.75" />
   </svg>
 );
+const CommunityIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M4 5h16v11H8l-4 4V5Z" /><path d="M8 9h8M8 12h5" />
+  </svg>
+);
 
-const menuItems = [
+const menuItems: { id: AdminTabId; label: string; icon: React.ReactNode }[] = [
   { id: "stats", label: "الإحصائيات", icon: <StatsIcon /> },
   { id: "suggestions", label: "الاقتراحات", icon: <SuggestionsIcon /> },
   { id: "messages", label: "الرسائل", icon: <MessagesIcon /> },
@@ -51,24 +59,33 @@ const menuItems = [
 ];
 
 export default function AdminSidebar({ activeTab, onTabChange }: Props) {
+  const [open, setOpen] = useState(false);
   return (
-    <aside className={styles.sidebar}>
+    <>
+    <button className={styles.sidebarMobileToggle} type="button" aria-expanded={open} aria-controls="admin-navigation" onClick={() => setOpen(!open)}>{open ? 'إغلاق القائمة' : 'قائمة الإدارة'}</button>
+    <aside id="admin-navigation" className={`${styles.sidebar} ${open ? styles.sidebarOpen : ''}`}>
       <div className={styles.logoArea}>
         <div className={styles.logo}>عُروبة</div>
         <div className={styles.logoSub}>لوحة التحكم</div>
       </div>
       <nav className={styles.nav}>
         {menuItems.map((item) => (
-          <div
+          <button
             key={item.id}
+            type="button"
             className={`${styles.navItem} ${activeTab === item.id ? styles.navItemActive : ""}`}
-            onClick={() => onTabChange(item.id as any)}
+            onClick={() => { onTabChange(item.id); setOpen(false); }}
+            aria-current={activeTab === item.id ? 'page' : undefined}
           >
             <span className={styles.navIcon}>{item.icon}</span>
             <span className={styles.navLabel}>{item.label}</span>
-          </div>
+          </button>
         ))}
+        <Link href="/admin/community" className={`${styles.navItem} ${activeTab === 'community' ? styles.navItemActive : ''}`} aria-current={activeTab === 'community' ? 'page' : undefined} onClick={() => setOpen(false)}>
+          <span className={styles.navIcon}><CommunityIcon /></span><span className={styles.navLabel}>المجتمع</span>
+        </Link>
       </nav>
     </aside>
+    </>
   );
 }

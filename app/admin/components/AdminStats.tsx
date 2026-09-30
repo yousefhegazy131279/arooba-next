@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useAdminData } from "../hooks/useAdminData";
-import { getCommunityStats } from '../actions';
 import { showToast } from '@/lib/toast';
 import styles from "../Admin.module.css";
 
@@ -38,21 +37,14 @@ const SuggestionsIcon = () => (
     <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
   </svg>
 );
-const StarIcon = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-  </svg>
-);
-
 export default function AdminStats() {
   const { suggestions, messages, novels, users, fetchAllData } = useAdminData();
   const [loading, setLoading] = useState(true);
-  const [community, setCommunity] = useState<Awaited<ReturnType<typeof getCommunityStats>> | null>(null);
 
   useEffect(() => {
     const load = async () => {
-      try { await Promise.all([fetchAllData(), getCommunityStats().then(setCommunity)]); }
-      catch { showToast.error('تعذر تحميل إحصائيات المجتمع'); }
+      try { await fetchAllData(); }
+      catch { showToast.error('تعذّر تحميل إحصائيات المنصة'); }
       finally { setLoading(false); }
     };
     load();
@@ -115,13 +107,6 @@ export default function AdminStats() {
             <strong className={styles.statValue}>{totalSuggestions}</strong>
           </div>
         </div>
-        {community && ([
-          ['القرّاء', community.readers], ['الكتّاب', community.writers],
-          ['منشورات المجتمع', community.posts], ['أعمال الكتّاب', community.works],
-          ['تعليقات المجتمع', community.comments], ['أوافق', community.approved],
-          ['عادي', community.meh], ['لا يعجبني', community.boo],
-          ['بلاغات تنتظر المراجعة', community.pendingReports], ['إشعارات غير مقروءة', community.unreadNotifications],
-        ] as const).map(([label, value]) => <div className={styles.statCard} key={label}><div className={styles.statIcon}><StarIcon /></div><div className={styles.statInfo}><span className={styles.statLabel}>{label}</span><strong className={styles.statValue}>{value}</strong></div></div>)}
       </div>
     </div>
   );
