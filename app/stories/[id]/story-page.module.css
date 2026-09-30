@@ -877,3 +877,5 @@
   border: 2px solid rgba(255,215,0,0.3);
   box-shadow: 0 10px 20px var(--shadow);
 }
+
+.libraryAction { margin: 4px 0 22px; }

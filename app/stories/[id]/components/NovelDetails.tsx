@@ -2,6 +2,7 @@
 
 import { RatingSection } from './RatingSection';
 import FavoriteButton from '@/app/components/FavoriteButton';
+import SaveForLaterButton from '@/app/components/SaveForLaterButton';
 import styles from '../story-page.module.css';
 
 interface NovelDetailsProps {
@@ -145,6 +146,8 @@ export function NovelDetails({ novel }: NovelDetailsProps) {
             <FavoriteButton novelId={novel.id} />
           </div>
         </div>
+
+        <div className={styles.libraryAction}><SaveForLaterButton novelId={novel.id} /></div>
 
         <div
           className={styles.rateSection}

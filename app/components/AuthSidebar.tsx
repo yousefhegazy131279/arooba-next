@@ -211,6 +211,20 @@ const AuthSidebar = () => {
                   <span className={styles.btnText}>الملف الشخصي</span>
                 </Link>
 
+                <Link href="/library" className={`${styles.actionBtn} ${styles.favoritesBtn}`} onClick={() => setIsOpen(false)}>
+                  <span className={styles.btnIcon}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4.5h13a3 3 0 0 1 3 3V21H7a3 3 0 0 1-3-3V4.5Z" /><path d="M8 9h8M8 13h6" /></svg>
+                  </span>
+                  <span className={styles.btnText}>مكتبتي</span>
+                </Link>
+
+                <Link href="/write" className={`${styles.actionBtn} ${styles.profileBtn}`} onClick={() => setIsOpen(false)}>
+                  <span className={styles.btnIcon}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 19l7-7 3 3-7 7-3-3z" /><path d="M18 13 16.5 5.5 2 2l3.5 14.5L13 18l5-5z" /><path d="M2 2l7.6 7.6" /></svg>
+                  </span>
+                  <span className={styles.btnText}>مساحة الكتابة</span>
+                </Link>
+
                 <Link href="/profile/favorites" className={`${styles.actionBtn} ${styles.favoritesBtn}`} onClick={() => setIsOpen(false)}>
                   <span className={styles.btnIcon}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

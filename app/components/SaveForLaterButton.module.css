@@ -1,0 +1,4 @@
+.button { display: inline-flex; align-items: center; justify-content: center; gap: .6rem; border: 1px solid var(--gold); border-radius: 14px; padding: .8rem 1.25rem; color: var(--gold); background: var(--bg-input); font: inherit; font-weight: 700; cursor: pointer; transition: background .2s, transform .2s; }
+.button:hover:not(:disabled) { background: var(--bg-card-hover); transform: translateY(-2px); }
+.button.saved { background: var(--gold); color: var(--bg-primary); }
+.button:disabled { opacity: .65; cursor: wait; }

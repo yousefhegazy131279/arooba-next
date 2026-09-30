@@ -50,6 +50,7 @@ const Footer = () => {
               <li><Link href="/">الرئيسية</Link></li>
               <li><Link href="/about">من نحن</Link></li>
               <li><Link href="/novels">الروايات</Link></li>
+              <li><Link href="/library">مكتبتي</Link></li>
               <li><Link href="/community">المجتمع</Link></li>
               <li><Link href="/contact">تواصل معنا</Link></li>
             </ul>

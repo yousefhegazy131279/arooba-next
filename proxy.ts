@@ -20,7 +20,7 @@ export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
   // Reading and contact pages are public. Reader progress is stored locally for
   // guests and synchronised to Supabase after they sign in.
-  const protectedPaths = ['/profile', '/admin', '/community/create', '/community/notifications', '/community/moderation'];
+  const protectedPaths = ['/profile', '/library', '/write', '/admin', '/community/create', '/community/notifications', '/community/moderation'];
   const isProtected = protectedPaths.some(prefix => path === prefix || path.startsWith(`${prefix}/`));
   function redirect(url: URL) {
     const target = NextResponse.redirect(url);
