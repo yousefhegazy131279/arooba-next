@@ -1,24 +1,26 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useAuthStore } from '@/app/stores/useAuthStore';
 import { safeRedirect } from '@/lib/safeRedirect';
 import { showToast } from '@/lib/toast';
+import GoogleSignIn from '@/app/components/auth/GoogleSignIn';
 import styles from './Login.module.css';
 
 export default function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirectTo') || '/';
+  const redirectTo = safeRedirect(searchParams.get('redirectTo'));
+  const authError = searchParams.get('authError');
   const { login, isLoggedIn, loading: authLoading } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [redirected, setRedirected] = useState(false);
+  const redirected = useRef(false);
 
   useEffect(() => {
     AOS.init({
@@ -35,13 +37,13 @@ export default function LoginForm() {
 
   // التوجيه بعد تسجيل الدخول - تنفيذ فوري
   useEffect(() => {
-    if (isLoggedIn && !authLoading && !redirected) {
+    if (isLoggedIn && !authLoading && !redirected.current) {
       const decodedPath = safeRedirect(redirectTo);
-      setRedirected(true);
+      redirected.current = true;
       // استخدام window.location للتوجيه الفوري وتجنب أي تخزين مؤقت
       window.location.href = decodedPath;
     }
-  }, [isLoggedIn, authLoading, redirectTo, redirected]);
+  }, [isLoggedIn, authLoading, redirectTo]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,12 +74,13 @@ export default function LoginForm() {
       <div className={styles.loginContainer}>
         <div className={styles.loginCard} data-aos="fade-up" data-aos-duration="800">
           <div className={styles.logoWrapper} data-aos="zoom-in" data-aos-duration="600" data-aos-delay="200">
-            <img src="/logo.png" alt="عُروبة" className={styles.logo} />
+            <Image src="/logo.png" alt="عُروبة" width={90} height={90} className={styles.logo} />
           </div>
 
           <h2 data-aos="fade-left" data-aos-delay="300">تسجيل الدخول</h2>
 
           <form onSubmit={handleSubmit}>
+            {authError && <div className={styles.errorMessage} role="alert">{authError === 'cancelled' ? 'تم إلغاء الدخول عبر Google.' : 'تعذر إكمال تسجيل الدخول. حاول مرة أخرى.'}</div>}
             {redirectTo !== '/' && (
               <div className={styles.infoMessage} data-aos="fade-up">
                 يرجى تسجيل الدخول للوصول إلى الصفحة المطلوبة.
@@ -89,6 +92,7 @@ export default function LoginForm() {
               <input
                 id="email"
                 type="email"
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="أدخل بريدك الإلكتروني"
@@ -101,6 +105,7 @@ export default function LoginForm() {
               <input
                 id="password"
                 type="password"
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="أدخل كلمة المرور"
@@ -119,9 +124,10 @@ export default function LoginForm() {
             </button>
 
             <p className={styles.switchLink} data-aos="fade-up" data-aos-delay="700">
-              ليس لديك حساب؟ <Link href="/register">إنشاء حساب</Link>
+              ليس لديك حساب؟ <Link href={`/register?redirectTo=${encodeURIComponent(redirectTo)}`}>إنشاء حساب</Link>
             </p>
           </form>
+          <GoogleSignIn redirectTo={redirectTo} label="المتابعة باستخدام Google" />
         </div>
       </div>
     </div>

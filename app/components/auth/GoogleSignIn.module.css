@@ -1,0 +1,7 @@
+.wrap { margin-top: 24px; }
+.separator { display: flex; align-items: center; gap: 12px; color: var(--text-muted); font-size: .9rem; margin-bottom: 18px; }
+.separator::before, .separator::after { content: ''; height: 1px; flex: 1; background: var(--border-color); }
+.googleButton { width: 100%; min-height: 52px; display: flex; align-items: center; justify-content: center; gap: 12px; border: 1px solid var(--border-color); border-radius: 50px; background: var(--bg-input); color: var(--text-primary); font: inherit; font-weight: 700; cursor: pointer; transition: border-color .2s, background .2s, transform .2s; }
+.googleButton:hover:not(:disabled) { border-color: var(--gold); background: var(--bg-card-hover); transform: translateY(-2px); }
+.googleButton:disabled { cursor: not-allowed; opacity: .6; }
+.note { margin: 10px 0 0; text-align: center; color: var(--text-secondary); font-size: .85rem; line-height: 1.6; }

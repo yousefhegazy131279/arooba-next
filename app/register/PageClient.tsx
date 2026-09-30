@@ -2,14 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useAuthStore } from '@/app/stores/useAuthStore';
+import { safeRedirect } from '@/lib/safeRedirect';
+import GoogleSignIn from '@/app/components/auth/GoogleSignIn';
 import styles from './Register.module.css';
 
 export default function RegisterPage() {
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = safeRedirect(searchParams.get('redirectTo'));
   const { register, isLoggedIn } = useAuthStore();
   const [username, setUsername] = useState('');
   const [fullName, setFullName] = useState('');
@@ -17,6 +21,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [awaitingEmail, setAwaitingEmail] = useState(false);
 
   useEffect(() => {
     AOS.init({
@@ -33,18 +38,20 @@ export default function RegisterPage() {
 
   useEffect(() => {
     if (isLoggedIn) {
-      router.push('/');
+      window.location.href = redirectTo;
     }
-  }, [isLoggedIn, router]);
+  }, [isLoggedIn, redirectTo]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
   
-    const result = await register(username, fullName, email, password);
+    const result = await register(username, fullName, email, password, redirectTo);
     setLoading(false);
-    if (!result.success) {
+    if (result.success && result.requiresConfirmation) {
+      setAwaitingEmail(true);
+    } else if (!result.success) {
       // إذا كان الخطأ يحتوي على "rate limit" نعطي رسالة واضحة
       if (result.error?.includes('rate limit')) {
         setError('لقد تجاوزت عدد المحاولات المسموح بها. يرجى الانتظار دقيقة ثم المحاولة باستخدام بريد إلكتروني جديد.');
@@ -68,11 +75,18 @@ export default function RegisterPage() {
       <div className={styles.registerContainer}>
         <div className={styles.registerCard} data-aos="fade-up" data-aos-duration="800">
           <div className={styles.logoWrapper} data-aos="zoom-in" data-aos-duration="600" data-aos-delay="200">
-            <img src="/logo.png" alt="عُروبة" className={styles.logo} />
+            <Image src="/logo.png" alt="عُروبة" width={90} height={90} className={styles.logo} />
           </div>
 
           <h2 data-aos="fade-left" data-aos-delay="300">إنشاء حساب جديد</h2>
 
+          {awaitingEmail ? (
+            <div className={styles.confirmationMessage} role="status">
+              <strong>تحقق من بريدك الإلكتروني</strong>
+              <p>أرسلنا رابط تأكيد إلى {email.trim().toLowerCase()}. افتح الرابط لتفعيل حسابك، ثم أكمل القراءة في عُروبة.</p>
+              <Link href={`/login?redirectTo=${encodeURIComponent(redirectTo)}`}>العودة إلى تسجيل الدخول</Link>
+            </div>
+          ) : (
           <form onSubmit={handleSubmit}>
             {error && (
               <div className={styles.errorMessage} data-aos="fade-in">
@@ -85,6 +99,7 @@ export default function RegisterPage() {
               <input
                 id="username"
                 type="text"
+                autoComplete="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="أدخل اسم المستخدم"
@@ -97,6 +112,7 @@ export default function RegisterPage() {
               <input
                 id="fullName"
                 type="text"
+                autoComplete="name"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="الاسم الكامل"
@@ -108,6 +124,7 @@ export default function RegisterPage() {
               <input
                 id="email"
                 type="email"
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="أدخل بريدك الإلكتروني"
@@ -120,6 +137,8 @@ export default function RegisterPage() {
               <input
                 id="password"
                 type="password"
+                autoComplete="new-password"
+                minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="أدخل كلمة المرور"
@@ -138,9 +157,11 @@ export default function RegisterPage() {
             </button>
 
             <p className={styles.switchLink} data-aos="fade-up" data-aos-delay="900">
-              لديك حساب بالفعل؟ <Link href="/login">سجل دخول</Link>
+              لديك حساب بالفعل؟ <Link href={`/login?redirectTo=${encodeURIComponent(redirectTo)}`}>سجل دخول</Link>
             </p>
           </form>
+          )}
+          {!awaitingEmail && <GoogleSignIn redirectTo={redirectTo} label="إنشاء حساب باستخدام Google" />}
         </div>
       </div>
     </div>

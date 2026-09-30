@@ -1,6 +1,5 @@
 // app/stores/useAuthStore.ts
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import { supabase } from '@/lib/supabaseClient';
 
 interface User {
@@ -19,14 +18,13 @@ interface AuthState {
   isLoggedIn: boolean;
   isAdmin: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  register: (username: string, full_name: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  register: (username: string, full_name: string, email: string, password: string, redirectTo?: string) => Promise<{ success: boolean; requiresConfirmation?: boolean; error?: string }>;
   logout: () => Promise<void>;
   fetchUser: () => Promise<void>;
   setUser: (user: User | null) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
-  persist(
     (set) => ({
       user: null,
       loading: true,
@@ -45,7 +43,7 @@ export const useAuthStore = create<AuthState>()(
       login: async (email, password) => {
         set({ loading: true });
         try {
-          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+          const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
           if (error) throw error;
 
           const { data: profile, error: profileError } = await supabase
@@ -77,29 +75,34 @@ export const useAuthStore = create<AuthState>()(
           return { success: true };
         } catch (err: unknown) {
           console.error('Login error:', err);
-          set({ loading: false });
-          return { success: false, error: err instanceof Error ? err.message : 'تعذر تسجيل الدخول' };
+          set({ user: null, isLoggedIn: false, isAdmin: false, loading: false });
+          const message = err instanceof Error ? err.message : '';
+          return { success: false, error: /email not confirmed/i.test(message) ? 'لم تؤكد بريدك الإلكتروني بعد. افتح رسالة التأكيد في بريدك ثم حاول مجددًا.' : /invalid login credentials/i.test(message) ? 'البريد الإلكتروني أو كلمة المرور غير صحيحة.' : message || 'تعذر تسجيل الدخول' };
         }
       },
 
-      register: async (username, full_name, email, password) => {
+      register: async (username, full_name, email, password, redirectTo = '/') => {
         set({ loading: true });
         try {
           const { data, error } = await supabase.auth.signUp({
-            email,
+            email: email.trim().toLowerCase(),
             password,
             options: {
-              data: { username, full_name },
+              data: { username: username.trim(), full_name: full_name.trim() },
+              emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
             },
           });
           if (error) throw error;
-
-          await new Promise(resolve => setTimeout(resolve, 500));
+          if (!data.user) throw new Error('تعذر إنشاء الحساب');
+          if (!data.session) {
+            set({ user: null, isLoggedIn: false, isAdmin: false, loading: false });
+            return { success: true, requiresConfirmation: true };
+          }
 
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('username, full_name, role, avatar_url, community_role')
-            .eq('id', data.user!.id)
+            .eq('id', data.user.id)
             .single();
 
           if (profileError && profileError.code !== 'PGRST116') {
@@ -107,8 +110,8 @@ export const useAuthStore = create<AuthState>()(
           }
 
           const userData: User = {
-            id: data.user!.id,
-            email: data.user!.email!,
+            id: data.user.id,
+            email: data.user.email!,
             username: profile?.username || username,
             full_name: profile?.full_name || full_name,
             role: profile?.role || 'user',
@@ -125,7 +128,7 @@ export const useAuthStore = create<AuthState>()(
           return { success: true };
         } catch (err: unknown) {
           console.error('Registration error:', err);
-          set({ loading: false });
+          set({ user: null, isLoggedIn: false, isAdmin: false, loading: false });
           return { success: false, error: err instanceof Error ? err.message : 'تعذر إنشاء الحساب' };
         }
       },
@@ -171,19 +174,10 @@ export const useAuthStore = create<AuthState>()(
           });
         } catch (err) {
           console.error('fetchUser error:', err);
-          set({ loading: false });
+          set({ user: null, isLoggedIn: false, isAdmin: false, loading: false });
         }
       },
-    }),
-    {
-      name: 'auth-storage',
-      partialize: (state) => ({
-        user: state.user,
-        isLoggedIn: state.isLoggedIn,
-        isAdmin: state.isAdmin,
-      }),
-    }
-  )
+    })
 );
 
 // الاستماع لتغيرات الجلسة من Supabase

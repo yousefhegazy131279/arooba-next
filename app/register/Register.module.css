@@ -263,3 +263,16 @@
     padding: 14px;
   }
 }
+
+.confirmationMessage {
+  padding: 22px;
+  border: 1px solid var(--gold);
+  border-radius: 20px;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.8;
+}
+.confirmationMessage strong { color: var(--gold); font-size: 1.15rem; }
+.confirmationMessage p { margin: 10px 0 16px; }
+.confirmationMessage a { color: var(--gold); font-weight: 700; }
