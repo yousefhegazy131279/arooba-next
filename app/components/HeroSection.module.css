@@ -421,3 +421,65 @@
   .heroDescription::after { display: none; }
   .logoImage { width: 60px; }
 }
+
+
+/* ===== إضافات جديدة ===== */
+
+.heroDescriptionAccent {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.85em;
+  color: var(--gold);
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.featureBadges {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.featureBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 50px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.featureBadge:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .featureBadges {
+    gap: 8px;
+    margin-bottom: 2rem;
+  }
+  .featureBadge {
+    font-size: 0.75rem;
+    padding: 6px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .featureBadges {
+    flex-direction: column;
+    align-items: center;
+  }
+  .heroDescriptionAccent {
+    font-size: 0.8em;
+  }
+}

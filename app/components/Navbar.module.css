@@ -1,5 +1,6 @@
 /* app/components/Navbar.module.css */
 
+/* ===== الحاوية الرئيسية ===== */
 .navbar {
   position: fixed;
   top: 20px;
@@ -10,54 +11,77 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.6rem 2rem;
-  background: var(--bg-card);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  padding: 0.55rem 1.5rem;
+
+  /* ✨ خلفية ديناميكية حسب الثيم */
+  background: rgba(var(--bg-card-rgb, 18, 20, 30), 0.75);
+
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
   border: 1px solid var(--border-color);
-  border-radius: 50px;
+  border-radius: 999px;
   z-index: 999;
   direction: rtl;
-  box-shadow: 0 10px 30px var(--shadow);
-  transition: var(--transition);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    0 1px 0 rgba(255, 255, 255, 0.05) inset;
+  transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
 }
 
 .navbar.scrolled {
-  top: 10px;
-  background: var(--bg-secondary);
-  box-shadow: 0 15px 35px var(--shadow), 0 0 0 1px var(--border-color) inset;
+  top: 12px;
+  padding: 0.45rem 1.5rem;
+  background: rgba(var(--bg-card-rgb, 18, 20, 30), 0.92);
+  border-color: rgba(255, 215, 0, 0.2);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 215, 0, 0.1) inset;
 }
 
+/* ✨ تحسين الظلال في الوضع الفاتح */
+:global(.light) .navbar {
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.9) inset;
+}
+
+:global(.light) .navbar.scrolled {
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(184, 134, 11, 0.15) inset;
+}
+
+/* ===== الخلفية المتحركة ===== */
 .navbarBg {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 50px;
+  inset: 0;
+  border-radius: 999px;
   overflow: hidden;
   z-index: -1;
+  pointer-events: none;
 }
 
 .bgGlow {
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle at center, var(--gold-glow) 0%, transparent 60%);
-  animation: rotateBg 25s linear infinite;
-  opacity: 0.6;
+  top: -100%;
+  left: -30%;
+  width: 60%;
+  height: 300%;
+  background: radial-gradient(ellipse, var(--gold-glow) 0%, transparent 60%);
+  animation: moveBgGlow 12s ease-in-out infinite;
+  opacity: 0.4;
 }
 
-@keyframes rotateBg {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+@keyframes moveBgGlow {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  50% { transform: translateX(500px) rotate(20deg); }
 }
 
-.navRight, .navLeft ul {
+/* ===== القوائم ===== */
+.navRight,
+.navLeft ul {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.25rem;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -67,90 +91,71 @@
 .navLeft {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
+/* ===== روابط التنقل ===== */
 .navLink {
   position: relative;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  color: var(--text-primary);
+  gap: 7px;
+  color: var(--text-secondary);
   text-decoration: none;
-  font-weight: 500;
-  font-size: 0.95rem;
-  padding: 0.5rem 1.1rem;
-  border-radius: 40px;
-  transition: var(--transition);
-  overflow: hidden;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
   border: 1px solid transparent;
   background: transparent;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 
 .linkIcon {
-  font-size: 1.1rem;
-  filter: drop-shadow(0 2px 5px var(--gold-glow));
-  transition: transform 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+  opacity: 0.85;
 }
 
 .linkText {
   position: relative;
-  z-index: 2;
-}
-
-.linkGlow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle at center, var(--gold-glow), transparent 70%);
-  transform: translate(-50%, -50%);
-  transition: width 0.4s ease, height 0.4s ease, opacity 0.3s ease;
-  opacity: 0;
   z-index: 1;
-  pointer-events: none;
 }
 
 .navLink:hover {
   color: var(--gold);
-  border-color: var(--border-color);
-  background: var(--bg-card-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px var(--gold-glow);
+  background: rgba(255, 215, 0, 0.06);
+  border-color: rgba(255, 215, 0, 0.15);
 }
 
 .navLink:hover .linkIcon {
-  transform: scale(1.15) rotate(2deg);
-}
-
-.navLink:hover .linkGlow {
-  width: 120px;
-  height: 120px;
-  opacity: 0.8;
+  transform: scale(1.15);
+  opacity: 1;
 }
 
 .navLink.active {
-  color: var(--bg-primary);
-  background: var(--gold);
-  border-color: var(--gold);
-  box-shadow: 0 8px 20px var(--gold-glow);
+  color: #1a1a1a;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  border-color: transparent;
+  box-shadow:
+    0 6px 20px -6px var(--gold-glow),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 }
 
 .navLink.active .linkIcon {
-  color: var(--bg-primary);
-  filter: drop-shadow(0 2px 4px var(--shadow));
+  color: #1a1a1a;
+  opacity: 1;
 }
 
-.navLink.active .linkGlow {
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.6), transparent 70%);
-}
-
+/* ===== اللوجو ===== */
 .logoWrapper {
   position: relative;
-  margin: 0 0.8rem;
+  margin: 0 0.5rem;
+  flex-shrink: 0;
 }
 
 .logo {
@@ -160,11 +165,12 @@
 
 .logoInner {
   position: relative;
-  width: 55px;
-  height: 55px;
+  width: 52px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
 }
 
 .logoInner img {
@@ -172,40 +178,42 @@
   height: 100%;
   object-fit: contain;
   filter: drop-shadow(0 4px 12px var(--gold-glow));
-  transition: all 0.3s ease;
+  transition: transform 0.4s ease;
   position: relative;
-  z-index: 3;
+  z-index: 2;
   border-radius: 50%;
 }
 
 .logoGlow {
   position: absolute;
-  top: -15px;
-  left: -15px;
-  right: -15px;
-  bottom: -15px;
+  inset: -8px;
   background: radial-gradient(circle at center, var(--gold-glow), transparent 70%);
   border-radius: 50%;
-  animation: glowPulse 4s ease-in-out infinite;
+  animation: glowPulse 3.5s ease-in-out infinite;
   z-index: 1;
+  pointer-events: none;
 }
 
 @keyframes glowPulse {
-  0% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.15); }
-  100% { opacity: 0.3; transform: scale(1); }
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(1.12); }
+}
+
+.logoWrapper:hover .logoInner {
+  transform: scale(1.08) rotate(3deg);
 }
 
 .logoWrapper:hover .logoInner img {
-  transform: scale(1.1) rotate(3deg);
+  filter: drop-shadow(0 6px 18px var(--gold-glow));
 }
 
+/* ===== زر الهامبرغر ===== */
 .hamburger {
   display: none;
   flex-direction: column;
   justify-content: space-between;
-  width: 28px;
-  height: 22px;
+  width: 26px;
+  height: 20px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -216,11 +224,12 @@
 
 .hamburgerLine {
   width: 100%;
-  height: 2.5px;
+  height: 2.2px;
   background: var(--gold);
   border-radius: 3px;
   transition: all 0.3s ease;
   box-shadow: 0 0 8px var(--gold-glow);
+  transform-origin: center;
 }
 
 .hamburger.active .hamburgerLine:nth-child(1) {
@@ -236,45 +245,64 @@
   transform: translateY(-9px) rotate(-45deg);
 }
 
+/* ===== الاستجابة ===== */
 @media (max-width: 992px) {
   .navbar {
-    padding: 0.5rem 1.5rem;
+    padding: 0.5rem 1.25rem;
   }
 
   .navLink {
-    padding: 0.4rem 0.9rem;
-    font-size: 0.9rem;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.87rem;
   }
 
-  .navRight, .navLeft ul {
-    gap: 0.4rem;
+  .logoInner {
+    width: 48px;
+    height: 48px;
   }
 }
 
 @media (max-width: 980px) {
   .navbar {
-    top: 10px;
-    padding: 0.5rem 1.2rem;
+    top: 12px;
+    padding: 0.45rem 1rem;
+    border-radius: 24px;
+  }
+
+  .navbar.scrolled {
+    top: 8px;
   }
 
   .hamburger {
     display: flex;
   }
 
-  .navRight, .navLeft ul {
+  .navRight,
+  .navLeft ul {
     display: none;
     position: absolute;
-    top: calc(100% + 10px);
+    top: calc(100% + 12px);
     flex-direction: column;
-    background: var(--bg-secondary);
-    backdrop-filter: blur(15px);
+
+    /* ✨ خلفية صلبة حسب الثيم */
+    background: var(--bg-primary);
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--border-color);
     border-radius: 20px;
-    padding: 1rem;
-    min-width: 200px;
-    gap: 0.6rem;
-    box-shadow: 0 20px 40px var(--shadow);
+    padding: 0.75rem;
+    min-width: 220px;
+    gap: 0.35rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
     z-index: 1000;
+  }
+
+  /* ✨ خلفية صلبة في الوضع الفاتح */
+  :global(.light) .navRight,
+  :global(.light) .navLeft ul {
+    background: #ffffff;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
   }
 
   .navRight {
@@ -285,7 +313,8 @@
     left: 0;
   }
 
-  .navRight.open, .navLeft ul.open {
+  .navRight.open,
+  .navLeft ul.open {
     display: flex;
     animation: slideIn 0.3s cubic-bezier(0.23, 1, 0.32, 1) forwards;
   }
@@ -293,7 +322,7 @@
   @keyframes slideIn {
     from {
       opacity: 0;
-      transform: translateY(-15px) scale(0.95);
+      transform: translateY(-12px) scale(0.97);
     }
     to {
       opacity: 1;
@@ -303,38 +332,36 @@
 
   .navLink {
     width: 100%;
-    justify-content: center;
-    padding: 0.7rem;
-    font-size: 0.95rem;
+    justify-content: flex-start;
+    padding: 0.7rem 1rem;
+    font-size: 0.92rem;
   }
 
-  .logoInner {
-    width: 48px;
-    height: 48px;
+  .navLink.active {
+    justify-content: center;
   }
 }
 
 @media (max-width: 480px) {
   .navbar {
-    padding: 0.4rem 1rem;
+    padding: 0.4rem 0.9rem;
+    width: calc(100% - 24px);
+    top: 10px;
   }
 
-  .navRight.open, .navLeft ul.open {
-    min-width: 170px;
+  .navRight.open,
+  .navLeft ul.open {
+    min-width: 190px;
   }
 
   .navLink {
-    padding: 0.5rem;
-    font-size: 0.85rem;
-  }
-
-  .linkIcon {
-    font-size: 1rem;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.88rem;
   }
 
   .logoInner {
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
   }
 
   .hamburger {
@@ -347,10 +374,18 @@
   }
 
   .hamburger.active .hamburgerLine:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
+    transform: translateY(8px) rotate(45deg);
   }
 
   .hamburger.active .hamburgerLine:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
+    transform: translateY(-8px) rotate(-45deg);
+  }
+}
+
+/* ===== تقليل الحركة ===== */
+@media (prefers-reduced-motion: reduce) {
+  .bgGlow,
+  .logoGlow {
+    animation: none;
   }
 }

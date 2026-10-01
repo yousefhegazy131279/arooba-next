@@ -1,372 +1,909 @@
+/* ==========================================================
+   🎨 عُروبة Reader — Enhanced Styles
+   الإصدار: 3.1.0
+   ========================================================== */
+
 /* ========== الحاوية الرئيسية ========== */
 .reader {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 32px 24px 60px;
-    color: var(--text-primary);
-    font-weight: 400;
-  }
-  .reader * { box-sizing: border-box; }
-  .routeNav { max-width:1232px; margin:0 auto 8px; padding:0 24px; display:flex; gap:18px; flex-wrap:wrap; }
-  .routeNav a { color:var(--gold); text-decoration:none; font-size:13px; }
-  .routeNav a:hover { text-decoration:underline; }
-  .focused { position:fixed; inset:0; z-index:10000; overflow:auto; background:var(--bg-primary,#080b16); max-width:none; padding:12px 24px; }
-  .focused .header { margin-bottom:8px; gap:12px; }
-  .focused .header h1 { font-size:18px; margin:4px 0; }
-  .focused .eyebrow { display:none; }
-  .focused .header p,.focused .searchRow,.focused .hint,.focused .status { display:none; }
-  .focused .controls { margin-top:0; }
-  .focused .bookContainer { min-height:0; }
-  .reader button,
-  .reader input,
-  .reader select,
-  .reader textarea { font: inherit; }
-  .reader button,
-  .reader select {
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 10px 14px;
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .reader button:hover { border-color: var(--gold); }
-  .reader button:disabled { opacity: 0.45; cursor: not-allowed; }
-  .reader :focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
-  .reader input,
-  .reader textarea {
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    background: var(--bg-input);
-    color: var(--text-primary);
-    padding: 10px;
-    min-width: 0;
-  }
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 24px 60px;
+  color: var(--text-primary);
+  font-weight: 400;
+  font-feature-settings: "kern" 1, "liga" 1;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.reader * { box-sizing: border-box; }
 
-  /* ========== الرأس ========== */
-  .header {
-    display: flex;
-    justify-content: space-between;
-    gap: 24px;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: 26px;
-  }
-  .header h1 { font-size: clamp(1.5rem, 4vw, 2.5rem); margin: 8px 0; }
-  .eyebrow { color: var(--gold); font-size: 14px; }
-  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; font-size: 13px; }
+.routeNav {
+  max-width: 1232px;
+  margin: 0 auto 8px;
+  padding: 0 24px;
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.routeNav a {
+  color: var(--gold);
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.25s ease;
+}
+.routeNav a:hover { text-decoration: underline; }
 
-  /* ========== شريط البحث ========== */
-  .searchRow {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    flex-wrap: wrap;
-    padding: 18px;
-    border: 1px solid var(--border-color);
-    border-radius: 14px;
-    margin-bottom: 24px;
-  }
-  .searchRow input { flex: 1; min-width: 160px; }
-  .searchRow label,
-  .searchRow span { font-size: 13px; }
+/* ========== الوضع المركّز ========== */
+.focused {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  overflow: auto;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, rgba(255, 215, 0, 0.05), transparent 60%),
+    var(--bg-primary, #080b16);
+  max-width: none;
+  padding: 12px 24px;
+  animation: focusIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes focusIn {
+  from { opacity: 0; transform: scale(0.985); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.focused .header { margin-bottom: 8px; gap: 12px; }
+.focused .header h1 { font-size: 18px; margin: 4px 0; }
+.focused .eyebrow { display: none; }
+.focused .header p,
+.focused .searchRow,
+.focused .hint,
+.focused .status { display: none; }
+.focused .controls { margin-top: 0; }
+.focused .bookContainer { min-height: 0; }
 
-  /* ========== التخطيط ========== */
-  .layout { display: flex; gap: 28px; align-items: flex-start; }
-  .readingArea { flex: 1; min-width: 0; }
+/* ========== عناصر التحكم العامة ========== */
+.reader button,
+.reader input,
+.reader select,
+.reader textarea { font: inherit; }
 
-  /* ========== حاوية الكتاب ========== */
-  .bookContainer {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    direction: rtl;
-    touch-action: pan-y;
-    min-height: 420px;
-  }
+.reader button,
+.reader select {
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease,
+    color 0.25s ease,
+    transform 0.15s ease,
+    box-shadow 0.25s ease;
+}
+.reader button:hover {
+  border-color: var(--gold);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px -8px var(--gold-glow, rgba(255, 215, 0, 0.4));
+}
+.reader button:active { transform: translateY(0); }
+.reader button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.reader :focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+.reader input,
+.reader textarea {
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  padding: 10px;
+  min-width: 0;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.reader input:focus,
+.reader textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.12);
+}
 
-  .flipBook {
-    direction: rtl !important;  /* ← كان ltr */
-  }
+/* ========== الرأس ========== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+.header h1 {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  margin: 8px 0;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+.eyebrow {
+  color: var(--gold);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; font-size: 13px; }
 
-  /* ========== صفحة الكتاب ========== */
-  .bookPage {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    padding: 28px 34px 18px;
-    direction: rtl;
-    background: #f9f2e4;
-    color: #3b3024;
-    box-shadow: inset 0 0 60px rgba(139, 90, 43, 0.06);
-    overflow: hidden;
-    position: relative;
-  }
-  /* خط تجليد الكتاب على الحافة اليمنى لصفحات اليمين */
-  .bookPage::before {
-    content: '';
-    position: absolute;
-    inset-block: 0;
-    inset-inline-end: 0;
-    width: 14px;
-    background: linear-gradient(to left, rgba(139, 90, 43, 0.12), transparent);
-    pointer-events: none;
-  }
+/* ========== شريط البحث ========== */
+.searchRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 18px;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  margin-bottom: 24px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  backdrop-filter: blur(6px);
+}
+.searchRow input { flex: 1; min-width: 160px; }
+.searchRow label,
+.searchRow span { font-size: 13px; }
 
-  .bookPage[data-theme="light"] {
-    background: #fffefb;
-    color: #252424;
-    border-color: #e4dfd4;
-  }
-  .bookPage[data-theme="dark"] {
-    background: #172027;
-    color: #e9e4d8;
-    border-color: #37424a;
-  }
-  .bookPage * { font-family: inherit; font-weight: 400; }
+/* ========== التخطيط ========== */
+.layout { display: flex; gap: 28px; align-items: flex-start; }
+.readingArea { flex: 1; min-width: 0; }
 
-  /* ========== عناوين الصفحة ========== */
-  .pageKicker {
-    display: flex;
-    justify-content: space-between;
-    padding-bottom: 14px;
-    border-bottom: 1px solid currentColor;
-    font-size: 12px;
-    opacity: 0.55;
-    flex-shrink: 0;
-  }
-  .pageKicker span { font-size: 10px; }
+/* ========== حاوية الكتاب ========== */
+.bookContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  direction: rtl;
+  touch-action: pan-y;
+  min-height: 420px;
+  perspective: 2000px;
+}
 
-  /* ========== نص الصفحة ========== */
-  .pageText {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
-    padding: 20px 0 14px;
-    line-height: 1.95;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-    word-break: normal;
-    user-select: text;
-    text-align: justify;
-    touch-action: pan-y;
-  }
-  .paragraph { position: relative; padding-inline-end: 24px; font-size: inherit; }
-  .paragraph > span { font-size: inherit; }
-  .paragraph mark,
-  .paragraph span span { font: inherit; }
+.flipBook { direction: rtl !important; }
 
-  /* ========== التظليل ========== */
-  .reader mark { border-radius: 3px; color: #182129; padding: 0 2px; background: #ffe991; }
-  .reader [data-color="yellow"] { background: #ffe991; color: #342a0a; }
-  .reader [data-color="green"] { background: #b6e3ac; color: #173816; }
-  .reader [data-color="blue"] { background: #b5ddfa; color: #15394d; }
-  .reader [data-color="pink"] { background: #f9c3db; color: #58253d; }
-  .reader [data-color="search"] { background: #f5ac35; color: #2d210f; outline: 1px solid #88520e; }
+/* ========== صفحة الكتاب — محسّنة ========== */
+.bookPage {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 30px 38px 20px;
+  direction: rtl;
+  background:
+    linear-gradient(180deg, #fbf5e8 0%, #f5ecd9 100%);
+  color: #3b3024;
+  box-shadow:
+    inset 0 0 80px rgba(139, 90, 43, 0.08),
+    inset 0 0 1px rgba(139, 90, 43, 0.2);
+  overflow: hidden;
+  position: relative;
+  border-radius: 4px;
+  transition: background 0.4s ease, color 0.4s ease;
+}
 
-  /* ========== زر المشاركة ========== */
-  .reader .share {
-    position: absolute;
-    inset-inline-end: 0;
-    top: 9px;
-    padding: 1px;
-    border: 0;
-    background: transparent;
-    color: inherit;
-    opacity: 0.35;
-    line-height: 1;
-    transition: opacity 0.2s;
-  }
-  .reader .share:hover { opacity: 1; }
+/* خط تجليد الكتاب */
+.bookPage::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  width: 18px;
+  background: linear-gradient(
+    to left,
+    rgba(139, 90, 43, 0.16),
+    rgba(139, 90, 43, 0.04) 60%,
+    transparent
+  );
+  pointer-events: none;
+}
 
-  .pageNumber {
-    flex-shrink: 0;
-    padding-top: 10px;
-    text-align: center;
-    font-size: 12px;
-    opacity: 0.65;
-  }
+/* حافة سفلية للملمس */
+.bookPage::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 40px;
+  background: linear-gradient(to top, rgba(139, 90, 43, 0.05), transparent);
+  pointer-events: none;
+}
 
-  /* ========== شريط التحكم السفلي ========== */
-  .controls {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    margin: 24px auto 0;
-    max-width: 640px;
-  }
-  .controls button { white-space: nowrap; }
-  .progress {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    text-align: center;
-    font-size: 12px;
-  }
-  .progress input {
-    width: 100%;
+.bookPage[data-theme="light"] {
+  background: linear-gradient(180deg, #ffffff 0%, #faf8f2 100%);
+  color: #252424;
+  border-color: #e4dfd4;
+  box-shadow:
+    inset 0 0 60px rgba(0, 0, 0, 0.02),
+    0 1px 0 rgba(255, 255, 255, 0.8) inset;
+}
+.bookPage[data-theme="dark"] {
+  background: linear-gradient(180deg, #1a232b 0%, #141c23 100%);
+  color: #e9e4d8;
+  border-color: #37424a;
+  box-shadow:
+    inset 0 0 80px rgba(0, 0, 0, 0.35),
+    inset 0 0 1px rgba(255, 255, 255, 0.06);
+}
+.bookPage * {
+  font-family: inherit;
+  font-weight: 400;
+}
+
+/* ========== عناوين الصفحة ========== */
+.pageKicker {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 14px;
+  border-bottom: 1px solid currentColor;
+  font-size: 12px;
+  opacity: 0.55;
+  flex-shrink: 0;
+  letter-spacing: 0.05em;
+}
+.pageKicker span { font-size: 10px; }
+
+/* ========== نص الصفحة — قراءة مريحة ========== */
+.pageText {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 90, 43, 0.3) transparent;
+  padding: 22px 4px 16px;
+  line-height: 2;
+  letter-spacing: 0.005em;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  user-select: text;
+  text-align: justify;
+  text-justify: inter-word;
+  touch-action: pan-y;
+}
+.pageText::-webkit-scrollbar { width: 6px; }
+.pageText::-webkit-scrollbar-thumb {
+  background: rgba(139, 90, 43, 0.25);
+  border-radius: 3px;
+}
+.pageText::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 90, 43, 0.45);
+}
+
+.paragraph {
+  position: relative;
+  padding-inline-end: 26px;
+  font-size: inherit;
+  margin: 0 0 0.9em;
+}
+.paragraph > span { font-size: inherit; }
+.paragraph mark,
+.paragraph span span { font: inherit; }
+
+/* ========== التظليل ========== */
+.reader mark {
+  border-radius: 3px;
+  color: #182129;
+  padding: 0 3px;
+  background: #ffe991;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.reader [data-color="yellow"] { background: #ffe991; color: #342a0a; }
+.reader [data-color="green"]  { background: #b6e3ac; color: #173816; }
+.reader [data-color="blue"]   { background: #b5ddfa; color: #15394d; }
+.reader [data-color="pink"]   { background: #f9c3db; color: #58253d; }
+.reader [data-color="search"] {
+  background: #f5ac35;
+  color: #2d210f;
+  outline: 1px solid #88520e;
+  box-shadow: 0 0 0 2px rgba(245, 172, 53, 0.25);
+}
+
+/* ========== زر المشاركة ========== */
+.reader .share {
+  position: absolute;
+  inset-inline-end: 0;
+  top: 9px;
+  padding: 3px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  opacity: 0.35;
+  line-height: 1;
+  border-radius: 6px;
+  transition: opacity 0.25s, background 0.25s, transform 0.2s;
+}
+.reader .share:hover {
+  opacity: 1;
+  background: rgba(255, 215, 0, 0.12);
+  transform: scale(1.08);
+}
+
+.pageNumber {
+  flex-shrink: 0;
+  padding-top: 12px;
+  text-align: center;
+  font-size: 12px;
+  opacity: 0.65;
+  letter-spacing: 0.1em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ========== شريط التحكم السفلي ========== */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 28px auto 0;
+  max-width: 640px;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 30px -18px rgba(0, 0, 0, 0.5);
+}
+.controls button { white-space: nowrap; }
+.progress {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+  font-size: 12px;
+}
+.progress input {
+  width: 100%;
+  padding: 0;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+
+.hint,
+.status {
+  color: var(--text-muted);
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.9;
+  margin: 12px 0;
+}
+.status button {
+  margin-inline-start: 10px;
+  font-size: 12px;
+}
+
+/* ========== الإعدادات ========== */
+.settings {
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 22px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 28px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  backdrop-filter: blur(4px);
+}
+.settings legend {
+  padding: 0 12px;
+  color: var(--gold);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+}
+.settings label {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.settings input,
+.settings select { accent-color: var(--gold); }
+
+/* ========== اللوحة الجانبية ========== */
+.panel {
+  width: 310px;
+  max-width: 100%;
+  border: 1px solid var(--border-color);
+  padding: 22px;
+  border-radius: 16px;
+  background: var(--bg-secondary);
+  box-shadow: 0 10px 30px -22px rgba(0, 0, 0, 0.5);
+}
+.panel h2 {
+  font-size: 16px;
+  margin: 0 0 14px;
+  letter-spacing: -0.01em;
+}
+.panel h2:not(:first-child) { margin-top: 26px; }
+.panel form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 12px;
+}
+.panel textarea {
+  resize: vertical;
+  width: 100%;
+  min-height: 80px;
+}
+
+.muted {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 14px 0;
+  line-height: 1.8;
+}
+
+.savedList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 16px 0;
+  padding: 0;
+  max-height: 440px;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+.savedList li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.2s;
+}
+.savedList li:hover {
+  background: rgba(255, 215, 0, 0.03);
+  border-radius: 6px;
+  padding-inline: 6px;
+}
+.reader .savedJump {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  text-align: start;
+  padding: 0;
+  overflow-wrap: anywhere;
+  background: transparent;
+  line-height: 1.9;
+  border-radius: 6px;
+}
+.savedJump span {
+  display: block;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+.savedList li > button:last-child {
+  font-size: 11px;
+  padding: 5px 8px;
+}
+
+/* ========== شريط التظليل — Glass ========== */
+.selectionBar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  position: sticky;
+  bottom: 18px;
+  z-index: 20;
+  padding: 14px 18px;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  background: rgba(var(--bg-card-rgb, 30, 30, 40), 0.85);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  box-shadow:
+    0 12px 40px -12px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 215, 0, 0.08);
+  margin: 16px auto 0;
+  max-width: 560px;
+  font-size: 13px;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.selectionBar button[data-color] {
+  width: 32px;
+  height: 32px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+  box-shadow: 0 4px 10px -4px rgba(0, 0, 0, 0.3);
+}
+.selectionBar button[data-color]:hover {
+  transform: scale(1.18);
+  box-shadow: 0 6px 14px -4px rgba(0, 0, 0, 0.4);
+}
+.selectionBar button[data-color="yellow"] { background: #ffe991; }
+.selectionBar button[data-color="green"]  { background: #b6e3ac; }
+.selectionBar button[data-color="blue"]   { background: #b5ddfa; }
+.selectionBar button[data-color="pink"]   { background: #f9c3db; }
+
+/* ========== Skeleton ========== */
+.empty {
+  text-align: center;
+  padding: 80px 20px;
+}
+.skeleton {
+  width: min(100%, 560px);
+  min-height: 420px;
+  margin: 24px auto;
+  padding: 50px 32px;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  background: var(--bg-secondary);
+}
+.skeleton span {
+  display: block;
+  height: 16px;
+  background: linear-gradient(
+    90deg,
+    var(--border-light) 25%,
+    rgba(255, 215, 0, 0.08) 50%,
+    var(--border-light) 75%
+  );
+  background-size: 200% 100%;
+  border-radius: 5px;
+  margin: 20px 0;
+  animation: shimmer 1.6s infinite;
+}
+.skeleton span:nth-child(3n) { width: 70%; }
+.skeleton p {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@keyframes pulse { 50% { opacity: 0.35; } }
+
+/* ==========================================================
+   Header Info
+   ========================================================== */
+.headerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* ==========================================================
+   Toolbar Buttons
+   ========================================================== */
+.toolBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 15px;
+  border-radius: 11px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 0.25s ease,
+    color 0.25s ease,
+    background 0.25s ease,
+    transform 0.15s ease,
+    box-shadow 0.25s ease;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+.toolBtn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255, 215, 0, 0.15), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.toolBtn:hover {
+  border-color: rgba(255, 215, 0, 0.5);
+  color: var(--gold);
+  background: rgba(255, 215, 0, 0.06);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -10px var(--gold-glow, rgba(255, 215, 0, 0.4));
+}
+.toolBtn:hover::after { opacity: 1; }
+
+.toolBtnActive {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: #1a1a1a;
+  border-color: transparent;
+  box-shadow: 0 8px 20px -8px var(--gold-glow, rgba(255, 215, 0, 0.5));
+}
+.toolBtnActive:hover {
+  color: #1a1a1a;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  transform: translateY(-1px);
+}
+.toolBtn svg {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+.toolBtn:hover svg { transform: scale(1.1); }
+
+/* ==========================================================
+   Search Wrapper
+   ========================================================== */
+.searchWrapper {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+  max-width: 420px;
+}
+.searchIcon {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: color 0.25s, transform 0.25s;
+}
+.searchWrapper:focus-within .searchIcon {
+  color: var(--gold);
+  transform: translateY(-50%) scale(1.08);
+}
+.searchWrapper input {
+  width: 100%;
+  padding: 11px 42px 11px 38px;
+  border-radius: 999px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 13.5px;
+  outline: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.searchWrapper input:focus {
+  border-color: var(--gold);
+  background: var(--bg-secondary);
+  box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.12);
+}
+.searchWrapper input::placeholder { color: var(--text-muted); }
+
+.searchClear {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 215, 0, 0.1);
+  border: none;
+  color: var(--gold);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+.searchClear:hover {
+  background: var(--gold);
+  color: #1a1a1a;
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* ==========================================================
+   Search Results
+   ========================================================== */
+.searchResults {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.searchCount {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+.searchNextBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: #1a1a1a;
+  border: none;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 20px -8px var(--gold-glow, rgba(255, 215, 0, 0.5));
+}
+.searchNextBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px -8px var(--gold-glow, rgba(255, 215, 0, 0.6));
+}
+.searchNextBtn svg { transition: transform 0.2s; }
+.searchNextBtn:hover svg { transform: translateY(2px); }
+
+/* ==========================================================
+   Empty State
+   ========================================================== */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 24px;
+  gap: 14px;
+  color: var(--text-muted);
+  width: 100%;
+}
+.emptyIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.14), transparent 70%);
+  border: 1px solid rgba(255, 215, 0, 0.22);
+  color: var(--gold);
+  margin-bottom: 6px;
+  box-shadow: 0 12px 32px -12px rgba(255, 215, 0, 0.35);
+}
+.empty p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+
+/* ==========================================================
+   Selection Bar (Extended)
+   ========================================================== */
+.selectionLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-inline-end: 4px;
+  letter-spacing: 0.02em;
+}
+.selectionColor {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+  box-shadow: 0 4px 10px -4px rgba(0, 0, 0, 0.3);
+}
+.selectionColor:hover {
+  transform: scale(1.15);
+  box-shadow: 0 6px 14px -4px rgba(0, 0, 0, 0.4);
+}
+.selectionColor[data-color='yellow'] { background: #ffe991; }
+.selectionColor[data-color='green']  { background: #b6e3ac; }
+.selectionColor[data-color='blue']   { background: #b5ddfa; }
+.selectionColor[data-color='pink']   { background: #f9c3db; }
+
+.selectionCancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+.selectionCancel:hover {
+  background: #ef4444;
+  color: #fff;
+  border-color: #ef4444;
+  transform: rotate(90deg);
+}
+
+/* ==========================================================
+   Responsive
+   ========================================================== */
+@media (max-width: 900px) {
+  .layout { flex-direction: column; }
+  .readingArea { width: 100%; }
+  .panel { width: 100%; }
+  .settings { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .toolBtn span { display: none; }
+  .toolBtn {
+    width: 40px;
+    height: 40px;
     padding: 0;
-    accent-color: var(--gold);
+    justify-content: center;
   }
-
-  .hint,
-  .status {
-    color: var(--text-muted);
-    text-align: center;
-    font-size: 12px;
-    line-height: 1.9;
-    margin: 12px 0;
-  }
-  .status button { margin-inline-start: 10px; font-size: 12px; }
-
-  /* ========== الإعدادات ========== */
-  .settings {
-    border: 1px solid var(--border-color);
-    border-radius: 14px;
-    padding: 20px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 18px;
-    margin-bottom: 28px;
-  }
-  .settings legend { padding: 0 10px; color: var(--gold); }
-  .settings label { display: flex; flex-direction: column; gap: 9px; font-size: 13px; }
-  .settings input,
-  .settings select { accent-color: var(--gold); }
-
-  /* ========== اللوحة الجانبية ========== */
-  .panel {
-    width: 310px;
+  .searchWrapper {
     max-width: 100%;
-    border: 1px solid var(--border-color);
-    padding: 20px;
-    border-radius: 14px;
-    background: var(--bg-secondary);
+    width: 100%;
   }
-  .panel h2 { font-size: 16px; margin: 0 0 14px; }
-  .panel h2:not(:first-child) { margin-top: 26px; }
-  .panel form { display: flex; flex-direction: column; gap: 10px; font-size: 12px; }
-  .panel textarea { resize: vertical; width: 100%; }
-
-  .muted { font-size: 12px; color: var(--text-muted); margin: 14px 0; line-height: 1.8; }
-
-  .savedList {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin: 16px 0;
-    padding: 0;
-    max-height: 440px;
-    overflow: auto;
+  .searchResults {
+    width: 100%;
+    justify-content: space-between;
   }
-  .savedList li {
-    display: flex;
+}
+
+@media (max-width: 540px) {
+  .reader.focused { padding: 12px; }
+  .focused .header { flex-wrap: nowrap; }
+  .focused .header h1 { font-size: 14px; }
+  .focused .toolbar button { padding: 6px 8px; font-size: 11px; }
+  .focused .toolbar button:nth-child(n+3) { display: none; }
+  .reader { padding: 22px 12px 40px; }
+  .bookPage { padding: 20px 22px 14px; }
+  .controls {
     gap: 8px;
-    align-items: flex-start;
-    font-size: 12px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border-color);
+    padding: 10px 12px;
+    border-radius: 16px;
   }
-  .reader .savedJump {
-    flex: 1;
-    min-width: 0;
-    border: 0;
-    text-align: start;
-    padding: 0;
-    overflow-wrap: anywhere;
-    background: transparent;
-    line-height: 1.9;
-  }
-  .savedJump span { display: block; color: var(--text-muted); font-weight: 400; }
-  .savedList li > button:last-child { font-size: 11px; padding: 5px 8px; }
+  .controls button { font-size: 12px; padding: 8px; }
+  .header { gap: 14px; }
+  .toolbar { font-size: 11px; }
+  .searchRow { padding: 12px; gap: 8px; }
+  .searchRow label { width: 100%; }
+  .settings { padding: 14px; gap: 12px; }
+  .pageKicker span { display: none; }
+}
 
-  /* ========== شريط التظليل ========== */
-  .selectionBar {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    position: sticky;
-    bottom: 18px;
-    z-index: 20;
-    padding: 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 14px;
-    background: var(--bg-secondary);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    margin: 16px auto 0;
-    max-width: 520px;
-    font-size: 13px;
-  }
-  .selectionBar button[data-color] {
-    width: 30px;
-    height: 30px;
-    border: 2px solid #fff;
-    border-radius: 50%;
-    padding: 0;
-    cursor: pointer;
-  }
-  .selectionBar button[data-color="yellow"] { background: #ffe991; }
-  .selectionBar button[data-color="green"] { background: #b6e3ac; }
-  .selectionBar button[data-color="blue"] { background: #b5ddfa; }
-  .selectionBar button[data-color="pink"] { background: #f9c3db; }
-
-  /* ========== Skeleton ========== */
-  .empty { text-align: center; padding: 80px 20px; }
-  .skeleton {
-    width: min(100%, 560px);
-    min-height: 420px;
-    margin: 24px auto;
-    padding: 50px 32px;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    background: var(--bg-secondary);
-  }
-  .skeleton span {
-    display: block;
-    height: 16px;
-    background: var(--border-light);
-    border-radius: 5px;
-    margin: 20px 0;
-    animation: pulse 1.5s infinite;
-  }
-  .skeleton span:nth-child(3n) { width: 70%; }
-  .skeleton p { font-size: 13px; color: var(--text-muted); }
-
-  @keyframes pulse { 50% { opacity: 0.35; } }
-
-  /* ========== الاستجابة ========== */
-  @media (max-width: 900px) {
-    .layout { flex-direction: column; }
-    .readingArea { width:100%; }
-    .panel { width: 100%; }
-    .settings { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 540px) {
-    .reader.focused { padding:12px; }
-    .focused .header { flex-wrap:nowrap; }
-    .focused .header h1 { font-size:14px; }
-    .focused .toolbar button { padding:6px 8px; font-size:11px; }
-    .focused .toolbar button:nth-child(n+3) { display:none; }
-    .reader { padding: 22px 12px 40px; }
-    .bookPage { padding: 18px 20px 12px; }
-    .controls { gap: 8px; }
-    .controls button { font-size: 12px; padding: 8px; }
-    .header { gap: 14px; }
-    .toolbar { font-size: 11px; }
-    .searchRow { padding: 12px; gap: 8px; }
-    .searchRow label { width: 100%; }
-    .settings { padding: 14px; gap: 12px; }
-    .pageKicker span { display: none; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .skeleton span { animation: none; }
-  }
+@media (prefers-reduced-motion: reduce) {
+  .skeleton span,
+  .focused,
+  .selectionBar,
+  .toolBtn,
+  .reader button,
+  .searchNextBtn,
+  .selectionColor,
+  .selectionCancel { animation: none !important; transition: none !important; }
+}

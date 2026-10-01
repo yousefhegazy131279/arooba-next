@@ -1,373 +1,1000 @@
-/* ===== الحاوية الرئيسية (لتجميع الزر والقائمة) ===== */
-.authContainer {
-  position: fixed;
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
-  z-index: 1001;
-  direction: ltr;
-}
+/* ==========================================================================
+   AuthSidebar.module.css
+   القائمة الجانبية للمستخدم – خلفية صلبة مع دعم الثيم
+   ========================================================================== */
 
-/* ===== الزر الدائري ===== */
-.authToggleBtn {
-  position: fixed;
-  top: 50%;
-  right: 20px;
-  transform: translateY(-50%);
-  width: 56px;
-  height: 56px;
-  background: var(--gold);
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: right 0.3s cubic-bezier(0.23, 1, 0.32, 1), transform 0.2s, background 0.2s;
-  box-shadow: 0 8px 20px var(--shadow), 0 0 0 2px rgba(255, 255, 255, 0.2) inset;
-  z-index: 1002;
-}
-
-.authToggleBtn:hover {
-  transform: translateY(-50%) scale(1.08);
-  background: var(--gold-dark);
-  box-shadow: 0 12px 28px var(--gold-glow);
-}
-
-.authToggleBtn.open {
-  background: var(--gold-dark);
-}
-
-.arrowIcon {
-  font-size: 1.8rem;
-  color: var(--bg-primary);
-  font-weight: bold;
-  transition: transform 0.2s;
-}
-
-.authToggleBtn:hover .arrowIcon {
-  transform: rotate(15deg);
-}
-
-/* ===== الشريط الجانبي (يظهر من اليمين) ===== */
-.authSidebar {
-  position: fixed;
-  top: 50%;
-  right: -320px;
-  transform: translateY(-50%);
-  width: 280px;
-  background: var(--bg-secondary);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border-color);
-  border-radius: 24px 0 0 24px;
-  box-shadow: -10px 10px 40px var(--shadow), -2px 0 10px var(--gold-glow);
-  padding: 1.5rem 1rem;
-  transition: right 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-  z-index: 1000;
-  color: var(--text-primary);
-}
-
-.authSidebar.open {
-  right: 0;
-}
-
-/* ===== عند فتح القائمة، يتحرك الزر إلى يسار القائمة ===== */
-.authToggleBtn.shifted {
-  right: 290px; /* عرض القائمة (280px) + مسافة 10px ليظهر الزر على يسار القائمة */
-}
-
-.authToggleBtn.shifted:hover {
-  transform: translateY(-50%) scale(1.08);
-}
-
-/* ===== باقي الأنماط (الملف الشخصي، الأزرار، إلخ) ===== */
-.sidebarContent {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  gap: 1.5rem;
-}
-
-.userProfile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.8rem;
-  text-align: center;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 1rem;
-}
-
-.avatarWrapper {
-  position: relative;
-  width: 80px;
-  height: 80px;
-}
-
-.avatar {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  font-weight: bold;
-  background: var(--bg-card);
-  border: 2px solid var(--gold);
-  transition: all 0.3s;
-  position: relative;
-  z-index: 2;
-}
-
-.userAvatar {
-  background: var(--gold);
-  color: var(--bg-primary);
-}
-
-.guestAvatar {
-  background: rgba(255,215,0,0.1);
-  color: var(--gold);
-}
-
-.guestAvatar svg {
-  stroke: var(--gold);
-  width: 40px;
-  height: 40px;
-}
-
-.avatarImg {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.avatarGlow {
-  position: absolute;
-  top: -10px;
-  left: -10px;
-  right: -10px;
-  bottom: -10px;
-  border-radius: 50%;
-  background: radial-gradient(circle, var(--gold-glow), transparent 70%);
-  animation: pulseGlow 2s infinite;
-  z-index: 1;
-}
-
-@keyframes pulseGlow {
-  0% { opacity: 0.3; transform: scale(0.9); }
-  50% { opacity: 0.7; transform: scale(1.1); }
-  100% { opacity: 0.3; transform: scale(0.9); }
-}
-
-.userInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.userName {
-  color: var(--gold);
-  font-size: 1.3rem;
-  font-weight: bold;
-}
-
-.userRole {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  background: rgba(255,215,0,0.15);
-  padding: 0.2rem 0.8rem;
-  border-radius: 50px;
-  display: inline-block;
-  width: fit-content;
-  margin: 0 auto;
-}
-
-.userStatus, .userGreeting {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-}
-
-.actionsList {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  width: 100%;
-}
-
-.actionBtn {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  padding: 0.7rem 1rem;
-  border-radius: 16px;
-  text-decoration: none;
-  font-weight: 500;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
-  transition: all 0.2s ease;
-  cursor: pointer;
-  width: 100%;
-  text-align: right;
-}
-
-.actionBtn:hover {
-  border-color: var(--gold);
-  background: var(--bg-card-hover);
-  transform: translateX(-5px);
-}
-
-.btnIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-}
-
-.btnIcon svg {
-  stroke: currentColor;
-}
-
-.loginBtn:hover,
-.registerBtn:hover,
-.adminBtn:hover {
-  background: var(--gold);
-  color: var(--bg-primary);
-}
-
-.logoutBtn:hover {
-  background: #e74c3c;
-  color: white;
-  border-color: #e74c3c;
-}
-
-.themeBtn {
-  margin-top: 1rem;
-  border-color: var(--gold);
-}
-
-.loadingState {
-  text-align: center;
-  padding: 2rem;
-  color: var(--gold);
-  font-size: 0.9rem;
-}
-
-/* ===== استجابة للأجهزة المحمولة ===== */
-@media (max-width: 768px) {
+/* ==========================================================
+   1) الحاوية الرئيسية والزر
+   ========================================================== */
+   .authContainer {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    z-index: 1001;
+    direction: ltr;
+  }
+  
   .authToggleBtn {
-    width: 48px;
-    height: 48px;
-    right: 15px;
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1a1a1a;
+    transition:
+      right 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+      transform 0.25s,
+      box-shadow 0.25s;
+    box-shadow:
+      0 10px 30px -10px rgba(255, 215, 0, 0.5),
+      0 0 0 2px rgba(255, 255, 255, 0.15) inset;
+    z-index: 1002;
   }
+  
+  .authToggleBtn:hover {
+    transform: translateY(-50%) scale(1.06);
+    box-shadow:
+      0 15px 40px -10px rgba(255, 215, 0, 0.6),
+      0 0 0 2px rgba(255, 255, 255, 0.2) inset;
+  }
+  
+  .authToggleBtn.open {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  }
+  
   .arrowIcon {
-    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s;
   }
-  .authSidebar {
-    width: 260px;
-    right: -280px;
-    padding: 1rem 0.8rem;
+  
+  .authToggleBtn:hover .arrowIcon {
+    transform: rotate(8deg);
   }
+  
+  .btnGlow {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.4), transparent 70%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  
+  .authToggleBtn:hover .btnGlow {
+    opacity: 1;
+  }
+  
   .authToggleBtn.shifted {
-    right: 270px; /* 260px + 10px */
+    right: 300px;
   }
+  
+  /* ==========================================================
+     2) القائمة الجانبية – خلفية صلبة
+     ========================================================== */
+  .authSidebar {
+    position: fixed;
+    top: 50%;
+    right: -340px;
+    transform: translateY(-50%);
+    width: 300px;
+    max-height: 92vh;
+    overflow-y: auto;
+  
+    /* ✨ خلفية صلبة غير شفافة */
+    background: var(--bg-primary);
+  
+    border: 1px solid var(--border-color);
+    border-radius: 24px 0 0 24px;
+    box-shadow:
+      -20px 10px 60px -20px rgba(0, 0, 0, 0.55),
+      -2px 0 20px -8px var(--gold-glow);
+    padding: 22px 18px;
+    transition: right 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+    z-index: 1000;
+    color: var(--text-primary);
+    scrollbar-width: thin;
+  }
+  
+  /* ✨ في الثيم الفاتح: أبيض صريح */
+  :global(.light) .authSidebar {
+    background: #ffffff;
+  }
+  
+  .authSidebar::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .authSidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 215, 0, 0.3);
+    border-radius: 2px;
+  }
+  
+  .authSidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 215, 0, 0.5);
+  }
+  
+  .authSidebar.open {
+    right: 0;
+  }
+  
+  /* ==========================================================
+     3) المحتوى
+     ========================================================== */
+  .sidebarContent {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  
+  /* ==========================================================
+     4) بطاقة المستخدم – خلفية صلبة
+     ========================================================== */
+  .userProfile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+    padding: 22px 12px 20px;
+  
+    /* ✨ خلفية صلبة */
+    background: var(--bg-secondary);
+  
+    border: 1px solid rgba(255, 215, 0, 0.18);
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  :global(.light) .userProfile {
+    background: #f5f7fc;
+  }
+  
+  .userProfile::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.6;
+  }
+  
   .avatarWrapper {
-    width: 65px;
-    height: 65px;
+    position: relative;
+    width: 88px;
+    height: 88px;
   }
+  
   .avatar {
-    font-size: 1.6rem;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: var(--bg-secondary);
+    border: 3px solid var(--gold);
+    transition: all 0.3s;
+    position: relative;
+    z-index: 2;
+    font-family: 'Amiri', serif;
   }
+  
+  .userAvatar {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #1a1a1a;
+  }
+  
+  .guestAvatar {
+    background: rgba(255, 215, 0, 0.08);
+    color: var(--gold);
+  }
+  
+  .guestAvatar svg {
+    stroke: var(--gold);
+  }
+  
+  .avatarImg {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--gold);
+    box-shadow: 0 8px 24px -8px var(--gold-glow);
+  }
+  
+  .avatarGlow {
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--gold-glow), transparent 70%);
+    animation: pulseGlow 2.4s infinite;
+    z-index: 1;
+    pointer-events: none;
+  }
+  
+  @keyframes pulseGlow {
+    0%, 100% {
+      opacity: 0.3;
+      transform: scale(0.95);
+    }
+    50% {
+      opacity: 0.6;
+      transform: scale(1.08);
+    }
+  }
+  
+  .userInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+  }
+  
+  .userName {
+    color: var(--text-primary);
+    font-size: 1.15rem;
+    font-weight: 800;
+    font-family: 'Amiri', serif;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  
+  .userRole {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    background: rgba(255, 215, 0, 0.08);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    padding: 3px 12px;
+    border-radius: 999px;
+    letter-spacing: 0.03em;
+  }
+  
+  .userRoleAdmin {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.08));
+    color: var(--gold);
+    border-color: rgba(255, 215, 0, 0.4);
+  }
+  
+  .userStatus,
+  .userGreeting {
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+  }
+  
+  .userStatus {
+    font-weight: 700;
+    color: var(--gold);
+    font-size: 0.95rem;
+  }
+  
+  /* ==========================================================
+     5) قائمة الأزرار
+     ========================================================== */
+  .actionsList {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+  }
+  
+  .sectionGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .sectionLabel {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 800;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0 8px 4px;
+    margin-top: 2px;
+  }
+  
+  /* ==========================================================
+     6) زر عام – خلفية صلبة
+     ========================================================== */
   .actionBtn {
-    padding: 0.6rem 0.8rem;
-    font-size: 0.9rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 14px;
+    text-decoration: none;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+  
+    /* ✨ خلفية صلبة */
+    background: var(--bg-secondary);
+  
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    cursor: pointer;
+    width: 100%;
+    text-align: right;
+    overflow: hidden;
   }
+  
+  :global(.light) .actionBtn {
+    background: #f5f7fc;
+  }
+  
+  .actionBtn::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%) scaleY(0);
+    width: 3px;
+    height: 60%;
+    border-radius: 3px;
+    background: var(--gold);
+    transition: transform 0.25s;
+  }
+  
+  .actionBtn:hover {
+    background: rgba(255, 215, 0, 0.08);
+    color: var(--gold);
+    transform: translateX(-3px);
+    border-color: rgba(255, 215, 0, 0.35);
+  }
+  
+  :global(.light) .actionBtn:hover {
+    background: #fff7d6;
+  }
+  
+  .actionBtn:hover::before {
+    transform: translateY(-50%) scaleY(1);
+  }
+  
   .btnIcon {
-    width: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: rgba(255, 215, 0, 0.08);
+    border: 1px solid rgba(255, 215, 0, 0.15);
+    color: var(--gold);
+    flex-shrink: 0;
+    transition: all 0.25s;
   }
-}
-
-@media (max-width: 480px) {
-  .authToggleBtn {
-    width: 44px;
-    height: 44px;
-    right: 10px;
+  
+  .actionBtn:hover .btnIcon {
+    background: rgba(255, 215, 0, 0.18);
+    transform: scale(1.05);
   }
-  .arrowIcon {
-    font-size: 1.3rem;
+  
+  .btnText {
+    flex: 1;
+    text-align: right;
   }
-  .authSidebar {
-    width: 240px;
-    right: -260px;
+  
+  /* ==========================================================
+     7) أزرار محددة
+     ========================================================== */
+  
+  /* --- تسجيل الدخول --- */
+  .loginBtn {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+    border-color: rgba(255, 215, 0, 0.35);
+    color: var(--gold);
+    font-weight: 800;
   }
-  .authToggleBtn.shifted {
-    right: 250px; /* 240px + 10px */
+  
+  :global(.light) .loginBtn {
+    background: linear-gradient(135deg, #fff7d6, #fff2b3);
   }
-  .authToggleBtn {
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
+  
+  .loginBtn .btnIcon {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #1a1a1a;
+    border-color: transparent;
   }
-}
-
-.favoritesBtn {
-  position: relative;
-  overflow: hidden;
-}
-
-.favoritesBtn svg {
-  transition: all 0.3s ease;
-}
-
-.favoritesBtn:hover svg {
-  transform: scale(1.2);
-  fill: #ef4444;
-  stroke: #ef4444;
-}
-
-.favoritesBtn:hover {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: #ef4444;
-}
-
-.favoritesBtn:hover .btnText {
-  color: #ef4444;
-}
-
-.profileBtn {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: #3b82f6;
-}
-.profileBtn:hover {
-  background: #3b82f6;
-  color: white;
-}
-
-.directSection{display:grid;gap:5px;min-width:0}
-.messageBtn{border-color:var(--gold);background:var(--gold-glow)}
-.dmBadge,.recentMessage>b{margin-inline-start:auto;background:var(--gold);color:#18202b;border-radius:100px;padding:2px 7px;font-size:.7rem}
-.recentMessages{display:grid;gap:3px;max-height:170px;overflow-y:auto;border:1px solid var(--border-color);border-radius:12px;padding:5px}
-.recentMessage{display:flex;align-items:center;gap:7px;text-decoration:none;color:var(--text-primary);padding:6px;border-radius:8px;min-width:0}
-.recentMessage:hover{background:var(--bg-card-hover)}
-.recentMessage img,.recentMessage>span:first-child{width:30px;height:30px;flex:none}
-.recentMessage>span:nth-child(2){display:grid;min-width:0;flex:1}
-.recentMessage strong,.recentMessage small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.75rem}
-.recentMessage small{color:var(--text-muted);font-size:.68rem}
-
-.avatarImg {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--gold);
-}
-
-@media (max-width: 600px) {
-  .authContainer { top: auto; bottom: 0; transform: none; }
-  .authToggleBtn { top: auto; bottom: 18px; right: 12px; transform: none; }
-  .authToggleBtn:hover { transform: scale(1.06); }
-  .authSidebar { top: auto; bottom: 0; transform: none; max-height: 80vh; overflow-y: auto; }
-  .authToggleBtn.shifted { right: 250px; }
-  .authToggleBtn.shifted:hover { transform: scale(1.06); }
-}
+  
+  .loginBtn:hover {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #1a1a1a;
+    border-color: transparent;
+    box-shadow: 0 10px 25px -10px var(--gold-glow);
+  }
+  
+  .loginBtn:hover .btnIcon {
+    background: rgba(0, 0, 0, 0.15);
+    color: #1a1a1a;
+  }
+  
+  /* --- إنشاء حساب --- */
+  .registerBtn {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+  }
+  
+  :global(.light) .registerBtn {
+    background: #f5f7fc;
+  }
+  
+  .registerBtn:hover {
+    border-color: rgba(255, 215, 0, 0.4);
+    color: var(--gold);
+  }
+  
+  /* --- لوحة التحكم --- */
+  .adminBtn {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.03));
+    border-color: rgba(255, 215, 0, 0.28);
+  }
+  
+  :global(.light) .adminBtn {
+    background: linear-gradient(135deg, #fff7d6, #fffbf0);
+  }
+  
+  .adminBtn:hover {
+    background: rgba(255, 215, 0, 0.18);
+    border-color: rgba(255, 215, 0, 0.5);
+  }
+  
+  /* --- المفضلات --- */
+  .favoritesBtn {
+    background: var(--bg-secondary);
+  }
+  
+  :global(.light) .favoritesBtn {
+    background: #f5f7fc;
+  }
+  
+  .favoritesBtn:hover {
+    background: rgba(239, 68, 68, 0.08);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+  
+  .favoritesBtn:hover::before {
+    background: #ef4444;
+  }
+  
+  .favoritesBtn:hover .btnIcon {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.25);
+    color: #ef4444;
+  }
+  
+  .favoritesBtn:hover .btnIcon svg {
+    fill: #ef4444;
+    stroke: #ef4444;
+  }
+  
+  /* --- مساحة الكتابة --- */
+  .writeBtn {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.03));
+    border-color: rgba(139, 92, 246, 0.25);
+  }
+  
+  :global(.light) .writeBtn {
+    background: linear-gradient(135deg, #f0eaff, #f8f5ff);
+  }
+  
+  .writeBtn:hover {
+    background: rgba(139, 92, 246, 0.15);
+    color: #a78bfa;
+    border-color: rgba(139, 92, 246, 0.5);
+  }
+  
+  .writeBtn:hover::before {
+    background: #a78bfa;
+  }
+  
+  .writeBtn:hover .btnIcon {
+    background: rgba(139, 92, 246, 0.18);
+    color: #a78bfa;
+  }
+  
+  /* --- الإشعارات --- */
+  .notificationBtn {
+    position: relative;
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+  }
+  
+  :global(.light) .notificationBtn {
+    background: #f5f7fc;
+  }
+  
+  .notificationBtn:hover {
+    background: rgba(255, 215, 0, 0.08);
+    border-color: rgba(255, 215, 0, 0.4);
+    color: var(--gold);
+  }
+  
+  .notificationBtn:hover::before {
+    background: var(--gold);
+  }
+  
+  .notificationBtn:hover .btnIcon {
+    background: rgba(255, 215, 0, 0.18);
+    color: var(--gold);
+  }
+  
+  .notificationBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    margin-inline-start: auto;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    box-shadow: 0 4px 12px -3px rgba(239, 68, 68, 0.5);
+    animation: badgePop 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  }
+  
+  @keyframes badgePop {
+    from {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  /* --- تسجيل الخروج --- */
+  .logoutBtn {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.25);
+    color: #ef4444;
+    margin-top: 6px;
+  }
+  
+  :global(.light) .logoutBtn {
+    background: #fff0f0;
+  }
+  
+  .logoutBtn .btnIcon {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.25);
+    color: #ef4444;
+  }
+  
+  .logoutBtn:hover {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 10px 25px -10px rgba(239, 68, 68, 0.5);
+  }
+  
+  .logoutBtn:hover::before {
+    background: #fff;
+  }
+  
+  .logoutBtn:hover .btnIcon {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #fff;
+  }
+  
+  /* --- زر الثيم --- */
+  .themeBtn {
+    border-color: var(--border-color);
+    background: var(--bg-secondary);
+    margin-top: 6px;
+  }
+  
+  :global(.light) .themeBtn {
+    background: #f5f7fc;
+  }
+  
+  .themeBtn:hover {
+    border-color: rgba(255, 215, 0, 0.4);
+    color: var(--gold);
+    background: rgba(255, 215, 0, 0.08);
+  }
+  
+  /* ==========================================================
+     8) حالة التحميل
+     ========================================================== */
+  .loadingState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-size: 13.5px;
+  }
+  
+  .loadingSpinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* ==========================================================
+     9) قسم الرسائل الجانبية (SidebarDirectMessages)
+     ========================================================== */
+  .directSection {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+  
+  .directSection .actionBtn {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+  }
+  
+  :global(.light) .directSection .actionBtn {
+    background: #f5f7fc;
+  }
+  
+  .messageBtn {
+    border-color: rgba(255, 215, 0, 0.3);
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.08), rgba(255, 215, 0, 0.02));
+  }
+  
+  :global(.light) .messageBtn {
+    background: linear-gradient(135deg, #fff7d6, #fffbf0);
+  }
+  
+  .messageBtn:hover {
+    background: rgba(255, 215, 0, 0.12);
+    border-color: rgba(255, 215, 0, 0.5);
+  }
+  
+  .dmBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    margin-inline-start: auto;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    box-shadow: 0 4px 12px -3px rgba(239, 68, 68, 0.5);
+  }
+  
+  .recentMessages {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 8px 6px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    animation: recentIn 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    max-height: 180px;
+    overflow-y: auto;
+  }
+  
+  :global(.light) .recentMessages {
+    background: #f5f7fc;
+  }
+  
+  @keyframes recentIn {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .recentHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 10px 8px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 4px;
+  }
+  
+  .recentTitle {
+    font-size: 10.5px;
+    font-weight: 800;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  
+  .recentViewAll {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+  
+  .recentViewAll:hover {
+    color: var(--gold);
+  }
+  
+  .recentMessage {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all 0.2s;
+    position: relative;
+  }
+  
+  .recentMessage:hover {
+    background: rgba(255, 215, 0, 0.06);
+  }
+  
+  :global(.light) .recentMessage:hover {
+    background: #fff7d6;
+  }
+  
+  .recentMessageUnread {
+    background: rgba(239, 68, 68, 0.04);
+  }
+  
+  :global(.light) .recentMessageUnread {
+    background: #fff0f0;
+  }
+  
+  .recentMessageUnread::before {
+    content: '';
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    border-radius: 3px;
+    background: #ef4444;
+  }
+  
+  .recentBody {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .recentTop {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  
+  .recentTop strong {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .recentTime {
+    font-size: 10px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    font-weight: 500;
+  }
+  
+  .recentPreview {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.4;
+  }
+  
+  .recentBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #1a1a1a;
+    font-size: 10px;
+    font-weight: 800;
+    flex-shrink: 0;
+    box-shadow: 0 3px 8px -2px var(--gold-glow);
+  }
+  
+  /* ==========================================================
+     10) الاستجابة
+     ========================================================== */
+  @media (max-width: 768px) {
+    .authToggleBtn {
+      width: 48px;
+      height: 48px;
+      right: 15px;
+    }
+  
+    .authSidebar {
+      width: 280px;
+      right: -300px;
+      padding: 18px 14px;
+    }
+  
+    .authToggleBtn.shifted {
+      right: 280px;
+    }
+  
+    .avatarWrapper {
+      width: 76px;
+      height: 76px;
+    }
+  
+    .actionBtn {
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+  
+    .btnIcon {
+      width: 30px;
+      height: 30px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .authToggleBtn {
+      width: 44px;
+      height: 44px;
+      right: 10px;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+  
+    .authSidebar {
+      width: 260px;
+      right: -280px;
+      padding: 16px 12px;
+    }
+  
+    .authToggleBtn.shifted {
+      right: 260px;
+    }
+  
+    .userProfile {
+      padding: 18px 10px 16px;
+    }
+  
+    .avatarWrapper {
+      width: 68px;
+      height: 68px;
+    }
+  
+    .userName {
+      font-size: 1.05rem;
+    }
+  
+    .sectionLabel {
+      font-size: 9.5px;
+    }
+  
+    .actionBtn {
+      padding: 9px 11px;
+      font-size: 12.5px;
+      gap: 10px;
+    }
+  
+    .btnIcon {
+      width: 28px;
+      height: 28px;
+    }
+  }
+  
+  /* ==========================================================
+     11) الجوال الأفقي (القائمة من الأسفل)
+     ========================================================== */
+  @media (max-width: 600px) {
+    .authContainer {
+      top: auto;
+      bottom: 0;
+      transform: none;
+    }
+  
+    .authToggleBtn {
+      top: auto;
+      bottom: 18px;
+      right: 12px;
+      transform: none;
+    }
+  
+    .authToggleBtn:hover {
+      transform: scale(1.06);
+    }
+  
+    .authSidebar {
+      top: auto;
+      bottom: 0;
+      transform: none;
+      max-height: 80vh;
+      overflow-y: auto;
+      border-radius: 24px 0 0 0;
+    }
+  
+    .authToggleBtn.shifted {
+      right: 272px;
+    }
+  
+    .authToggleBtn.shifted:hover {
+      transform: scale(1.06);
+    }
+  }
+  
+  /* ==========================================================
+     12) تقليل الحركة
+     ========================================================== */
+  @media (prefers-reduced-motion: reduce) {
+    .authSidebar,
+    .authToggleBtn,
+    .arrowIcon,
+    .avatarGlow,
+    .loadingSpinner,
+    .recentMessages,
+    .notificationBadge {
+      transition: none;
+      animation: none;
+    }
+  
+    .actionBtn:hover {
+      transform: none;
+    }
+  
+    .actionBtn:hover::before {
+      transform: translateY(-50%) scaleY(0);
+    }
+  }

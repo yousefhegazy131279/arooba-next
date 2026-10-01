@@ -1,0 +1,208 @@
+/* ==========================================================================
+   PostThread – غلاف صفحة المنشور والتعليقات
+   ========================================================================== */
+
+   .thread {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    animation: threadIn 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  }
+  
+  @keyframes threadIn {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* ==========================================================
+     رأس الصفحة
+     ========================================================== */
+  .threadHeader {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  /* زر العودة */
+  .backLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    width: fit-content;
+    border-radius: 999px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  
+  .backLink:hover {
+    color: var(--gold);
+    border-color: rgba(255, 215, 0, 0.4);
+    transform: translateX(-2px);
+  }
+  
+  /* عنوان الصفحة */
+  .threadTitle {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  
+  .threadIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #1a1a1a;
+    flex-shrink: 0;
+    box-shadow: 0 10px 25px -10px var(--gold-glow);
+  }
+  
+  .threadTitle h1 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 2px;
+    font-family: 'Amiri', serif;
+    line-height: 1.3;
+  }
+  
+  .threadTitle p {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin: 0;
+  }
+  
+  /* ==========================================================
+     المنشور والتعليقات
+     ========================================================== */
+  .postWrap,
+  .commentsWrap {
+    position: relative;
+  }
+  
+  /* فاصل بصري بين المنشور والتعليقات */
+  .commentsWrap::before {
+    content: '';
+    position: absolute;
+    top: -12px;
+    right: 20px;
+    left: 20px;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--border-color) 30%,
+      var(--border-color) 70%,
+      transparent
+    );
+    opacity: 0.6;
+  }
+  
+  /* ==========================================================
+     حالة الحذف
+     ========================================================== */
+  .deletingState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 80px 24px;
+    text-align: center;
+    color: var(--text-muted);
+    animation: threadIn 0.3s ease;
+  }
+  
+  .deletingSpinner {
+    width: 44px;
+    height: 44px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .deletingState p {
+    font-size: 14px;
+    margin: 0;
+    font-weight: 500;
+  }
+  
+  /* ==========================================================
+     الاستجابة
+     ========================================================== */
+  @media (max-width: 640px) {
+    .thread {
+      gap: 16px;
+    }
+  
+    .threadHeader {
+      padding-bottom: 14px;
+      gap: 12px;
+    }
+  
+    .threadIcon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+    }
+  
+    .threadTitle h1 {
+      font-size: 1.05rem;
+    }
+  
+    .threadTitle p {
+      font-size: 11.5px;
+    }
+  
+    .backLink {
+      padding: 7px 12px;
+      font-size: 12.5px;
+    }
+  
+    .deletingState {
+      padding: 60px 20px;
+    }
+  
+    .deletingSpinner {
+      width: 36px;
+      height: 36px;
+    }
+  }
+  
+  /* ==========================================================
+     تقليل الحركة
+     ========================================================== */
+  @media (prefers-reduced-motion: reduce) {
+    .thread,
+    .deletingState,
+    .deletingSpinner {
+      animation: none;
+    }
+    .backLink {
+      transition: none;
+    }
+  }

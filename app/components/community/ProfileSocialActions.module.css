@@ -1,0 +1,255 @@
+/* ==========================================================================
+   ProfileSocialActions – أزرار الإجراءات الاجتماعية
+   ========================================================================== */
+
+   .actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  /* ==========================================================
+     الأزرار الأساسية
+     ========================================================== */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border-radius: 999px;
+    border: 1.5px solid;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    white-space: nowrap;
+    min-height: 42px;
+  }
+  
+  .btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+  
+  .btn svg {
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+  
+  .btn:hover:not(:disabled) svg {
+    transform: scale(1.1);
+  }
+  
+  /* ==========================================================
+     زر المتابعة – أساسي (ذهبي)
+     ========================================================== */
+  .btnPrimary {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border-color: transparent;
+    color: #1a1a1a;
+    box-shadow: 0 10px 25px -10px var(--gold-glow);
+  }
+  
+  .btnPrimary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px -10px var(--gold-glow);
+  }
+  
+  /* ==========================================================
+     زر المتابعة – عند المتابعة (outlined)
+     ========================================================== */
+  .btnFollowing {
+    background: rgba(255, 215, 0, 0.08);
+    border-color: rgba(255, 215, 0, 0.4);
+    color: var(--gold);
+  }
+  
+  .btnFollowing:hover:not(:disabled) {
+    background: rgba(255, 215, 0, 0.15);
+    border-color: rgba(255, 215, 0, 0.6);
+    transform: translateY(-2px);
+  }
+  
+  /* ==========================================================
+     زر المراسلة – ثانوي
+     ========================================================== */
+  .btnSecondary {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+  }
+  
+  .btnSecondary:hover:not(:disabled) {
+    background: var(--bg-card-hover);
+    border-color: rgba(255, 215, 0, 0.4);
+    color: var(--gold);
+    transform: translateY(-2px);
+  }
+  
+  /* ==========================================================
+     زر الحظر – ghost
+     ========================================================== */
+  .btnGhost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--text-muted);
+    padding: 11px 16px;
+  }
+  
+  .btnGhost:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.25);
+    color: #ef4444;
+  }
+  
+  /* ==========================================================
+     زر الحظر – عند الحظر النشط
+     ========================================================== */
+  .btnBlocked {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #ef4444;
+  }
+  
+  .btnBlocked:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.6);
+  }
+  
+  /* ==========================================================
+     زر تعديل ملفي (isOwn)
+     ========================================================== */
+  .editBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border-radius: 999px;
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-color);
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 700;
+    transition: all 0.25s;
+  }
+  
+  .editBtn:hover {
+    border-color: rgba(255, 215, 0, 0.5);
+    color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -10px var(--gold-glow);
+  }
+  
+  /* ==========================================================
+     زر تسجيل الدخول (زائر)
+     ========================================================== */
+  .loginCta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #1a1a1a;
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 800;
+    box-shadow: 0 10px 25px -10px var(--gold-glow);
+    transition: all 0.25s;
+  }
+  
+  .loginCta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px -10px var(--gold-glow);
+  }
+  
+  /* ==========================================================
+     رسالة الخطأ
+     ========================================================== */
+  .error {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    font-size: 12px;
+    font-weight: 600;
+    animation: errorShake 0.4s ease;
+  }
+  
+  @keyframes errorShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+  
+  /* ==========================================================
+     Spinner
+     ========================================================== */
+  .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    opacity: 0.8;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  /* ==========================================================
+     الاستجابة
+     ========================================================== */
+  @media (max-width: 640px) {
+    .actions {
+      width: 100%;
+    }
+  
+    .btn {
+      flex: 1;
+      min-width: 0;
+      padding: 11px 16px;
+      font-size: 13px;
+    }
+  
+    .btnGhost {
+      flex: 0 0 auto;
+      padding: 11px 14px;
+    }
+  
+    .btnGhost span {
+      display: none;
+    }
+  
+    .loginCta,
+    .editBtn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  
+  /* ==========================================================
+     تقليل الحركة
+     ========================================================== */
+  @media (prefers-reduced-motion: reduce) {
+    .btn,
+    .editBtn,
+    .loginCta,
+    .btn svg,
+    .error {
+      transition: none;
+      animation: none;
+    }
+  }

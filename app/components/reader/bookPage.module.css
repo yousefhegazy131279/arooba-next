@@ -1,0 +1,232 @@
+/* ========== الصفحة ========== */
+.page {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 28px 32px 18px;
+    background: #fdfcf7;
+    color: #2a2118;
+    font-family: "Cairo", "Amiri", serif;
+    direction: rtl;
+    text-align: right;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  
+  /* ========== نص الصفحة ========== */
+  .pageBody {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    padding-left: 8px;
+    padding-right: 4px;
+    line-height: 1.85;
+  }
+  
+  .pageBody::-webkit-scrollbar {
+    width: 4px;
+  }
+  .pageBody::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+  }
+  
+  .paragraph {
+    margin: 0 0 1em 0;
+    text-indent: 1.5em;
+    text-align: justify;
+    font-size: 1.05rem;
+    line-height: 1.85;
+    word-spacing: 0.05em;
+  }
+  
+  .paragraph:first-child {
+    text-indent: 0;
+  }
+  
+  /* ========== تذييل الصفحة ========== */
+  .pageFooter {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    margin-top: 8px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 0.75rem;
+    color: rgba(0, 0, 0, 0.45);
+  }
+  
+  .pageKicker {
+    font-family: "Amiri", serif;
+    letter-spacing: 0.05em;
+  }
+  
+  .pageNumber {
+    font-weight: 600;
+  }
+  
+  /* ========== صفحة الغلاف ========== */
+  .coverPage {
+    padding: 0;
+    background: linear-gradient(135deg, #1a1410 0%, #2d1f15 100%);
+    color: #e8d5a8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .coverFrame {
+    width: calc(100% - 24px);
+    height: calc(100% - 24px);
+    border: 2px solid #b8860b;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 16px;
+    position: relative;
+    background: linear-gradient(135deg, #1f1812 0%, #3a2818 100%);
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.5);
+  }
+  
+  .coverFrame::before,
+  .coverFrame::after {
+    content: "";
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #b8860b;
+  }
+  
+  .coverFrame::before {
+    top: 6px;
+    right: 6px;
+    border-left: none;
+    border-bottom: none;
+  }
+  
+  .coverFrame::after {
+    bottom: 6px;
+    left: 6px;
+    border-right: none;
+    border-top: none;
+  }
+  
+  .coverOrnamentTop,
+  .coverOrnamentBottom {
+    font-family: "Amiri", serif;
+    font-size: 1.5rem;
+    color: #b8860b;
+    opacity: 0.85;
+  }
+  
+  .coverImageWrapper {
+    width: 70%;
+    max-height: 45%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 3px solid #b8860b;
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  }
+  
+  .coverImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .coverTitle {
+    font-family: "Amiri", serif;
+    font-size: 1.7rem;
+    text-align: center;
+    color: #f4e4b8;
+    margin: 12px 0 4px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    line-height: 1.3;
+  }
+  
+  .coverAuthor {
+    font-size: 0.85rem;
+    color: #c4a670;
+    margin: 0;
+    font-style: italic;
+  }
+  
+  .coverBrand {
+    font-family: "Amiri", serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.4em;
+    color: #b8860b;
+    opacity: 0.7;
+  }
+  
+  /* ========== ظهر الغلاف ========== */
+  .backCoverContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    height: 100%;
+  }
+  
+  .backCoverText {
+    font-family: "Amiri", serif;
+    font-size: 1.5rem;
+    color: #c4a670;
+    font-style: italic;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  }
+  
+  /* ========== صفحة العنوان ========== */
+  .titlePageContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 16px;
+  }
+  
+  .titlePageContent h2 {
+    font-family: "Amiri", serif;
+    font-size: 1.4rem;
+    color: #6b4f1f;
+    margin: 0;
+  }
+  
+  .titlePageContent h3 {
+    font-family: "Amiri", serif;
+    font-size: 1.6rem;
+    color: #2a2118;
+    margin: 0;
+  }
+  
+  .divider {
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #b8860b, transparent);
+    margin: 8px 0;
+  }
+  
+  /* ========== استجابة ========== */
+  @media (max-width: 768px) {
+    .page {
+      padding: 20px 22px 14px;
+    }
+    .paragraph {
+      font-size: 1rem;
+    }
+    .coverTitle {
+      font-size: 1.4rem;
+    }
+  }

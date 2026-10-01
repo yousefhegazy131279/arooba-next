@@ -1,0 +1,160 @@
+/* ==========================================================================
+   Community Read Page – صفحة قراءة PDF / DOCX
+   ========================================================================== */
+
+   .page {
+    position: relative;
+    min-height: 100vh;
+    background: var(--bg-primary);
+    direction: rtl;
+    padding: 24px 20px 60px;
+    overflow-x: hidden;
+  }
+  
+  /* ===== زر العودة ===== */
+  .backLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    transition: all 0.2s;
+  }
+  
+  .backLink:hover {
+    color: var(--gold);
+    border-color: rgba(255, 215, 0, 0.4);
+    transform: translateX(-2px);
+  }
+  
+  /* ===== الرأس ===== */
+  .head {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    max-width: 1200px;
+    margin: 0 auto 24px;
+    padding: 24px 26px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .head::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.5;
+  }
+  
+  .headIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #1a1a1a;
+    flex-shrink: 0;
+    box-shadow: 0 12px 30px -10px var(--gold-glow);
+  }
+  
+  .headText {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .eyebrow {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  
+  .headText h1 {
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.3;
+    font-family: 'Amiri', serif;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .headText p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0;
+  }
+  
+  /* ===== حاوية القارئ ===== */
+  .readerWrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px -25px rgba(0, 0, 0, 0.35);
+    min-height: 500px;
+    padding: 20px;
+  }
+  
+  /* ===== الاستجابة ===== */
+  @media (max-width: 640px) {
+    .page {
+      padding: 16px 14px 40px;
+    }
+  
+    .head {
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: right;
+      padding: 20px 18px;
+      gap: 12px;
+    }
+  
+    .headIcon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+    }
+  
+    .headText h1 {
+      white-space: normal;
+      font-size: 1.15rem;
+    }
+  
+    .readerWrap {
+      border-radius: 16px;
+      padding: 12px;
+    }
+  }
+  
+  /* ===== تقليل الحركة ===== */
+  @media (prefers-reduced-motion: reduce) {
+    .backLink {
+      transition: none;
+    }
+  }

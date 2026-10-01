@@ -1,0 +1,279 @@
+/* ==========================================================================
+   Notification Bell & Permission Button
+   ========================================================================== */
+
+/* ==========================================================
+   جرس الإشعارات
+   ========================================================== */
+   .bell {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    overflow: visible;
+  }
+  
+  .bell:hover {
+    border-color: rgba(255, 215, 0, 0.5);
+    color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px -10px var(--gold-glow);
+  }
+  
+  .bellHasUnread {
+    border-color: rgba(255, 215, 0, 0.4);
+  }
+  
+  .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    transition: transform 0.3s;
+  }
+  
+  .bell:hover .icon {
+    transform: scale(1.08);
+  }
+  
+  /* نبضة عند وصول إشعار جديد */
+  .bellPulse .icon {
+    animation: bellShake 0.6s ease-in-out;
+  }
+  
+  @keyframes bellShake {
+    0%, 100% { transform: rotate(0deg); }
+    15% { transform: rotate(-15deg); }
+    30% { transform: rotate(12deg); }
+    45% { transform: rotate(-8deg); }
+    60% { transform: rotate(6deg); }
+    75% { transform: rotate(-3deg); }
+  }
+  
+  /* شارة العدّاد */
+  .badge {
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    box-shadow: 0 4px 12px -3px rgba(239, 68, 68, 0.5);
+    z-index: 3;
+    border: 2px solid var(--bg-primary);
+    animation: badgePop 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  }
+  
+  @keyframes badgePop {
+    from {
+      opacity: 0;
+      transform: scale(0.4);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  /* توهج خلفي */
+  .glow {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.25), transparent 70%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1;
+    transition: opacity 0.3s;
+  }
+  
+  .bellHasUnread .glow {
+    opacity: 1;
+    animation: glowPulse 2s ease-in-out infinite;
+  }
+  
+  @keyframes glowPulse {
+    0%, 100% {
+      opacity: 0.4;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.05);
+    }
+  }
+  
+  /* ==========================================================
+     زر تفعيل التنبيهات
+     ========================================================== */
+  .permissionBtn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.08), rgba(255, 215, 0, 0.02));
+    border: 1px solid rgba(255, 215, 0, 0.28);
+    border-radius: 16px;
+    color: var(--text-primary);
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    position: relative;
+    overflow: hidden;
+    text-align: right;
+  }
+  
+  .permissionBtn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.5;
+  }
+  
+  .permissionBtn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    border-color: rgba(255, 215, 0, 0.5);
+    box-shadow: 0 15px 35px -15px var(--gold-glow);
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.12), rgba(255, 215, 0, 0.03));
+  }
+  
+  .permissionBtn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+  
+  .permissionIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #1a1a1a;
+    flex-shrink: 0;
+    box-shadow: 0 8px 20px -6px var(--gold-glow);
+    transition: transform 0.3s;
+  }
+  
+  .permissionBtn:hover .permissionIcon {
+    transform: scale(1.08) rotate(-6deg);
+  }
+  
+  .permissionText {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .permissionText strong {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: 'Amiri', serif;
+  }
+  
+  .permissionText > span {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  
+  .permissionArrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255, 215, 0, 0.1);
+    color: var(--gold);
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+  
+  .permissionBtn:hover .permissionArrow {
+    background: var(--gold);
+    color: #1a1a1a;
+    transform: translateX(-4px);
+  }
+  
+  .permissionBtn:hover .permissionArrow svg {
+    transform: rotate(180deg) translateX(0) !important;
+  }
+  
+  /* ==========================================================
+     الاستجابة
+     ========================================================== */
+  @media (max-width: 640px) {
+    .bell {
+      width: 38px;
+      height: 38px;
+    }
+  
+    .badge {
+      min-width: 18px;
+      height: 18px;
+      font-size: 10px;
+      padding: 0 5px;
+    }
+  
+    .permissionBtn {
+      padding: 12px 14px;
+      gap: 12px;
+    }
+  
+    .permissionIcon {
+      width: 36px;
+      height: 36px;
+    }
+  
+    .permissionText strong {
+      font-size: 13px;
+    }
+  
+    .permissionText > span {
+      font-size: 11.5px;
+    }
+  }
+  
+  /* ==========================================================
+     تقليل الحركة
+     ========================================================== */
+  @media (prefers-reduced-motion: reduce) {
+    .bell,
+    .bellPulse .icon,
+    .badge,
+    .bellHasUnread .glow,
+    .permissionBtn,
+    .permissionIcon,
+    .permissionArrow {
+      animation: none;
+      transition: none;
+    }
+  }

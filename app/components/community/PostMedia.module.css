@@ -1,0 +1,318 @@
+/* ==========================================================================
+   PostMedia – تصميم أنيق للمرفقات
+   ========================================================================== */
+
+   .mediaGrid {
+    display: grid;
+    gap: 10px;
+    margin: 6px 0 18px;
+  }
+  
+  /* تخطيط حسب عدد المرفقات */
+  .single {
+    grid-template-columns: 1fr;
+  }
+  
+  .double {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .multiple {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  
+  /* المرفق الوحيد من نوع كتاب يأخذ العرض الكامل */
+  .single .documentCard {
+    grid-column: 1 / -1;
+  }
+  
+  /* ==========================================================
+     الصور والفيديوهات
+     ========================================================== */
+  .mediaFrame {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    aspect-ratio: 4 / 3;
+    transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  }
+  
+  .mediaFrame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  }
+  
+  .mediaFrame:hover {
+    border-color: rgba(255, 215, 0, 0.4);
+    box-shadow: 0 15px 35px -15px rgba(0, 0, 0, 0.4);
+  }
+  
+  .mediaFrame:hover img {
+    transform: scale(1.05);
+  }
+  
+  /* الفيديو */
+  .videoFrame {
+    aspect-ratio: 16 / 9;
+    background: #10131d;
+  }
+  
+  .videoFrame video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  
+  .videoFrame:hover {
+    transform: none;
+  }
+  
+  .videoFrame:hover img {
+    transform: none;
+  }
+  
+  /* ===== Overlay للصور ===== */
+  .mediaOverlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.1) 0%,
+      rgba(0, 0, 0, 0.6) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  
+  .mediaFrame:hover .mediaOverlay {
+    opacity: 1;
+  }
+  
+  .overlayIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: rgba(255, 215, 0, 0.95);
+    color: #1a1a1a;
+    box-shadow: 0 8px 20px -6px rgba(255, 215, 0, 0.6);
+    transform: scale(0.7);
+    transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  }
+  
+  .mediaFrame:hover .overlayIcon {
+    transform: scale(1);
+  }
+  
+  .overlayText {
+    color: #fff;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  }
+  
+  /* ==========================================================
+     بطاقة الكتاب (PDF / DOCX)
+     ========================================================== */
+  .documentCard {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    border-radius: 16px;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 215, 0, 0.08),
+      rgba(255, 215, 0, 0.02)
+    );
+    border: 1px solid rgba(255, 215, 0, 0.25);
+    color: var(--text-primary);
+    text-decoration: none;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  }
+  
+  .documentCard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.6;
+  }
+  
+  .documentCard:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 215, 0, 0.5);
+    box-shadow: 0 15px 35px -15px var(--gold-glow);
+  }
+  
+  /* رمز الكتاب */
+  .documentSymbol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    flex-shrink: 0;
+    color: #1a1a1a;
+    box-shadow: 0 8px 20px -8px var(--gold-glow);
+    transition: transform 0.3s;
+  }
+  
+  .documentCard:hover .documentSymbol {
+    transform: scale(1.08) rotate(-4deg);
+  }
+  
+  .pdfSymbol {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    box-shadow: 0 8px 20px -8px rgba(239, 68, 68, 0.5);
+  }
+  
+  .docxSymbol {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #fff;
+    box-shadow: 0 8px 20px -8px rgba(59, 130, 246, 0.5);
+  }
+  
+  /* جسم البطاقة */
+  .documentBody {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  
+  .documentType {
+    font-size: 10.5px;
+    font-weight: 800;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  
+  .documentName {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text-primary);
+    font-family: 'Amiri', serif;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .documentCta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+  
+  .documentCard:hover .documentCta {
+    color: var(--gold);
+  }
+  
+  .documentCta svg {
+    transition: transform 0.3s;
+  }
+  
+  .documentCard:hover .documentCta svg {
+    transform: rotate(180deg) translateX(-3px) !important;
+  }
+  
+  /* ==========================================================
+     الاستجابة
+     ========================================================== */
+  @media (max-width: 640px) {
+    .mediaGrid {
+      gap: 8px;
+    }
+  
+    .double,
+    .multiple {
+      grid-template-columns: 1fr;
+    }
+  
+    .mediaFrame {
+      aspect-ratio: 16 / 10;
+      border-radius: 14px;
+    }
+  
+    .videoFrame {
+      aspect-ratio: 16 / 9;
+    }
+  
+    .overlayText {
+      display: none;
+    }
+  
+    .overlayIcon {
+      width: 40px;
+      height: 40px;
+    }
+  
+    .documentCard {
+      padding: 14px 16px;
+      gap: 14px;
+      border-radius: 14px;
+    }
+  
+    .documentSymbol {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+    }
+  
+    .documentName {
+      font-size: 14px;
+    }
+  
+    .documentCta {
+      font-size: 11.5px;
+    }
+  }
+  
+  /* ==========================================================
+     تقليل الحركة
+     ========================================================== */
+  @media (prefers-reduced-motion: reduce) {
+    .mediaFrame,
+    .mediaFrame img,
+    .mediaOverlay,
+    .overlayIcon,
+    .documentCard,
+    .documentSymbol,
+    .documentCta svg {
+      transition: none;
+      transform: none;
+    }
+    .mediaFrame:hover img {
+      transform: none;
+    }
+  }

@@ -3,19 +3,53 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabaseServer';
 import { getDirectInbox, getDirectMessagePage } from '@/app/community/social/actions';
 import DirectMessages from '@/app/components/community/DirectMessages';
+import styles from './messages.module.css';
 
-export const metadata: Metadata = { title: 'الرسائل الخاصة | مجتمع عُروبة', robots: { index: false, follow: false } };
+export const metadata: Metadata = {
+  title: 'الرسائل الخاصة | مجتمع عُروبة',
+  robots: { index: false, follow: false },
+};
 
-export default async function MessagesPage({ searchParams }: { searchParams: Promise<{ thread?: string }> }) {
+export default async function MessagesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ thread?: string }>;
+}) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const { thread } = await searchParams;
-  if (!user) redirect(`/login?redirectTo=${encodeURIComponent(`/community/messages${thread ? `?thread=${encodeURIComponent(thread)}` : ''}`)}`);
+
+  if (!user) {
+    redirect(
+      `/login?redirectTo=${encodeURIComponent(
+        `/community/messages${thread ? `?thread=${encodeURIComponent(thread)}` : ''}`
+      )}`
+    );
+  }
+
   const inbox = await getDirectInbox();
-  const selectedId = typeof thread === 'string' && /^[0-9a-f-]{36}$/i.test(thread) ? thread : null;
+  const selectedId =
+    typeof thread === 'string' && /^[0-9a-f-]{36}$/i.test(thread) ? thread : null;
+
   let initialThread = null;
   if (selectedId) {
-    try { initialThread = await getDirectMessagePage(selectedId); } catch { initialThread = null; }
+    try {
+      initialThread = await getDirectMessagePage(selectedId);
+    } catch {
+      initialThread = null;
+    }
   }
-  return <DirectMessages userId={user.id} initialInbox={inbox} initialSelectedId={initialThread ? selectedId : null} initialThread={initialThread} />;
+
+  return (
+    <div className={styles.page}>
+      <div className={styles.shell}>
+        <DirectMessages
+          userId={user.id}
+          initialInbox={inbox}
+          initialSelectedId={initialThread ? selectedId : null}
+          initialThread={initialThread}
+        />
+      </div>
+    </div>
+  );
 }

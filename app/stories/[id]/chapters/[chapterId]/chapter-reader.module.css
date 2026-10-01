@@ -1,0 +1,225 @@
+/* ==========================================================================
+   chapter-reader.module.css
+   صفحة قارئ الفصل – تصميم أنيق مع دعم كامل للثيم
+   ========================================================================== */
+
+/* ==========================================================
+   الصفحة والخلفية
+   ========================================================== */
+   .page {
+    position: relative;
+    min-height: calc(100vh - 90px);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    direction: rtl;
+    padding: 24px 0 40px;
+    overflow-x: hidden;
+  }
+  
+  /* ===== خلفية خفيفة ===== */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  
+  .bgGlow {
+    position: absolute;
+    top: -200px;
+    right: -100px;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.06), transparent 70%);
+    filter: blur(100px);
+    animation: float 25s infinite ease-in-out;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-30px, 30px) scale(1.08); }
+  }
+  
+  /* ==========================================================
+     الحاوية
+     ========================================================== */
+  .shell {
+    position: relative;
+    z-index: 1;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  /* ==========================================================
+     شريط التنقل العلوي
+     ========================================================== */
+  .topNav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .backLink,
+  .fileLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 700;
+    transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    backdrop-filter: blur(8px);
+    white-space: nowrap;
+  }
+  
+  .backLink:hover {
+    border-color: rgba(255, 215, 0, 0.5);
+    color: var(--gold);
+    background: rgba(255, 215, 0, 0.06);
+    transform: translateX(-3px);
+  }
+  
+  .fileLink {
+    margin-inline-start: auto;
+    background: rgba(255, 215, 0, 0.08);
+    border-color: rgba(255, 215, 0, 0.3);
+    color: var(--gold);
+  }
+  
+  .fileLink:hover {
+    background: var(--gold);
+    color: #1a1a1a;
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -10px var(--gold-glow);
+  }
+  
+  .backLink svg,
+  .fileLink svg {
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+  
+  .backLink:hover svg {
+    transform: translateX(-2px);
+  }
+  
+  .fileLink:hover svg {
+    transform: translate(2px, -2px);
+  }
+  
+  /* ==========================================================
+     حاوية القارئ
+     ========================================================== */
+  .readerWrap {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 24px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 20px 50px -30px rgba(0, 0, 0, 0.35);
+    position: relative;
+    overflow: hidden;
+    min-height: 500px;
+  }
+  
+  .readerWrap::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  
+  /* ==========================================================
+     الاستجابة
+     ========================================================== */
+  @media (max-width: 768px) {
+    .page {
+      padding: 16px 0 30px;
+    }
+  
+    .shell {
+      padding: 0 16px;
+      gap: 14px;
+    }
+  
+    .backLink,
+    .fileLink {
+      padding: 8px 14px;
+      font-size: 12.5px;
+    }
+  
+    .fileLink {
+      margin-inline-start: 0;
+    }
+  
+    .readerWrap {
+      padding: 16px;
+      border-radius: 18px;
+      min-height: 400px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .topNav {
+      gap: 8px;
+    }
+  
+    .backLink span,
+    .fileLink span {
+      display: none;
+    }
+  
+    .backLink,
+    .fileLink {
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      justify-content: center;
+      border-radius: 50%;
+    }
+  
+    .readerWrap {
+      padding: 12px;
+      border-radius: 14px;
+    }
+  }
+  
+  /* ==========================================================
+     تقليل الحركة
+     ========================================================== */
+  @media (prefers-reduced-motion: reduce) {
+    .bgGlow {
+      animation: none;
+    }
+  
+    .backLink,
+    .fileLink,
+    .backLink svg,
+    .fileLink svg {
+      transition: none;
+    }
+  
+    .backLink:hover,
+    .fileLink:hover {
+      transform: none;
+    }
+  }

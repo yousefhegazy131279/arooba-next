@@ -1,4 +1,4 @@
-/* About.module.css – نسخة كاملة مع دعم الثيم (فاتح/داكن) */
+/* ===== About.module.css – نسخة محدثة مع دعم الثيم ===== */
 
 .aboutPage {
   min-height: 100vh;
@@ -8,14 +8,18 @@
   overflow-x: hidden;
 }
 
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
 /* ===== الخلفية المتحركة ===== */
 .heroBackground {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   z-index: 0;
+  pointer-events: none;
 }
 
 .gradientOrb {
@@ -29,16 +33,15 @@
 .orb1 {
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle at 30% 30%, var(--gold-glow), rgba(255,215,0,0.05));
+  background: radial-gradient(circle at 30% 30%, var(--gold-glow), rgba(255, 215, 0, 0.05));
   top: -200px;
   right: -200px;
-  animation-delay: 0s;
 }
 
 .orb2 {
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle at 70% 70%, var(--gold-glow), rgba(255,165,0,0.05));
+  background: radial-gradient(circle at 70% 70%, var(--gold-glow), rgba(255, 165, 0, 0.05));
   bottom: -150px;
   left: -150px;
   animation-delay: -5s;
@@ -56,13 +59,10 @@
 
 .gridOverlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: 
-    linear-gradient(rgba(255,215,0,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,215,0,0.05) 1px, transparent 1px);
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 215, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
   background-size: 50px 50px;
   animation: gridMove 20s linear infinite;
 }
@@ -84,7 +84,7 @@
   100% { transform: translate(50px, 50px); }
 }
 
-/* ===== قسم البطل (Hero) ===== */
+/* ===== قسم البطل ===== */
 .aboutHero {
   position: relative;
   min-height: 60vh;
@@ -93,7 +93,7 @@
   justify-content: center;
   text-align: center;
   overflow: hidden;
-  padding: 60px 20px;
+  padding: 100px 20px 60px;
 }
 
 .heroContent {
@@ -101,10 +101,25 @@
   z-index: 2;
 }
 
+.heroBadge {
+  display: inline-block;
+  padding: 8px 20px;
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  border-radius: 999px;
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 24px;
+  backdrop-filter: blur(8px);
+}
+
 .heroTitle {
-  font-size: 4rem;
-  margin-bottom: 1rem;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  margin: 0 0 20px;
   font-family: 'Amiri', serif;
+  line-height: 1.2;
 }
 
 .titleWord {
@@ -122,9 +137,13 @@
 }
 
 .heroSubtitle {
-  font-size: 1.5rem;
+  font-size: clamp(1rem, 2vw, 1.4rem);
   color: var(--text-secondary);
   margin-bottom: 1.5rem;
+  line-height: 1.7;
+  max-width: 620px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .heroDecoration {
@@ -148,7 +167,7 @@
 
 .decorationStar {
   color: var(--gold);
-  font-size: 1.5rem;
+  display: inline-flex;
   animation: spinStar 4s linear infinite;
 }
 
@@ -159,17 +178,14 @@
 
 .floatingShapes {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   pointer-events: none;
   z-index: 1;
 }
 
 .shape {
   position: absolute;
-  font-size: 2rem;
+  color: var(--gold);
   opacity: 0.1;
   animation: floatShape 15s infinite linear;
 }
@@ -186,6 +202,13 @@
   100% { transform: translate(0, 0) rotate(360deg); }
 }
 
+/* ===== قسم المحتوى ===== */
+.contentSection {
+  position: relative;
+  z-index: 1;
+  padding: 40px 0 100px;
+}
+
 /* ===== قسم المؤسس ===== */
 .founderSection {
   display: flex;
@@ -197,6 +220,12 @@
   border-radius: 40px;
   border: 1px solid var(--border-color);
   backdrop-filter: blur(10px);
+  transition: all 0.3s;
+}
+
+.founderSection:hover {
+  border-color: rgba(255, 215, 0, 0.3);
+  box-shadow: 0 20px 50px -20px rgba(255, 215, 0, 0.15);
 }
 
 .founderImageWrapper {
@@ -224,10 +253,7 @@
 
 .imageGlow {
   position: absolute;
-  top: -10px;
-  left: -10px;
-  right: -10px;
-  bottom: -10px;
+  inset: -10px;
   background: radial-gradient(circle at center, var(--gold-glow), transparent 70%);
   border-radius: 50%;
   animation: glowPulse 3s infinite;
@@ -241,10 +267,7 @@
 
 .imageFrame {
   position: absolute;
-  top: -5px;
-  left: -5px;
-  right: -5px;
-  bottom: -5px;
+  inset: -5px;
   border: 2px solid var(--gold);
   border-radius: 50%;
   animation: rotateFrame 10s linear infinite;
@@ -259,27 +282,29 @@
 
 .founderQuote {
   position: relative;
-  font-size: 1.3rem;
-  line-height: 1.8;
+  font-size: 1.2rem;
+  line-height: 1.9;
   color: var(--text-secondary);
   padding: 0 20px;
+  flex: 1;
 }
 
 .quoteIcon {
   font-size: 4rem;
   color: var(--gold);
-  opacity: 0.3;
+  opacity: 0.25;
   position: absolute;
-  top: -20px;
+  top: -25px;
   right: -10px;
+  font-family: 'Amiri', serif;
 }
 
 .quoteAuthor {
   display: block;
   margin-top: 20px;
   color: var(--gold);
-  font-size: 1rem;
-  text-align: left;
+  font-size: 0.95rem;
+  font-weight: 600;
 }
 
 /* ===== شبكة البطاقات ===== */
@@ -325,54 +350,145 @@
 
 .goldenText {
   color: var(--gold);
-  font-size: 2rem;
-  margin-bottom: 20px;
+  font-size: 1.8rem;
+  margin: 0 0 20px;
   font-family: 'Amiri', serif;
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
+.goldenText svg {
+  flex-shrink: 0;
+}
+
 .aboutCard p {
-  line-height: 1.8;
+  line-height: 1.9;
   color: var(--text-secondary);
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+  font-size: 15px;
+}
+
+.aboutCard p strong {
+  color: var(--gold);
+  font-weight: 700;
 }
 
 .visionStats {
   display: flex;
   justify-content: space-around;
-  margin-top: 30px;
+  margin-top: 28px;
   gap: 15px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border-color);
 }
 
 .statItem {
   text-align: center;
+  flex: 1;
 }
 
 .statNumber {
   display: block;
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: bold;
   color: var(--gold);
   line-height: 1.2;
+  margin-bottom: 4px;
 }
 
 .statLabel {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
 }
 
-/* ===== قسم الميزات ===== */
-.missionSection {
+/* ===== قسم الركائز ===== */
+.pillarsSection {
   margin-bottom: 80px;
   text-align: center;
 }
 
-.sectionTitle {
-  font-size: 2.5rem;
-  margin-bottom: 40px;
+.pillarsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-top: 40px;
+}
+
+.pillarCard {
+  background: var(--bg-card);
+  padding: 32px 22px;
+  border-radius: 22px;
+  border: 1px solid var(--border-color);
+  transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  text-align: center;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.pillarCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(255, 215, 0, 0.06) 100%);
+  opacity: 0;
+  transition: opacity 0.35s;
+  pointer-events: none;
+}
+
+.pillarCard:hover {
+  transform: translateY(-8px);
+  border-color: rgba(255, 215, 0, 0.4);
+  box-shadow: 0 20px 40px -15px rgba(255, 215, 0, 0.2);
+}
+
+.pillarCard:hover::after {
+  opacity: 1;
+}
+
+.pillarIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  color: var(--gold);
+  margin-bottom: 20px;
+  transition: all 0.3s;
+}
+
+.pillarCard:hover .pillarIcon {
+  transform: scale(1.08) rotate(-4deg);
+  background: rgba(255, 215, 0, 0.18);
+  box-shadow: 0 12px 28px -8px var(--gold-glow);
+}
+
+.pillarCard h3 {
+  color: var(--text-primary);
+  font-size: 1.35rem;
+  margin: 0 0 12px;
   font-family: 'Amiri', serif;
+  font-weight: 700;
+}
+
+.pillarCard p {
+  color: var(--text-secondary);
+  font-size: 13.5px;
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* ===== عناوين الأقسام ===== */
+.sectionTitle {
+  font-size: clamp(1.7rem, 4vw, 2.4rem);
+  margin: 0 0 12px;
+  font-family: 'Amiri', serif;
+  text-align: center;
+  line-height: 1.3;
 }
 
 .sectionTitle span {
@@ -388,107 +504,236 @@
   -webkit-text-fill-color: transparent;
 }
 
+.sectionSubtitle {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.8;
+  max-width: 620px;
+  margin: 0 auto 20px;
+}
+
+/* ===== قسم الميزات ===== */
+.missionSection {
+  margin-bottom: 80px;
+  text-align: center;
+}
+
 .featuresGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 25px;
+  gap: 22px;
+  margin-top: 44px;
 }
 
 .featureCard {
   background: var(--bg-card);
-  padding: 30px 20px;
-  border-radius: 25px;
+  padding: 32px 20px;
+  border-radius: 22px;
   border: 1px solid var(--border-color);
-  transition: all 0.3s ease;
+  transition: all 0.35s ease;
   text-align: center;
+  backdrop-filter: blur(10px);
 }
 
 .featureCard:hover {
-  transform: translateY(-10px);
+  transform: translateY(-8px);
   border-color: var(--gold);
   box-shadow: 0 20px 40px var(--shadow);
 }
 
 .featureIcon {
-  font-size: 2.5rem;
-  margin-bottom: 15px;
-  animation: bounce 2s infinite;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  margin-bottom: 16px;
+  color: var(--gold);
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 16px;
+  transition: all 0.3s;
 }
 
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+.featureCard:hover .featureIcon {
+  transform: scale(1.08);
+  background: rgba(255, 215, 0, 0.15);
 }
 
 .featureCard h3 {
-  color: var(--gold);
-  font-size: 1.3rem;
-  margin-bottom: 10px;
+  color: var(--text-primary);
+  font-size: 1.15rem;
+  margin: 0 0 10px;
+  font-family: 'Amiri', serif;
+  font-weight: 700;
 }
 
 .featureCard p {
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: 13.5px;
+  line-height: 1.75;
+  margin: 0;
+}
+
+/* ===== قسم رحلتنا ===== */
+.journeySection {
+  margin-bottom: 80px;
+  text-align: center;
+}
+
+.journeyGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+  margin-top: 44px;
+}
+
+.journeyItem {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), rgba(255, 215, 0, 0.01));
+  padding: 30px 20px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  transition: all 0.35s ease;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.journeyItem::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.5;
+}
+
+.journeyItem:hover {
+  transform: translateY(-6px);
+  border-color: var(--gold);
+  box-shadow: 0 20px 40px -15px var(--gold-glow);
+}
+
+.journeyIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  margin-bottom: 18px;
+  color: var(--gold);
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  border-radius: 18px;
+  transition: all 0.3s;
+}
+
+.journeyItem:hover .journeyIcon {
+  transform: scale(1.08) rotate(-3deg);
+  background: rgba(255, 215, 0, 0.18);
+}
+
+.journeyNumber {
+  display: block;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--gold);
+  font-family: 'Amiri', serif;
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+
+.journeyLabel {
+  display: block;
+  font-size: 13px;
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 
 /* ===== قسم القيم ===== */
 .valuesSection {
   margin-bottom: 60px;
+  text-align: center;
 }
 
 .valuesContainer {
   display: flex;
   justify-content: center;
-  gap: 30px;
+  gap: 22px;
   flex-wrap: wrap;
+  margin-top: 40px;
 }
 
 .valueItem {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  background: rgba(255,215,0,0.05);
-  padding: 25px 35px;
-  border-radius: 50px;
+  gap: 12px;
+  background: rgba(255, 215, 0, 0.04);
+  padding: 26px 36px;
+  border-radius: 24px;
   border: 1px solid var(--border-color);
-  transition: all 0.3s ease;
-  min-width: 120px;
+  transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  min-width: 140px;
+  backdrop-filter: blur(8px);
 }
 
 .valueItem:hover {
-  transform: scale(1.05);
+  transform: translateY(-6px);
   border-color: var(--gold);
-  background: rgba(255,215,0,0.1);
+  background: rgba(255, 215, 0, 0.08);
+  box-shadow: 0 15px 35px -15px var(--gold-glow);
 }
 
 .valueIcon {
-  font-size: 2rem;
-  animation: pulseValue 2s infinite;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  color: var(--gold);
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  border-radius: 50%;
+  transition: all 0.3s;
 }
 
-@keyframes pulseValue {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.2); }
+.valueItem:hover .valueIcon {
+  transform: scale(1.1);
+  background: rgba(255, 215, 0, 0.18);
 }
 
 .valueItem h4 {
-  color: var(--gold);
-  font-size: 1.2rem;
+  color: var(--text-primary);
+  font-size: 1.1rem;
   margin: 0;
+  font-family: 'Amiri', serif;
+  font-weight: 700;
 }
 
-/* ===== استجابة ===== */
+/* ===== الاستجابة ===== */
 @media (max-width: 992px) {
   .founderSection {
     flex-direction: column;
     text-align: center;
+    padding: 32px 24px;
+    gap: 32px;
   }
-  .founderQuote .quoteAuthor {
-    text-align: center;
+
+  .founderQuote {
+    font-size: 1.05rem;
   }
-  .featuresGrid {
+
+  .featuresGrid,
+  .journeyGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pillarsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -496,90 +741,97 @@
 @media (max-width: 768px) {
   .aboutGrid {
     grid-template-columns: 1fr;
+    gap: 22px;
   }
+
+  .aboutHero {
+    min-height: 50vh;
+    padding: 80px 20px 50px;
+  }
+
   .heroTitle {
     font-size: 2.5rem;
   }
-  .heroSubtitle {
-    font-size: 1.2rem;
+
+  .aboutCard {
+    padding: 28px 22px;
   }
-  .featuresGrid {
-    grid-template-columns: 1fr;
+
+  .goldenText {
+    font-size: 1.5rem;
   }
-  .valuesContainer {
-    gap: 15px;
-  }
-  .valueItem {
-    padding: 15px 20px;
-    min-width: auto;
-  }
+
   .founderImageWrapper {
-    width: 150px;
-    height: 150px;
+    width: 160px;
+    height: 160px;
+  }
+
+  .valuesContainer {
+    gap: 14px;
+  }
+
+  .valueItem {
+    padding: 20px 24px;
+    min-width: 110px;
+  }
+
+  .visionStats {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .statItem {
+    min-width: 80px;
   }
 }
 
-@media (max-width: 480px) {
-  .aboutHero {
-    min-height: 50vh;
+@media (max-width: 540px) {
+  .featuresGrid,
+  .journeyGrid,
+  .pillarsGrid {
+    grid-template-columns: 1fr;
   }
+
   .heroTitle {
     font-size: 2rem;
   }
+
+  .heroSubtitle {
+    font-size: 1rem;
+  }
+
   .aboutCard {
-    padding: 25px;
+    padding: 24px 18px;
+    border-radius: 22px;
   }
-  .goldenText {
-    font-size: 1.6rem;
+
+  .founderSection {
+    padding: 24px 18px;
+    border-radius: 26px;
+  }
+
+  .contentSection {
+    padding: 20px 0 60px;
+  }
+
+  .aboutGrid,
+  .pillarsSection,
+  .missionSection,
+  .journeySection,
+  .valuesSection {
+    margin-bottom: 56px;
   }
 }
 
-/* ===== تأثيرات AOS (مع :global لتجنب مشاكل CSS Modules) ===== */
-:global([data-aos="fade-left"]) {
-  transform: translateX(-30px);
-  opacity: 0;
-  transition-property: transform, opacity;
-}
-:global([data-aos="fade-left"].aos-animate) {
-  transform: translateX(0);
-  opacity: 1;
-}
-
-:global([data-aos="fade-right"]) {
-  transform: translateX(30px);
-  opacity: 0;
-  transition-property: transform, opacity;
-}
-:global([data-aos="fade-right"].aos-animate) {
-  transform: translateX(0);
-  opacity: 1;
-}
-
-:global([data-aos="zoom-in"]) {
-  transform: scale(0.8);
-  opacity: 0;
-  transition-property: transform, opacity;
-}
-:global([data-aos="zoom-in"].aos-animate) {
-  transform: scale(1);
-  opacity: 1;
-}
-
-:global([data-aos="flip-left"]) {
-  transform: perspective(2500px) rotateY(100deg);
-  opacity: 0;
-  transition-property: transform, opacity;
-}
-:global([data-aos="flip-left"].aos-animate) {
-  transform: perspective(2500px) rotateY(0);
-  opacity: 1;
-}
-
-/* ===== تحسينات الأداء ===== */
+/* ===== تقليل الحركة ===== */
 @media (prefers-reduced-motion: reduce) {
-  :global(*) {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  .gradientOrb,
+  .gridOverlay,
+  .shape,
+  .imageGlow,
+  .imageFrame,
+  .decorationLine,
+  .decorationStar {
+    animation: none;
   }
 }

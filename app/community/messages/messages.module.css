@@ -1,0 +1,35 @@
+/* ===== حاوية صفحة الرسائل ===== */
+.page {
+    min-height: calc(100vh - 100px);
+    background: var(--bg-primary);
+    padding: 16px;
+    direction: rtl;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  
+  .shell {
+    width: 100%;
+    max-width: 1300px;
+    height: calc(100vh - 132px);
+    min-height: 600px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow:
+      0 25px 60px -30px rgba(0, 0, 0, 0.35),
+      0 0 0 1px rgba(255, 215, 0, 0.04) inset;
+  }
+  
+  @media (max-width: 900px) {
+    .page { padding: 0; }
+    .shell {
+      height: calc(100vh - 80px);
+      border-radius: 0;
+      border: none;
+      max-width: 100%;
+      min-height: 0;
+    }
+  }

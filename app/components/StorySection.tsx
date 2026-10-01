@@ -32,7 +32,7 @@ const StorySection = () => {
         </svg>
       ),
       title: "قصص خالدة",
-      description: "روايات صعب أن تنسى"
+      description: "روايات صعب أن تنسى",
     },
     {
       icon: (
@@ -45,7 +45,7 @@ const StorySection = () => {
         </svg>
       ),
       title: "تعريب كما قال الكتاب",
-      description: "نحاول أن يكون التعريب على أعلى مستوى ليحظى القارئ بأفضل تجربة ممكنة"
+      description: "نحاول أن يكون التعريب على أعلى مستوى ليحظى القارئ بأفضل تجربة ممكنة",
     },
     {
       icon: (
@@ -54,15 +54,13 @@ const StorySection = () => {
         </svg>
       ),
       title: "نستمع للجمهور",
-      description: "رأيك هو أكثر ما يهمنا لذا لا تكن خجولاً واقترح ما تشاء!"
+      description: "رأيك هو أكثر ما يهمنا لذا لا تكن خجولاً واقترح ما تشاء!",
     },
   ];
 
   const getCoverUrl = (coverPath: string): string => {
-    if (!coverPath) return '';
-    if (coverPath.startsWith('http') || coverPath.startsWith('/')) {
-      return coverPath;
-    }
+    if (!coverPath) return "";
+    if (coverPath.startsWith("http") || coverPath.startsWith("/")) return coverPath;
     return `/covers/${coverPath}`;
   };
 
@@ -147,19 +145,14 @@ const StorySection = () => {
       </div>
 
       <div className={styles.container}>
+        {/* ===== الترويسة ===== */}
         <div className={styles.sectionHeader} data-aos="fade-up" data-aos-duration="1000">
-          <span className={styles.sectionBadge} data-aos="fade-down" data-aos-delay="200">
-            اعمالنا
-          </span>
+          <span className={styles.sectionBadge}>أعمالنا</span>
           <h2 className={styles.sectionTitle}>
-            <span className={styles.titleWord} data-aos="fade-left" data-aos-delay="300">
-              استمتع بالقصص العالمية
-            </span>
-            <span className={`${styles.titleWord} ${styles.gold}`} data-aos="fade-up" data-aos-delay="400">
-              بلغة الضاد
-            </span>
+            <span className={styles.titleWord}>استمتع بالقصص العالمية</span>
+            <span className={`${styles.titleWord} ${styles.gold}`}>بلغة الضاد</span>
           </h2>
-          <div className={styles.titleDecoration} data-aos="zoom-in" data-aos-delay="600">
+          <div className={styles.titleDecoration}>
             <span className={styles.decorationLine}></span>
             <span className={styles.decorationStar}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -170,15 +163,17 @@ const StorySection = () => {
           </div>
         </div>
 
+        {/* ===== التحميل ===== */}
         {pending && (
-          <div className={styles.loadingState} data-aos="fade-up">
+          <div className={styles.loadingState}>
             <div className={styles.loader}></div>
             <p>جاري تحميل القصة المميزة...</p>
           </div>
         )}
 
+        {/* ===== الخطأ ===== */}
         {error && !pending && (
-          <div className={styles.errorState} data-aos="fade-up">
+          <div className={styles.errorState}>
             <span className={styles.errorIcon}>
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <circle cx="12" cy="12" r="10" />
@@ -190,6 +185,7 @@ const StorySection = () => {
           </div>
         )}
 
+        {/* ===== البطاقة ===== */}
         {!pending && !error && story && (
           <div
             className={styles.storyCard}
@@ -198,50 +194,67 @@ const StorySection = () => {
             data-aos-delay="200"
           >
             <div className={styles.cardWrapper} onClick={goToStory}>
+              {/* زخرفة خلفية */}
+              <div className={styles.cardGlow}></div>
+
+              {/* الصورة */}
               <div className={styles.imageContainer}>
-                <div className={styles.imageOverlay}></div>
+                <div className={styles.imageFrame}></div>
                 <img src={getCoverUrl(story.cover)} alt={story.title} />
-                <div className={styles.imageGlow}></div>
-                <div className={styles.storyBadge} data-aos="zoom-in" data-aos-delay="800">
+                <div className={styles.imageOverlay}></div>
+                <div className={styles.storyBadge}>
                   <span className={styles.badgeIcon}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                     </svg>
                   </span>
-                  <span className={styles.badgeText}>{story.category || "الأكثر قراءة"}</span>
+                  <span>{story.category || "الأكثر قراءة"}</span>
                 </div>
               </div>
+
+              {/* المحتوى */}
               <div className={styles.cardContent}>
+                <span className={styles.eyebrow}>قصة الأسبوع</span>
                 <h3 className={styles.storyTitle}>{story.title}</h3>
                 <p className={styles.storyDescription}>{story.description}</p>
+
+                {/* الإحصائيات */}
                 <div className={styles.storyStats}>
-                  <div className={styles.stat}>
-                    <span className={styles.statIcon}>
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <div className={styles.statBox}>
+                    <span className={styles.statIconWrap}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                         <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
                         <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
                       </svg>
                     </span>
-                    <span className={styles.statValue}>{story.chapters_count} فصل</span>
+                    <div className={styles.statInfo}>
+                      <span className={styles.statNumber}>{story.chapters_count}</span>
+                      <span className={styles.statLabel}>فصل</span>
+                    </div>
                   </div>
-                  <div className={styles.stat}>
-                    <span className={styles.statIcon}>
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+
+                  <div className={styles.statBox}>
+                    <span className={styles.statIconWrap}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                       </svg>
                     </span>
-                    <span className={styles.statValue}>
-                      {story.avg_rating ? story.avg_rating.toFixed(1) : "0"} (
-                      {story.total_ratings} تقييم)
-                    </span>
+                    <div className={styles.statInfo}>
+                      <span className={styles.statNumber}>
+                        {story.avg_rating ? story.avg_rating.toFixed(1) : "0"}
+                      </span>
+                      <span className={styles.statLabel}>
+                        {story.total_ratings} تقييم
+                      </span>
+                    </div>
                   </div>
                 </div>
+
                 <button className={styles.readButton}>
-                  <span>اقرأ القصة</span>
-                  <span className={styles.buttonIcon}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <line x1="5" y1="12" x2="19" y2="12" />
-                      <polyline points="12 5 19 12 12 19" />
+                  <span>اقرأ الآن</span>
+                  <span className={styles.buttonArrow}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <path d="M19 12H5M12 19l-7-7 7-7" />
                     </svg>
                   </span>
                 </button>
@@ -250,12 +263,8 @@ const StorySection = () => {
           </div>
         )}
 
-        <div
-          className={styles.whySection}
-          data-aos="fade-up"
-          data-aos-duration="1000"
-          data-aos-delay="400"
-        >
+        {/* ===== بطاقات Why ===== */}
+        <div className={styles.whySection}>
           <div className={styles.whyGrid}>
             {whyItems.map((item, index) => (
               <div

@@ -1,0 +1,723 @@
+/* ==========================================================================
+   PostCard – تصميم أنيق
+   ========================================================================== */
+
+   .card {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 22px;
+    padding: 22px 22px 16px;
+    backdrop-filter: blur(12px);
+    transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    overflow: hidden;
+  }
+  
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.4;
+  }
+  
+  .card:hover {
+    border-color: rgba(255, 215, 0, 0.3);
+    box-shadow: 0 20px 45px -22px rgba(0, 0, 0, 0.4);
+  }
+  
+  /* ==========================================================
+     رأس البطاقة
+     ========================================================== */
+  .head {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  
+  .authorWrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .authorInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    flex: 1;
+  }
+  
+  .authorRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  
+  .authorName {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-family: 'Amiri', serif;
+    transition: color 0.2s;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 200px;
+  }
+  
+  .authorName:hover {
+    color: var(--gold);
+  }
+  
+  /* شارة الدور */
+  .roleBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  
+  .roleWriter {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.06));
+    border: 1px solid rgba(255, 215, 0, 0.35);
+    color: var(--gold);
+  }
+  
+  .roleReader {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+  }
+  
+  /* الوقت */
+  .meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  
+  .meta:hover {
+    color: var(--gold);
+  }
+  
+  .edited {
+    font-size: 11px;
+    opacity: 0.8;
+  }
+  
+  /* ==========================================================
+     المحتوى
+     ========================================================== */
+  .content {
+    font-size: 15px;
+    line-height: 1.85;
+    color: var(--text-primary);
+    margin: 0 0 18px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  
+  /* ==========================================================
+     نموذج التعديل
+     ========================================================== */
+  .editForm {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding: 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+  }
+  
+  .editLabel {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold);
+    font-family: 'Amiri', serif;
+  }
+  
+  .editTextarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 14px 16px;
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-color);
+    border-radius: 14px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 14.5px;
+    line-height: 1.8;
+    resize: vertical;
+    outline: none;
+    transition: all 0.25s;
+  }
+  
+  .editTextarea:focus {
+    border-color: rgba(255, 215, 0, 0.5);
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.08);
+  }
+  
+  .editFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  
+  .editCounter {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  
+  .editActions {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .cancelBtn,
+  .saveBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid;
+  }
+  
+  .cancelBtn {
+    background: transparent;
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+  }
+  
+  .cancelBtn:hover:not(:disabled) {
+    border-color: rgba(255, 215, 0, 0.4);
+    color: var(--gold);
+  }
+  
+  .saveBtn {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border-color: transparent;
+    color: #1a1a1a;
+    box-shadow: 0 8px 20px -8px var(--gold-glow);
+  }
+  
+  .saveBtn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px -8px var(--gold-glow);
+  }
+  
+  .cancelBtn:disabled,
+  .saveBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  /* ==========================================================
+     لوحة التقييم (للكتّاب)
+     ========================================================== */
+  .reactionPanel {
+    margin: 4px 0 16px;
+    padding: 18px;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), rgba(255, 215, 0, 0.01));
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    border-radius: 16px;
+  }
+  
+  .reactionHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  
+  .reactionHead strong {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-primary);
+    font-family: 'Amiri', serif;
+  }
+  
+  .reactionHead span {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  
+  .reactionButtons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  
+  .reactionBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 14px;
+    border-radius: 12px;
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-color);
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+  
+  .reactionBtn:hover:not(:disabled) {
+    border-color: rgba(255, 215, 0, 0.4);
+    background: rgba(255, 215, 0, 0.05);
+    transform: translateY(-2px);
+  }
+  
+  .reactionBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .reactionIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  
+  .reactionLabel {
+    font-weight: 800;
+  }
+  
+  .reactionCount {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 20px;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: rgba(255, 215, 0, 0.1);
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 800;
+  }
+  
+  /* حالات التقييم النشطة */
+  .reaction_approve {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+    border-color: rgba(16, 185, 129, 0.5);
+    color: #10b981;
+  }
+  
+  .reaction_approve .reactionCount {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+  }
+  
+  .reaction_meh {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
+    border-color: rgba(245, 158, 11, 0.5);
+    color: #f59e0b;
+  }
+  
+  .reaction_meh .reactionCount {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+  }
+  
+  .reaction_boo {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #ef4444;
+  }
+  
+  .reaction_boo .reactionCount {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+  }
+  
+  /* رابط تبديل الدور */
+  .switchRoleLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(255, 215, 0, 0.06);
+    border: 1px dashed rgba(255, 215, 0, 0.3);
+    color: var(--gold);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+    transition: all 0.2s;
+  }
+  
+  .switchRoleLink:hover {
+    background: rgba(255, 215, 0, 0.12);
+    border-style: solid;
+  }
+  
+  /* ==========================================================
+     شريط الإجراءات
+     ========================================================== */
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border-light);
+    margin-top: 4px;
+    flex-wrap: wrap;
+  }
+  
+  .actionBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    border-radius: 11px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  
+  .actionBtn:hover {
+    background: rgba(255, 215, 0, 0.06);
+    color: var(--gold);
+  }
+  
+  .actionBtn svg {
+    transition: transform 0.2s;
+  }
+  
+  .actionBtn:hover svg {
+    transform: scale(1.15);
+  }
+  
+  .actionCount {
+    font-weight: 800;
+  }
+  
+  .actionLabel {
+    opacity: 0.85;
+  }
+  
+  .liked {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.25);
+  }
+  
+  .liked:hover {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+  }
+  
+  /* الأزرار الأيقونية */
+  .iconOnlyBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .iconOnlyBtn:hover:not(:disabled) {
+    color: var(--gold);
+    background: rgba(255, 215, 0, 0.08);
+    border-color: rgba(255, 215, 0, 0.2);
+  }
+  
+  .iconOnlyBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  
+  .dangerBtn:hover:not(:disabled) {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.25);
+  }
+  
+  .iconOnlyActive {
+    color: var(--gold);
+    background: rgba(255, 215, 0, 0.1);
+    border-color: rgba(255, 215, 0, 0.3);
+  }
+  
+  .spacer {
+    flex: 1;
+  }
+  
+  /* ==========================================================
+     نموذج الإبلاغ
+     ========================================================== */
+  .reportForm {
+    margin-top: 14px;
+    padding: 18px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(239, 68, 68, 0.01));
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    animation: reportSlide 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  }
+  
+  @keyframes reportSlide {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .reportHead {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .reportIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    flex-shrink: 0;
+  }
+  
+  .reportHead strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-primary);
+    font-family: 'Amiri', serif;
+    margin-bottom: 2px;
+  }
+  
+  .reportHead p {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0;
+  }
+  
+  .reportTextarea {
+    width: 100%;
+    min-height: 90px;
+    padding: 12px 14px;
+    background: var(--bg-card);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.7;
+    resize: vertical;
+    outline: none;
+    transition: all 0.2s;
+  }
+  
+  .reportTextarea:focus {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  }
+  
+  .reportActions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  
+  .reportSubmit,
+  .reportCancel {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 20px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid;
+  }
+  
+  .reportSubmit {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 8px 20px -8px rgba(239, 68, 68, 0.5);
+  }
+  
+  .reportSubmit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px -8px rgba(239, 68, 68, 0.6);
+  }
+  
+  .reportSubmit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .reportCancel {
+    background: transparent;
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+  }
+  
+  .reportCancel:hover:not(:disabled) {
+    border-color: var(--border-color);
+    color: var(--text-primary);
+  }
+  
+  /* ==========================================================
+     Spinner
+     ========================================================== */
+  .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    opacity: 0.7;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* ==========================================================
+     الاستجابة
+     ========================================================== */
+  @media (max-width: 640px) {
+    .card {
+      padding: 18px 16px 14px;
+      border-radius: 18px;
+    }
+  
+    .authorName {
+      font-size: 14px;
+      max-width: 150px;
+    }
+  
+    .content {
+      font-size: 14.5px;
+    }
+  
+    .reactionButtons {
+      grid-template-columns: 1fr;
+    }
+  
+    .reactionBtn {
+      justify-content: flex-start;
+      padding: 11px 14px;
+    }
+  
+    .reactionBtn .reactionCount {
+      margin-inline-start: auto;
+    }
+  
+    .actionLabel {
+      display: none;
+    }
+  
+    .actionBtn {
+      padding: 8px 12px;
+    }
+  
+    .editForm,
+    .reportForm {
+      padding: 14px;
+    }
+  
+    .editFooter,
+    .reportActions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .editActions {
+      width: 100%;
+    }
+  
+    .cancelBtn,
+    .saveBtn,
+    .reportSubmit,
+    .reportCancel {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  
+  /* ==========================================================
+     تقليل الحركة
+     ========================================================== */
+  @media (prefers-reduced-motion: reduce) {
+    .card,
+    .reactionBtn,
+    .actionBtn,
+    .iconOnlyBtn,
+    .reportForm,
+    .spinner {
+      transition: none;
+      animation: none;
+    }
+  }

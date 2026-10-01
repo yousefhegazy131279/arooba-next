@@ -22,6 +22,10 @@
   --error: #e74c3c;
   --info: #3498db;
   --transition: all 0.3s ease;
+    /* ✨ جديد: RGB للخلفيات */
+    --bg-card-rgb: 18, 20, 30;
+    --bg-secondary-rgb: 10, 16, 32;
+    --bg-primary-rgb: 5, 8, 20;
 }
 
 /* ===== الوضع الفاتح (خلفية بيضاء، نصوص سوداء) ===== */
@@ -40,6 +44,12 @@
   --gold-dark: #8b6508;
   --gold-glow: rgba(184, 134, 11, 0.2);
   --shadow: rgba(0, 0, 0, 0.1);
+ 
+    /* ✨ جديد: RGB للخلفيات */
+    --bg-card-rgb: 255, 255, 255;
+    --bg-secondary-rgb: 248, 249, 250;
+    --bg-primary-rgb: 255, 255, 255;
+  
 }
 
 /* ===== إعادة تعيين عامة ===== */
