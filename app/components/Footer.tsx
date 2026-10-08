@@ -7,11 +7,23 @@ import "aos/dist/aos.css";
 import styles from "./Footer.module.css";
 
 /* ==========================================================
-   🎨 أيقونات SVG
+   🎨 أيقونات SVG — روابط المطوّر يوسف حجازي
    ========================================================== */
-const FacebookIcon = () => (
+const YoutubeIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
-    <path d="M22 12c0-5.522-4.477-10-10-10S2 6.478 2 12c0 5 3.657 9.128 8.438 9.878v-6.988h-2.54v-2.89h2.54V9.845c0-2.507 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.462h-1.26c-1.242 0-1.63.771-1.63 1.562v1.875h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 17 22 12z" />
+    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+  </svg>
+);
+
+const TiktokIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43V8.66a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.09z" />
+  </svg>
+);
+
+const XIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
   </svg>
 );
 
@@ -21,9 +33,21 @@ const InstagramIcon = () => (
   </svg>
 );
 
-const TwitterIcon = () => (
+const FacebookIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
-    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+  </svg>
+);
+
+const GithubIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+  </svg>
+);
+
+const LinkedinIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
   </svg>
 );
 
@@ -41,7 +65,20 @@ const ArrowUpIcon = () => (
 );
 
 /* ==========================================================
-   📖 اقتباسات أدبية متجددة
+   🔗 روابط المطوّر يوسف حجازي
+   ========================================================== */
+const DEVELOPER_LINKS = [
+  { brand: "youtube",   label: "YouTube",   href: "https://www.youtube.com/@YousefHegazydev",             icon: <YoutubeIcon /> },
+  { brand: "tiktok",    label: "TikTok",    href: "https://www.tiktok.com/@yousefhegazydev?lang=en",      icon: <TiktokIcon /> },
+  { brand: "x",         label: "X (تويتر)", href: "https://x.com/Yousefhegazy00",                        icon: <XIcon /> },
+  { brand: "instagram", label: "Instagram", href: "https://www.instagram.com/yousef.hegazy.dev/",        icon: <InstagramIcon /> },
+  { brand: "facebook",  label: "Facebook",  href: "https://www.facebook.com/profile.php?id=61594760347792", icon: <FacebookIcon /> },
+  { brand: "github",    label: "GitHub",    href: "https://github.com/yousefhegazy131279",               icon: <GithubIcon /> },
+  { brand: "linkedin",  label: "LinkedIn",  href: "https://www.linkedin.com/in/yousef-hegazy-a0aa13333",  icon: <LinkedinIcon /> },
+] as const;
+
+/* ==========================================================
+   📖 اقتباسات أدبية
    ========================================================== */
 const quotes = [
   { text: "الكلمة الطيبة صدقة، والحكاية الجميلة إرثٌ لا يموت.", author: "حكمة عربية" },
@@ -58,18 +95,12 @@ const Footer = () => {
   const [quoteIndex, setQuoteIndex] = useState(0);
 
   useEffect(() => {
-    AOS.init({
-      duration: 700,
-      easing: "ease-out-cubic",
-      once: true,
-      offset: 40,
-    });
-    const handleResize = () => AOS.refresh();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    AOS.init({ duration: 700, easing: "ease-out-cubic", once: true, offset: 40 });
+    const onResize = () => AOS.refresh();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // تدوير الاقتباسات كل 6 ثوانٍ
   useEffect(() => {
     const interval = setInterval(() => {
       setQuoteIndex((prev) => (prev + 1) % quotes.length);
@@ -77,16 +108,12 @@ const Footer = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   return (
     <footer className={styles.footer}>
-      {/* ===== شريط ذهبي علوي ===== */}
       <div className={styles.topGlow} aria-hidden="true" />
 
-      {/* ===== الخلفية المتحركة ===== */}
       <div className={styles.footerBackground} aria-hidden="true">
         <div className={`${styles.gradientOrb} ${styles.orb1}`} />
         <div className={`${styles.gradientOrb} ${styles.orb2}`} />
@@ -108,43 +135,11 @@ const Footer = () => {
               منصة أدبية عربية متكاملة للقراءة والكتابة والتعريب والمجتمع.
               حيث تُولَد الحكايات بلغة الضاد.
             </p>
-            <div className={styles.socialLinks}>
-              <a
-                href="https://www.facebook.com/arubaharabia"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.socialIcon}
-                data-brand="facebook"
-                aria-label="Facebook"
-              >
-                <FacebookIcon />
-              </a>
-              <a
-                href="https://www.instagram.com/arubaharabia"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.socialIcon}
-                data-brand="instagram"
-                aria-label="Instagram"
-              >
-                <InstagramIcon />
-              </a>
-              <a
-                href="https://twitter.com/arubaharabia"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.socialIcon}
-                data-brand="twitter"
-                aria-label="Twitter"
-              >
-                <TwitterIcon />
-              </a>
-            </div>
           </div>
 
-          {/* العمود 2: استكشف */}
+          {/* العمود 2: المنصة */}
           <div className={styles.linkColumn} data-aos="fade-up" data-aos-delay="100">
-            <h3 className={styles.footerTitle}>استكشف</h3>
+            <h3 className={styles.footerTitle}>المنصة</h3>
             <ul className={styles.footerLinks}>
               <li><Link href="/">الرئيسية</Link></li>
               <li><Link href="/novels">الروايات</Link></li>
@@ -153,9 +148,9 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* العمود 3: المنصة */}
+          {/* العمود 3: الاستكشاف */}
           <div className={styles.linkColumn} data-aos="fade-up" data-aos-delay="200">
-            <h3 className={styles.footerTitle}>المنصة</h3>
+            <h3 className={styles.footerTitle}>استكشف</h3>
             <ul className={styles.footerLinks}>
               <li><Link href="/write">مساحة الكتابة</Link></li>
               <li><Link href="/about">من نحن</Link></li>
@@ -169,9 +164,7 @@ const Footer = () => {
             <h3 className={styles.footerTitle}>من دفتر عُروبة</h3>
             <div className={styles.quoteCard}>
               <span className={styles.quoteIconTop}><QuoteIcon /></span>
-              <p key={quoteIndex} className={styles.quoteText}>
-                {quotes[quoteIndex].text}
-              </p>
+              <p key={quoteIndex} className={styles.quoteText}>{quotes[quoteIndex].text}</p>
               <span className={styles.quoteAuthor}>— {quotes[quoteIndex].author}</span>
               <div className={styles.quoteDots}>
                 {quotes.map((_, i) => (
@@ -188,7 +181,62 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* ===== خط فاصل ===== */}
+        {/* ===== قسم المطوّر (مفصول) ===== */}
+        <div className={styles.developerSection} data-aos="fade-up">
+          <div className={styles.developerHeader}>
+            <span className={styles.developerLabel}>المطوّر</span>
+            <div className={styles.developerLine} />
+          </div>
+
+          <div className={styles.developerContent}>
+            <div className={styles.developerInfo}>
+              <a
+                href="https://hogz.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.hgzLink}
+                aria-label="زيارة موقع المطوّر HGZ"
+              >
+                <span className={styles.hgzText}>HGZ</span>
+                <span className={styles.hgzSpark} aria-hidden="true">✦</span>
+              </a>
+              <p className={styles.developerName}>يوسف حجازي</p>
+              <p className={styles.developerRole}>Full-Stack Developer &amp; Creator of عُروبة</p>
+              <a
+                href="https://hogz.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.portfolioBtn}
+              >
+                زيارة البورتفوليو
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+              </a>
+            </div>
+
+            <div className={styles.socialLinks}>
+              {DEVELOPER_LINKS.map((s) => (
+                <a
+                  key={s.brand}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.socialIcon}
+                  data-brand={s.brand}
+                  data-label={s.label}
+                  aria-label={s.label}
+                >
+                  {s.icon}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ===== الفاصل ===== */}
         <div className={styles.footerDivider}>
           <span className={styles.dividerDiamond} aria-hidden="true">✦</span>
         </div>
@@ -200,15 +248,18 @@ const Footer = () => {
           </p>
 
           <p className={styles.copyrightHeart}>
-            صُنع بكل <span className={styles.heartIcon}>♥</span> من <strong>HGZ</strong>
+            صُنع بكل <span className={styles.heartIcon}>♥</span> من{" "}
+            <a
+              href="https://hogz.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.hgzInline}
+            >
+              HGZ
+            </a>
           </p>
 
-          <button
-            type="button"
-            onClick={scrollToTop}
-            className={styles.backToTop}
-            aria-label="العودة إلى الأعلى"
-          >
+          <button type="button" onClick={scrollToTop} className={styles.backToTop} aria-label="العودة إلى الأعلى">
             <ArrowUpIcon />
             <span>للأعلى</span>
           </button>

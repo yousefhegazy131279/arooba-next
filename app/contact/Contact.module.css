@@ -1,6 +1,9 @@
 /* ==========================================================
-   📞 عُروبة | Contact Page — Premium v2.2 (Production Ready)
-   دعم كامل للثيم + روابط اجتماعية + أيقونات SVG
+   📞 عُروبة | Contact Page — v3.0 (Production Ready)
+   • دعم كامل للثيم (فاتح/داكن)
+   • روابط المنصة (3) + روابط المطوّر (7)
+   • أيقونات SVG فاخرة (بدون إيموجي)
+   • بدون تكرارات أو كود ميت
    ========================================================== */
 
 /* ==========================================================
@@ -170,7 +173,6 @@
     background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 700;
-    /* ✂️ أُزيل text-shadow — لا يعمل مع النص المتدرّج الشفاف */
   }
   
   .pageSubtitle {
@@ -207,15 +209,22 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    /* ✂️ أُزيل font-size — لم يعد مستخدماً (SVG الآن) */
   }
   
   @keyframes spinStar {
     to { transform: rotate(360deg); }
   }
   
+  .decorationStar svg {
+    width: 22px;
+    height: 22px;
+    stroke: var(--gold);
+    display: block;
+    filter: drop-shadow(0 4px 14px rgba(255, 215, 0, 0.35));
+  }
+  
   /* ==========================================================
-     5. المحتوى الرئيسي (Grid)
+     5. المحتوى الرئيسي (Grid بعمودين)
      ========================================================== */
   .contactContent {
     display: grid;
@@ -298,7 +307,9 @@
     background: linear-gradient(90deg, transparent, var(--gold), transparent);
   }
   
-  /* عناصر المعلومات */
+  /* ==========================================================
+     7. عناصر المعلومات
+     ========================================================== */
   .infoItems {
     display: flex;
     flex-direction: column;
@@ -330,7 +341,6 @@
   }
   
   .itemIcon {
-    /* ✂️ أُزيل font-size */
     width: 46px;
     height: 46px;
     flex-shrink: 0;
@@ -341,12 +351,21 @@
     border: 1px solid rgba(255, 215, 0, 0.2);
     border-radius: 14px;
     transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    color: var(--gold);
   }
   
   .infoItem:hover .itemIcon {
     transform: scale(1.08) rotate(-5deg);
     background: rgba(255, 215, 0, 0.2);
     box-shadow: 0 8px 20px -8px var(--gold-glow);
+  }
+  
+  .itemIcon svg {
+    width: 22px;
+    height: 22px;
+    stroke: var(--gold);
+    fill: none;
+    display: block;
   }
   
   .itemDetails {
@@ -372,10 +391,8 @@
     text-align: right;
   }
   
-  /* ✂️ أُزيلت قاعدة .itemDetails p.rtlText — لم تعد مستخدمة */
-  
   /* ==========================================================
-     7. قسم التواصل الاجتماعي
+     8. شبكة السوشيال (تُستخدم للمنصة والمطوّر)
      ========================================================== */
   .socialSection {
     margin-top: 28px;
@@ -408,32 +425,33 @@
     max-width: 60px;
   }
   
-  /* ✅ 4 منصات: X · إنستغرام · فيسبوك · يوتيوب */
   .socialIcons {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
   }
   
   .socialIcon {
     position: relative;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    aspect-ratio: 1;
-    min-height: 58px;
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
     background: rgba(255, 215, 0, 0.04);
     border: 1px solid var(--border-color);
-    border-radius: 16px;
     color: var(--gold);
     text-decoration: none;
     transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     overflow: hidden;
+    flex-shrink: 0;
   }
   
   .socialIcon svg {
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 22px;
     fill: currentColor;
     position: relative;
     z-index: 1;
@@ -450,7 +468,7 @@
   }
   
   .socialIcon:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
     border-color: transparent;
     box-shadow: 0 14px 30px -12px var(--gold-glow);
   }
@@ -458,24 +476,9 @@
   .socialIcon:hover::before { opacity: 1; }
   
   .socialIcon:hover svg {
-    fill: var(--bg-primary);
+    fill: #fff;
     transform: scale(1.15) rotate(-6deg);
   }
-  
-  /* ألوان العلامات عند Hover */
-  .socialIcon[data-brand="twitter"]:hover { box-shadow: 0 14px 30px -12px rgba(29, 161, 242, 0.5); }
-  .socialIcon[data-brand="twitter"]::before { background: linear-gradient(135deg, #1DA1F2, #0d8ddb); }
-  
-  .socialIcon[data-brand="instagram"]:hover { box-shadow: 0 14px 30px -12px rgba(225, 48, 108, 0.5); }
-  .socialIcon[data-brand="instagram"]::before { background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
-  
-  .socialIcon[data-brand="facebook"]:hover { box-shadow: 0 14px 30px -12px rgba(24, 119, 242, 0.5); }
-  .socialIcon[data-brand="facebook"]::before { background: linear-gradient(135deg, #1877F2, #0f5ec7); }
-  
-  .socialIcon[data-brand="youtube"]:hover { box-shadow: 0 14px 30px -12px rgba(255, 0, 0, 0.5); }
-  .socialIcon[data-brand="youtube"]::before { background: linear-gradient(135deg, #FF0000, #cc0000); }
-  
-  /* ✂️ أُزيلت قاعدة data-brand="telegram" — المنصة محذوفة */
   
   /* Tooltip */
   .socialIcon::after {
@@ -503,8 +506,198 @@
     transform: translateX(-50%) translateY(0);
   }
   
+  /* === ألوان كل منصة عند Hover === */
+  .socialIcon[data-brand="youtube"]:hover { box-shadow: 0 14px 30px -12px rgba(255, 0, 0, 0.55); }
+  .socialIcon[data-brand="youtube"]::before { background: linear-gradient(135deg, #FF0000, #cc0000); }
+  
+  .socialIcon[data-brand="tiktok"]:hover { box-shadow: 0 14px 30px -12px rgba(0, 0, 0, 0.7); }
+  .socialIcon[data-brand="tiktok"]::before { background: linear-gradient(135deg, #000, #25F4EE 50%, #FE2C55); }
+  
+  .socialIcon[data-brand="x"]:hover { box-shadow: 0 14px 30px -12px rgba(0, 0, 0, 0.65); }
+  .socialIcon[data-brand="x"]::before { background: linear-gradient(135deg, #1a1a1a, #000); }
+  
+  .socialIcon[data-brand="instagram"]:hover { box-shadow: 0 14px 30px -12px rgba(225, 48, 108, 0.6); }
+  .socialIcon[data-brand="instagram"]::before { background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+  
+  .socialIcon[data-brand="facebook"]:hover { box-shadow: 0 14px 30px -12px rgba(24, 119, 242, 0.6); }
+  .socialIcon[data-brand="facebook"]::before { background: linear-gradient(135deg, #1877F2, #0d5bbf); }
+  
+  .socialIcon[data-brand="github"]:hover { box-shadow: 0 14px 30px -12px rgba(51, 51, 51, 0.7); }
+  .socialIcon[data-brand="github"]::before { background: linear-gradient(135deg, #333, #111); }
+  
+  .socialIcon[data-brand="linkedin"]:hover { box-shadow: 0 14px 30px -12px rgba(10, 102, 194, 0.6); }
+  .socialIcon[data-brand="linkedin"]::before { background: linear-gradient(135deg, #0A66C2, #004182); }
+  
   /* ==========================================================
-     8. بطاقة النموذج
+     9. قسم المطوّر (منفصل عن روابط المنصة)
+     ========================================================== */
+  .developerSection {
+    margin-bottom: 70px;
+  }
+  
+  .developerCard {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 42px 34px;
+    border-radius: 28px;
+    border: 1px solid var(--border-color);
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255, 215, 0, 0.08), transparent 60%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 40%),
+      var(--bg-card);
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    box-shadow: 0 20px 50px -30px var(--shadow);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+  
+  .developerCard::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--gold), rgba(255, 215, 0, 0.05));
+    opacity: 0.9;
+  }
+  
+  .developerLabel {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 999px;
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    color: var(--gold);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  
+  /* === كلمة HGZ المشعّة === */
+  .hgzLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 10px;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    margin-bottom: 6px;
+  }
+  
+  .hgzLink:hover {
+    transform: translateY(-2px);
+  }
+  
+  .hgzText {
+    font-family: 'Amiri', 'Cairo', system-ui, sans-serif;
+    font-size: 2.4rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    background: linear-gradient(135deg, #fff8d6 0%, #ffd700 25%, #fbbf24 50%, #d4a017 75%, #ffd700 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter:
+      drop-shadow(0 0 8px rgba(255, 215, 0, 0.65))
+      drop-shadow(0 0 20px rgba(255, 215, 0, 0.35));
+    animation: hgzShine 3.5s ease-in-out infinite;
+  }
+  
+  @keyframes hgzShine {
+    0%, 100% {
+      background-position: 0% 50%;
+      filter:
+        drop-shadow(0 0 8px rgba(255, 215, 0, 0.55))
+        drop-shadow(0 0 20px rgba(255, 215, 0, 0.25));
+    }
+    50% {
+      background-position: 100% 50%;
+      filter:
+        drop-shadow(0 0 14px rgba(255, 215, 0, 0.9))
+        drop-shadow(0 0 30px rgba(255, 215, 0, 0.55));
+    }
+  }
+  
+  .hgzSpark {
+    color: var(--gold);
+    font-size: 1.2rem;
+    display: inline-block;
+    animation: sparkle 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.8));
+  }
+  
+  @keyframes sparkle {
+    0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.85; }
+    50%      { transform: rotate(180deg) scale(1.15); opacity: 1; }
+  }
+  
+  .hgzLink:hover .hgzText {
+    animation-play-state: paused;
+    filter:
+      drop-shadow(0 0 16px rgba(255, 215, 0, 1))
+      drop-shadow(0 0 36px rgba(255, 215, 0, 0.7));
+  }
+  
+  .developerName {
+    font-family: 'Amiri', serif;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin: 8px 0 6px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  
+  .developerRole {
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    margin: 0 0 22px;
+    line-height: 1.7;
+    letter-spacing: 0.02em;
+  }
+  
+  .portfolioBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark, #d4a017));
+    color: #1a1a1a;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    box-shadow: 0 12px 28px -12px var(--gold-glow);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s;
+    margin-bottom: 26px;
+  }
+  
+  .portfolioBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 34px -12px var(--gold-glow);
+  }
+  
+  .portfolioBtn svg {
+    transition: transform 0.3s;
+  }
+  
+  .portfolioBtn:hover svg {
+    transform: translate(2px, -2px);
+  }
+  
+  .developerCard .socialIcons {
+    padding-top: 24px;
+    border-top: 1px dashed var(--border-color);
+  }
+  
+  /* ==========================================================
+     10. بطاقة النموذج
      ========================================================== */
   .contactForm {
     position: relative;
@@ -632,7 +825,7 @@
   }
   
   /* ==========================================================
-     9. زر الإرسال
+     11. زر الإرسال
      ========================================================== */
   .submitBtn {
     width: 100%;
@@ -692,6 +885,19 @@
     opacity: 0.7;
   }
   
+  .submitBtn svg {
+    width: 19px;
+    height: 19px;
+    stroke: currentColor;
+    fill: none;
+    flex-shrink: 0;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  .submitBtn:hover:not(:disabled) svg {
+    transform: translateX(-4px) rotate(-6deg);
+  }
+  
   .loadingSpinner {
     display: inline-block;
     width: 20px;
@@ -707,7 +913,7 @@
   }
   
   /* ==========================================================
-     10. رسائل الحالة
+     12. رسائل الحالة
      ========================================================== */
   .statusMessage {
     margin-top: 18px;
@@ -735,12 +941,19 @@
     color: #f87171;
   }
   
-  /* ✅ تعريف واحد فقط (كان معرّفاً مرتين — دمجناهما) */
   .statusIcon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+  }
+  
+  .statusIcon svg {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+    fill: none;
+    display: block;
   }
   
   @keyframes slideUp {
@@ -749,13 +962,12 @@
   }
   
   /* ==========================================================
-     11. قسم الثقة
+     13. قسم الثقة
      ========================================================== */
   .trustSection {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 0;
-    margin-top: 70px;
     position: relative;
     border-radius: 26px;
     border: 1px solid var(--border-color);
@@ -790,7 +1002,6 @@
   }
   
   .trustIcon {
-    /* ✂️ أُزيل font-size */
     width: 72px;
     height: 72px;
     display: flex;
@@ -813,6 +1024,19 @@
     box-shadow: 0 16px 36px -14px rgba(255, 215, 0, 0.55);
   }
   
+  .trustIcon svg {
+    width: 30px;
+    height: 30px;
+    stroke: currentColor;
+    fill: none;
+    display: block;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  .trustItem:hover .trustIcon svg {
+    transform: scale(1.08) rotate(-6deg);
+  }
+  
   .trustItem h4 {
     color: var(--gold);
     font-size: 1.15rem;
@@ -830,65 +1054,7 @@
   }
   
   /* ==========================================================
-     12. 🎨 أيقونات SVG — أبعاد وألوان
-     ========================================================== */
-  
-  /* أيقونات عناصر المعلومات (ظرف + سمّاعة) */
-  .itemIcon svg {
-    width: 22px;
-    height: 22px;
-    stroke: var(--gold);
-    display: block;
-  }
-  
-  /* أيقونة الزخرفة (Sparkle) */
-  .decorationStar svg {
-    width: 22px;
-    height: 22px;
-    stroke: var(--gold);
-    display: block;
-    filter: drop-shadow(0 4px 14px rgba(255, 215, 0, 0.35));
-  }
-  
-  /* أيقونة زر الإرسال (Paper plane) */
-  .submitBtn svg {
-    width: 19px;
-    height: 19px;
-    stroke: currentColor;
-    fill: none;
-    flex-shrink: 0;
-    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  
-  .submitBtn:hover:not(:disabled) svg {
-    transform: translateX(-4px) rotate(-6deg);
-  }
-  
-  /* أيقونات حالة النجاح/الخطأ */
-  .statusIcon svg {
-    width: 22px;
-    height: 22px;
-    stroke: currentColor;
-    fill: none;
-    display: block;
-  }
-  
-  /* أيقونات قسم الثقة (صاعقة + درع + محادثة) */
-  .trustIcon svg {
-    width: 30px;
-    height: 30px;
-    stroke: currentColor;
-    fill: none;
-    display: block;
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  
-  .trustItem:hover .trustIcon svg {
-    transform: scale(1.08) rotate(-6deg);
-  }
-  
-  /* ==========================================================
-     13. Responsive
+     14. Responsive
      ========================================================== */
   @media (max-width: 992px) {
     .contactContent {
@@ -930,32 +1096,33 @@
       margin-bottom: 26px;
     }
   
-    /* ✅ 4 أعمدة ثابتة */
     .socialIcons {
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
+      gap: 8px;
     }
   
     .socialIcon {
-      min-height: 50px;
-      border-radius: 14px;
+      width: 46px;
+      height: 46px;
+      border-radius: 13px;
     }
   
     .socialIcon svg {
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
     }
   
     .socialIcon::after { display: none; }
+  
+    .developerCard {
+      padding: 32px 24px;
+      border-radius: 22px;
+    }
+  
+    .hgzText { font-size: 2rem; }
+    .developerName { font-size: 1.3rem; }
   }
   
   @media (max-width: 480px) {
-    /* ✅ 2×2 على الشاشات الصغيرة جداً */
-    .socialIcons {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-  
     .infoItem {
       padding: 12px 14px;
       gap: 12px;
@@ -972,10 +1139,24 @@
       font-size: 0.98rem;
       padding: 15px 18px;
     }
+  
+    .developerCard { padding: 26px 18px; }
+    .hgzText { font-size: 1.75rem; }
+    .portfolioBtn {
+      font-size: 0.8rem;
+      padding: 10px 18px;
+    }
+  
+    .socialIcon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+    }
+    .socialIcon svg { width: 18px; height: 18px; }
   }
   
   /* ==========================================================
-     14. تقليل الحركة (a11y)
+     15. تقليل الحركة (a11y)
      ========================================================== */
   @media (prefers-reduced-motion: reduce) {
     .gradientOrb,
@@ -983,7 +1164,9 @@
     .decorationLine,
     .decorationStar,
     .availabilityBadge::before,
-    .submitBtn::before {
+    .submitBtn::before,
+    .hgzText,
+    .hgzSpark {
       animation: none !important;
       transition: none !important;
     }
@@ -1003,7 +1186,12 @@
     .submitBtn svg,
     .submitBtn:hover:not(:disabled) svg,
     .trustIcon svg,
-    .trustItem:hover .trustIcon svg {
+    .trustItem:hover .trustIcon svg,
+    .developerCard,
+    .portfolioBtn,
+    .portfolioBtn:hover,
+    .hgzLink,
+    .hgzLink:hover {
       transform: none !important;
       transition: none !important;
     }
