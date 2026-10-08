@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import styles from './about.module.css';
+import styles from './About.module.css';
 
 /* ==========================================================
    🎨 أيقونات SVG
