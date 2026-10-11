@@ -9,7 +9,7 @@ $cacheDirectory = Join-Path $env:LOCALAPPDATA 'Arooba\tools'
 $apksigJar = Join-Path $cacheDirectory 'apksig-8.9.1.jar'
 $apksigHash = 'C070ED1394629D74641AA0906F60B2FFA1EE77E6366A1F93437F59717B1AEB89'
 $classesDirectory = Join-Path $cacheDirectory 'classes'
-$signedApk = Join-Path $projectRoot 'public\downloads\arooba-android.apk'
+$signedApk = Join-Path $projectRoot 'public\downloads\arooba-android-v2.apk'
 
 if (-not (Test-Path $UnsignedApk)) { throw "Unsigned APK is missing: $UnsignedApk" }
 if (-not (Test-Path $keyFile)) { throw "Signing key is missing: $keyFile" }

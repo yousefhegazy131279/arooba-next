@@ -38,7 +38,7 @@ try {
     $expectedFingerprint = ($assetLinks[0].target.sha256_cert_fingerprints[0] -replace ':', '').ToUpperInvariant()
     if ($actualFingerprint -ne $expectedFingerprint) { throw 'APK signing certificate does not match assetlinks.json.' }
 
-    $destination = Join-Path $projectRoot 'public\downloads\arooba-android.apk'
+    $destination = Join-Path $projectRoot 'public\downloads\arooba-android-v2.apk'
     New-Item -ItemType Directory -Path (Split-Path $destination) -Force | Out-Null
     Copy-Item -LiteralPath $apk -Destination $destination -Force
     $hash = Get-FileHash -LiteralPath $destination -Algorithm SHA256

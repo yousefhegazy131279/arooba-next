@@ -3,10 +3,10 @@ const nextConfig = {
   headers() {
     return [
       {
-        source: '/downloads/arooba-android.apk',
+        source: '/downloads/arooba-android-v2.apk',
         headers: [
           { key: 'Content-Type', value: 'application/vnd.android.package-archive' },
-          { key: 'Content-Disposition', value: 'attachment; filename="arooba-android.apk"' },
+          { key: 'Content-Disposition', value: 'attachment; filename="arooba-android-v2.apk"' },
         ],
       },
     ];

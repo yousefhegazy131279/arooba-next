@@ -24,11 +24,11 @@ export default function InstallPage() {
           <span className={styles.tag}>Android</span>
           <h2 id="android-title">حمّل عُروبة لأندرويد</h2>
           <p>تُوزّع نسخة Android كملف APK موقّع من موقع عُروبة. يمكنك أيضًا تثبيت نسخة الويب من المتصفح.</p>
-          <a className={styles.primaryButton} href="/downloads/arooba-android.apk" download="arooba-android.apk">
+          <a className={styles.primaryButton} href="/downloads/arooba-android-v2.apk" download="arooba-android-v2.apk">
             تنزيل APK لأندرويد <span aria-hidden="true">↓</span>
           </a>
           <InstallWebAppButton />
-          <p className={styles.note}>عند استخدام APK، قد يطلب Android السماح بالتثبيت من هذا المصدر. نزّل الملف من الرابط الرسمي هنا فقط.</p>
+          <p className={styles.note}>هذه نسخة Android المحدثة. احذف ملف APK القديم من التنزيلات قبل المحاولة، واسمح بالتثبيت من المصدر الذي تفتح منه الملف. نزّل الملف من الرابط الرسمي هنا فقط.</p>
         </section>
 
         <section className={styles.card} aria-labelledby="iphone-title">

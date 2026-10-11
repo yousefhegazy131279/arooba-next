@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - .github/workflows/android-install-check.yml
-      - public/downloads/arooba-android.apk
+      - public/downloads/arooba-android-v2.apk
   workflow_dispatch:
 
 jobs:
@@ -22,7 +22,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
       - name: Select release APK
         run: |
-          cp public/downloads/arooba-android.apk arooba.apk
+          cp public/downloads/arooba-android-v2.apk arooba.apk
           sha256sum arooba.apk
       - name: Install and launch on Android 13
         uses: reactivecircus/android-emulator-runner@v2
