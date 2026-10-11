@@ -36,7 +36,7 @@ export default function InstallWebAppButton() {
   }, []);
 
   if (installed) return <p className={styles.installed}>عُروبة مثبتة بالفعل على هذا الجهاز.</p>;
-  if (!promptEvent) return <p className={styles.hint}>إذا ظهر خيار «تثبيت التطبيق» في قائمة المتصفح، يمكنك استخدامه مباشرة.</p>;
+  if (!promptEvent) return <p className={styles.hint}>إذا تعذّر تثبيت APK، افتح عُروبة في Chrome واختر من قائمة ⋮ «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».</p>;
 
   return (
     <button
