@@ -33,7 +33,7 @@ public final class SignApk {
             new ApkSigner.Builder(Arrays.asList(signer))
                 .setInputApk(new File(args[0]))
                 .setOutputApk(new File(args[1]))
-                .setMinSdkVersion(21)
+                .setMinSdkVersion(24)
                 .setV1SigningEnabled(true)
                 .setV2SigningEnabled(true)
                 .setV3SigningEnabled(true)
@@ -41,7 +41,7 @@ public final class SignApk {
                 .sign();
 
             ApkVerifier.Result verified = new ApkVerifier.Builder(new File(args[1]))
-                .setMinCheckedPlatformVersion(21)
+                .setMinCheckedPlatformVersion(24)
                 .build()
                 .verify();
             if (!verified.isVerified() || !verified.isVerifiedUsingV2Scheme()) {

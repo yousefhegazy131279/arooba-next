@@ -58,7 +58,7 @@ android {
     namespace "com.hgz.arooba"
     defaultConfig {
         applicationId "com.hgz.arooba"
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 36
         versionCode 1
         versionName "1"
