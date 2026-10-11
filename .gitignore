@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Android release credentials and build artifacts
+/android/release-key.jks
+/android/*.dpapi
+/android/.gradle/
+/android/app/build/
+/android/build/
+/android/*.apk
+/android/*.aab
