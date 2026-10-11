@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
@@ -16,7 +16,17 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",       // أيقونة الموقع الأساسية
     shortcut: "/favicon.ico",   // اختصار (اختياري)
+    apple: "/logo.png",
   },
+  appleWebApp: {
+    capable: true,
+    title: "عُروبة",
+    statusBarStyle: "black-translucent",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#050814",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

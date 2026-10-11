@@ -155,6 +155,7 @@ const Footer = () => {
               <li><Link href="/write">مساحة الكتابة</Link></li>
               <li><Link href="/about">من نحن</Link></li>
               <li><Link href="/contact">تواصل معنا</Link></li>
+              <li><Link href="/install">عُروبة على هاتفك</Link></li>
               <li><Link href="/profile">حسابي</Link></li>
             </ul>
           </div>

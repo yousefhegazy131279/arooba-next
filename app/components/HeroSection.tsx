@@ -221,6 +221,10 @@ const HeroSection = () => {
               </svg>
             </span>
           </Link>
+          <Link href="/install" className={`${styles.ctaButton} ${styles.secondary}`}>
+            <span>عُروبة على هاتفك</span>
+            <span className={styles.buttonIcon} aria-hidden="true">↓</span>
+          </Link>
         </div>
       </div>
 
