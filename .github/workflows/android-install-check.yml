@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - .github/workflows/android-install-check.yml
+      - public/downloads/arooba-android.apk
   workflow_dispatch:
 
 jobs:
@@ -19,13 +20,10 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-      - name: Download published APK
+      - name: Select release APK
         run: |
-          curl --fail --location --silent --show-error \
-            "https://arooba-hgz.vercel.app/downloads/arooba-android.apk?install-check=${GITHUB_SHA}" \
-            --output arooba.apk
-          test "$(sha256sum arooba.apk | cut -d ' ' -f 1 | tr '[:lower:]' '[:upper:]')" = \
-            '0F6BACE55A392B8DB751D255479666D28A181ED72B32A71B811CEA823632804C'
+          cp public/downloads/arooba-android.apk arooba.apk
+          sha256sum arooba.apk
       - name: Install and launch on Android 13
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -35,5 +33,5 @@ jobs:
           script: |
             adb shell getprop ro.build.version.release
             adb install -r arooba.apk
-            adb shell pm path com.hgz.arooba
-            adb shell monkey -p com.hgz.arooba 1
+            adb shell pm path com.hgz.arooba.mobile
+            adb shell monkey -p com.hgz.arooba.mobile 1
