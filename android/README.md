@@ -1,6 +1,6 @@
 # Arooba Android APK
 
-This directory is the Bubblewrap 1.27.0 Trusted Web Activity for `https://arooba-hgz.vercel.app/`. The Android package ID is `com.hgz.arooba`. The web content remains on the live site, so the app requires internet access.
+This directory is the Bubblewrap 1.27.0 Trusted Web Activity for `https://arooba-hgz.vercel.app/`. The Android package ID is `com.hgz.arooba.mobile`. The first public APK used `com.hgz.arooba`; the ID changed after an Android 13 tablet rejected installation even after the user removed that version. Both IDs remain in `assetlinks.json`, but only the current ID is built here. The web content remains on the live site, so the app requires internet access.
 
 The production signing key is `android/release-key.jks` and is ignored by Git. Its password is encrypted for the current Windows account at `%LOCALAPPDATA%\Arooba\android-signing-password.dpapi`. **Back up the key and its password securely.** The DPAPI password file works only for this Windows account, so it is not a portable password backup. Losing either the key or its password prevents signing future APK updates for the same Android package. Never commit either file or the decrypted password.
 

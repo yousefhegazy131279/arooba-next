@@ -1,5 +1,5 @@
 {
-  "packageId": "com.hgz.arooba",
+  "packageId": "com.hgz.arooba.mobile",
   "host": "arooba-hgz.vercel.app",
   "name": "عُروبة",
   "launcherName": "عُروبة",
@@ -19,8 +19,8 @@
     "path": "release-key.jks",
     "alias": "arooba"
   },
-  "appVersionName": "1",
-  "appVersionCode": 1,
+  "appVersionName": "2",
+  "appVersionCode": 2,
   "shortcuts": [],
   "generatorApp": "Bubblewrap",
   "webManifestUrl": "https://arooba-hgz.vercel.app/manifest.webmanifest",
@@ -42,5 +42,5 @@
   "fileHandlers": [],
   "launchHandlerClientMode": "",
   "displayOverride": [],
-  "appVersion": "1"
+  "appVersion": "2"
 }
