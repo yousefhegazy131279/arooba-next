@@ -16,14 +16,17 @@ export async function POST(request: Request) {
       if (!chapter || (novel_id && String(chapter.novel_id) !== String(novel_id))) return NextResponse.json({ error: 'الفصل غير موجود' }, { status: 404 });
       novel_id = chapter.novel_id;
     }
-    let query = supabase.from('ratings').select('id').eq('user_id', user.id).eq('novel_id', novel_id);
-    query = chapter_id ? query.eq('chapter_id', chapter_id) : query.is('chapter_id', null);
+    // ratings_target_check requires exactly one target: a novel or a chapter.
+    // Keep the chapter's novel ID only for validation and page revalidation.
+    let query = supabase.from('ratings').select('id').eq('user_id', user.id);
+    query = chapter_id ? query.eq('chapter_id', chapter_id) : query.eq('novel_id', novel_id).is('chapter_id', null);
     const { data: existing, error: readError } = await query.maybeSingle();
     if (readError) throw readError;
-    const { error } = existing ? await supabase.from('ratings').update({ rating }).eq('id', existing.id).eq('user_id', user.id) : await supabase.from('ratings').insert({ user_id: user.id, novel_id, chapter_id: chapter_id || null, rating });
+    const target = chapter_id ? { chapter_id, novel_id: null } : { novel_id, chapter_id: null };
+    const { error } = existing ? await supabase.from('ratings').update({ rating }).eq('id', existing.id).eq('user_id', user.id) : await supabase.from('ratings').insert({ user_id: user.id, ...target, rating });
     if (error) throw error;
-    let stats = supabase.from('ratings').select('rating').eq('novel_id', novel_id);
-    stats = chapter_id ? stats.eq('chapter_id', chapter_id) : stats.is('chapter_id', null);
+    let stats = supabase.from('ratings').select('rating');
+    stats = chapter_id ? stats.eq('chapter_id', chapter_id) : stats.eq('novel_id', novel_id).is('chapter_id', null);
     const { data } = await stats;
     const count = data?.length || 0;
     revalidatePath('/stories/' + novel_id);
