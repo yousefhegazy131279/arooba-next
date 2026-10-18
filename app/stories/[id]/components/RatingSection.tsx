@@ -1,7 +1,7 @@
 'use client';
 import { showToast } from '@/lib/toast';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '@/app/stores/useAuthStore';
 import { supabase } from '@/lib/supabaseClient';
 import styles from '../story-page.module.css';
@@ -21,7 +21,7 @@ export function RatingSection({
   averageRating,
   showAverageOnly = false,
 }: RatingSectionProps) {
-  const { user, isLoggedIn } = useAuthStore();
+  const userId = useAuthStore((state) => state.user?.id);
   const [userRating, setUserRating] = useState<number | null>(null);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
@@ -29,8 +29,14 @@ export function RatingSection({
   const [totalRatings, setTotalRatings] = useState<number>(0);
 
   // جلب تقييم المستخدم الحالي
-  const fetchUserRating = async () => {
-    if (!user) return;
+  const fetchUserRating = useCallback(async () => {
+    // The auth store can still be hydrating after a page load. Read the actual
+    // Supabase session instead of treating an empty local store as signed out.
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setUserRating(null);
+      return;
+    }
     const column = targetType === 'novel' ? 'novel_id' : 'chapter_id';
     const { data, error } = await supabase
       .from('ratings')
@@ -44,10 +50,10 @@ export function RatingSection({
       return;
     }
     if (data) setUserRating(data.rating);
-  };
+  }, [targetId, targetType]);
 
   // جلب متوسط التقييم وعدد التقييمات
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     const column = targetType === 'novel' ? 'novel_id' : 'chapter_id';
     const { data, error } = await supabase
       .from('ratings')
@@ -66,35 +72,29 @@ export function RatingSection({
       setAvg(null);
       setTotalRatings(0);
     }
-  };
+  }, [targetId, targetType]);
 
   useEffect(() => {
-    fetchStats();
-    if (isLoggedIn) {
-      fetchUserRating();
-    }
-  }, [targetId, targetType, isLoggedIn, user]);
+    void fetchStats();
+    if (!showAverageOnly) void fetchUserRating();
+  }, [fetchStats, fetchUserRating, showAverageOnly, userId]);
 
   const handleRating = async (rating: number) => {
-    if (!isLoggedIn) {
-      showToast.error('يجب تسجيل الدخول أولاً لتقييم المحتوى');
-      return;
-    }
-    if (!user) {
-      showToast.error('يوجد خطأ في حساب المستخدم');
-      return;
-    }
-
+    if (loading) return;
     setLoading(true);
     try {
-      const response = await fetch('/api/ratings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rating, ...(targetType === 'chapter' ? { chapter_id: targetId, ...(novelId ? { novel_id: novelId } : {}) } : { novel_id: targetId }) }) });
+      const response = await fetch('/api/ratings', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rating, ...(targetType === 'chapter' ? { chapter_id: targetId, ...(novelId ? { novel_id: novelId } : {}) } : { novel_id: targetId }) }) });
       const result = await response.json();
+      if (response.status === 401) {
+        showToast.error('سجّل الدخول في هذه النسخة من عُروبة لتقييم المحتوى');
+        return;
+      }
       if (!response.ok) throw new Error(result.error || 'تعذر حفظ التقييم');
       setUserRating(rating);
       await fetchStats(); // إعادة جلب المتوسط
-    } catch (err: any) {
-      console.error('Rating error:', err.message, err);
-      showToast.error(`فشل في حفظ التقييم: ${err.message || 'خطأ غير معروف'}`);
+    } catch (err: unknown) {
+      console.error('Rating error:', err);
+      showToast.error(`فشل في حفظ التقييم: ${err instanceof Error ? err.message : 'خطأ غير معروف'}`);
     } finally {
       setLoading(false);
     }

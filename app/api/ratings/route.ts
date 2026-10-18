@@ -31,6 +31,11 @@ export async function POST(request: Request) {
     const count = data?.length || 0;
     revalidatePath('/stories/' + novel_id);
     return NextResponse.json({ success: true, total_ratings: count, avg_rating: count ? data!.reduce((sum, r) => sum + r.rating, 0) / count : 0 });
-  } catch { return NextResponse.json({ error: 'تعذر حفظ التقييم. تحقق من تسجيل الدخول ثم حاول مجددًا.' }, { status: 400 }); }
+  } catch (error) {
+    if (error instanceof Error && error.message === 'سجّل الدخول لإكمال هذه العملية') {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    return NextResponse.json({ error: 'تعذر حفظ التقييم. حاول مجددًا.' }, { status: 400 });
+  }
 }
 
